@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour Journal™ — Your Intelligence Log | Bourbon Pour</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0805;--deep:#100C07;--card:#15100A;--card-hover:#1A1410;
+  --amber:#C47A2A;--amber-light:#E8A84C;--amber-pale:#F5D98B;
+  --text:#F5EFE4;--text-dim:rgba(245,239,228,0.72);--text-faint:rgba(245,239,228,0.38);
+  --border:rgba(196,122,42,0.22);
+  --green:#2ECC71;--red:#E74C3C;--blue:#3498DB;--orange:#E67E22;--purple:#9B59B6;
+  --font-display:'Playfair Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;
+  --nav-h:56px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.42;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--amber);border-radius:3px;}
+a{color:var(--amber);text-decoration:none;transition:color .2s;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(10,8,5,0.94);backdrop-filter:blur(16px);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border);}
+.nav-left{display:flex;align-items:center;gap:12px;}
+.nav-logo{width:30px;height:30px;background:var(--amber);border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:16px;color:var(--bg);}
+.nav-wordmark{font-family:var(--font-display);font-size:15px;font-weight:700;}
+.nav-sep{width:1px;height:20px;background:var(--border);margin:0 8px;}
+.nav-section{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-back{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);padding:6px 14px;border:1px solid var(--border);border-radius:3px;transition:all .2s;}
+.nav-back:hover{border-color:var(--amber);color:var(--amber);}
+.nav-user{display:flex;align-items:center;gap:8px;}
+.nav-avatar{width:28px;height:28px;background:linear-gradient(135deg,var(--amber),var(--amber-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--bg);}
+.nav-username{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.pro-badge{font-family:var(--font-mono);font-size:8px;background:var(--amber);color:var(--bg);padding:2px 6px;border-radius:2px;text-transform:uppercase;letter-spacing:1px;font-weight:500;}
+
+/* HEADER */
+.pj-header{margin-top:var(--nav-h);background:var(--deep);border-bottom:1px solid var(--border);padding:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.pjh-left h1{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:2px;}
+.pjh-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+.pjh-stats{display:flex;gap:28px;}
+.pjh-stat{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px 20px;}
+.pjh-stat-val{font-family:var(--font-mono);font-size:24px;font-weight:500;}
+.pjh-stat-label{font-family:var(--font-mono);font-size:8px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* LAYOUT */
+.pj-main{padding:28px;max-width:1360px;margin:0 auto;}
+.pj-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+.pj-full{margin-bottom:24px;}
+
+/* CARD BASE */
+.pj-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative;}
+.pj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),var(--amber-light));}
+.pj-card-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);}
+.pj-card-title{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;}
+.pj-card-meta{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);}
+.pj-card-body{padding:24px;}
+
+/* WEEKLY AI BRIEFING */
+.briefing-date{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);margin-bottom:16px;}
+.briefing-headline{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.25;margin-bottom:16px;}
+.briefing-summary{font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;}
+.briefing-insights{list-style:none;}
+.briefing-insight{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(196,122,42,0.06);}
+.briefing-insight:last-child{border-bottom:none;}
+.bi-icon{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.bi-icon.bullish{background:rgba(46,204,113,0.12);color:var(--green);}
+.bi-icon.bearish{background:rgba(231,76,60,0.12);color:var(--red);}
+.bi-icon.neutral{background:rgba(196,122,42,0.12);color:var(--amber);}
+.bi-icon.alert{background:rgba(52,152,219,0.12);color:var(--blue);}
+.bi-text{flex:1;}
+.bi-title{font-family:var(--font-mono);font-size:11px;color:var(--text);font-weight:500;margin-bottom:2px;}
+.bi-desc{font-size:12px;color:var(--text-dim);line-height:1.5;}
+.bi-proof{font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-top:4px;}
+
+/* INTELLIGENCE FINGERPRINT */
+.fingerprint-wrap{display:flex;align-items:center;gap:32px;}
+.fingerprint-chart{width:280px;height:280px;flex-shrink:0;}
+.fingerprint-chart canvas{width:280px!important;height:280px!important;}
+.fingerprint-legend{flex:1;}
+.fp-legend-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(196,122,42,0.06);}
+.fp-legend-item:last-child{border-bottom:none;}
+.fp-legend-left{display:flex;align-items:center;gap:8px;}
+.fp-legend-dot{width:8px;height:8px;border-radius:50%;}
+.fp-legend-name{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.fp-legend-val{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--amber-light);}
+.fp-legend-bar{flex:1;margin:0 16px;height:3px;background:rgba(245,239,228,0.04);border-radius:2px;overflow:hidden;}
+.fp-legend-bar-fill{height:100%;border-radius:2px;background:var(--amber);}
+
+/* SIGNALS CAUGHT VS MISSED */
+.signals-split{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.signals-col{padding:0 20px;}
+.signals-col:first-child{border-right:1px solid var(--border);}
+.signals-col-title{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.signals-col-title .dot{width:8px;height:8px;border-radius:50%;}
+.signal-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(196,122,42,0.04);}
+.signal-item:last-child{border-bottom:none;}
+.si-indicator{width:3px;height:100%;min-height:36px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.si-indicator.caught{background:var(--green);}
+.si-indicator.missed{background:var(--red);}
+.si-content{flex:1;}
+.si-name{font-size:12px;font-weight:500;margin-bottom:2px;}
+.si-detail{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.si-proof{font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-top:2px;}
+
+/* READING HISTORY */
+.history-filters{display:flex;gap:4px;margin-bottom:16px;}
+.hf-btn{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);padding:4px 10px;border:1px solid var(--border);border-radius:3px;background:transparent;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:0.5px;}
+.hf-btn:hover{border-color:var(--amber);color:var(--amber);}
+.hf-btn.active{border-color:var(--amber);color:var(--amber);background:rgba(196,122,42,0.08);}
+.history-timeline{}
+.ht-day{margin-bottom:20px;}
+.ht-date{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.ht-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:4px;transition:all .15s;cursor:pointer;margin-bottom:4px;}
+.ht-item:hover{background:var(--card-hover);}
+.ht-time{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);min-width:48px;flex-shrink:0;}
+.ht-type{font-family:var(--font-mono);font-size:8px;text-transform:uppercase;letter-spacing:0.5px;padding:2px 6px;border-radius:2px;flex-shrink:0;min-width:50px;text-align:center;}
+.ht-type.article{background:rgba(196,122,42,0.12);color:var(--amber);}
+.ht-type.sip{background:rgba(46,204,113,0.12);color:var(--green);}
+.ht-type.radar{background:rgba(231,76,60,0.12);color:var(--red);}
+.ht-type.tipsy{background:rgba(155,89,182,0.12);color:var(--purple);}
+.ht-headline{font-size:12px;color:var(--text-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ht-proof{font-family:var(--font-mono);font-size:11px;color:var(--amber);font-weight:500;flex-shrink:0;}
+
+/* PROOF SCORE DISTRIBUTION */
+.proof-dist-chart{height:160px;}
+.proof-dist-chart canvas{width:100%!important;height:160px!important;}
+
+/* READING VELOCITY */
+.rv-chart{height:120px;margin-bottom:16px;}
+.rv-chart canvas{width:100%!important;height:120px!important;}
+.rv-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.rv-stat{background:var(--deep);border:1px solid var(--border);border-radius:4px;padding:10px;text-align:center;}
+.rv-stat-val{font-family:var(--font-mono);font-size:18px;font-weight:500;}
+.rv-stat-label{font-family:var(--font-mono);font-size:8px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* STREAK & VALUE */
+.pj-value{background:linear-gradient(135deg,rgba(196,122,42,0.1),rgba(196,122,42,0.03));border:1px solid var(--border);border-radius:8px;padding:28px;display:flex;justify-content:space-between;align-items:center;gap:24px;}
+.pj-value-left h3{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:6px;}
+.pj-value-left p{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:500px;}
+.pj-value-right{text-align:center;flex-shrink:0;}
+.pj-value-num{font-family:var(--font-mono);font-size:48px;font-weight:500;color:var(--amber-light);line-height:1;}
+.pj-value-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* FOOTER */
+.footer{background:var(--deep);border-top:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.footer-copy{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.footer-link{font-family:var(--font-mono);font-size:10px;color:var(--amber);}
+
+@keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fade-up .5s cubic-bezier(0.4,0,0.2,1) both;}
+
+@media(max-width:900px){
+  .pj-grid{grid-template-columns:1fr;}
+  .fingerprint-wrap{flex-direction:column;}
+  .signals-split{grid-template-columns:1fr;}
+  .signals-col:first-child{border-right:none;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;}
+  .pjh-stats{display:none;}
+  .pj-value{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-left">
+    <div class="nav-logo">B</div>
+    <div class="nav-wordmark">Bourbon Pour</div>
+    <div class="nav-sep"></div>
+    <div class="nav-section">Pour Journal™</div>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← The Pour</a>
+    <div class="nav-user">
+      <div class="nav-avatar">A</div>
+      <div class="nav-username">alex.chen</div>
+      <div class="pro-badge">Pro</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="pj-header">
+  <div class="pjh-left">
+    <h1>Your Pour Journal™</h1>
+    <div class="pjh-sub">Private intelligence log · Member since Oct 2025 · 147 days active</div>
+  </div>
+  <div class="pjh-stats">
+    <div class="pjh-stat"><div class="pjh-stat-val" style="color:var(--amber-light)">342</div><div class="pjh-stat-label">Articles Read</div></div>
+    <div class="pjh-stat"><div class="pjh-stat-val" style="color:var(--green)">87</div><div class="pjh-stat-label">Avg Proof Score</div></div>
+    <div class="pjh-stat"><div class="pjh-stat-val" style="color:var(--green)">23/27</div><div class="pjh-stat-label">Signals Caught</div></div>
+    <div class="pjh-stat"><div class="pjh-stat-val" style="color:var(--amber)">41d</div><div class="pjh-stat-label">Read Streak</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="pj-main">
+
+  <!-- ROW 1: WEEKLY BRIEFING + FINGERPRINT -->
+  <div class="pj-grid">
+    <!-- WEEKLY AI BRIEFING -->
+    <div class="pj-card fade-in">
+      <div class="pj-card-header">
+        <div class="pj-card-title">Weekly AI Briefing</div>
+        <div class="pj-card-meta">Generated Mar 24, 2026</div>
+      </div>
+      <div class="pj-card-body">
+        <div class="briefing-date">Week of March 18–24, 2026</div>
+        <h3 class="briefing-headline">Your AI Infrastructure Thesis Is Getting Confirmed Faster Than Expected</h3>
+        <p class="briefing-summary">Based on your reading patterns this week, you've been tracking three convergent signals: Azure GPU capacity constraints, the CoreWeave IPO trajectory, and enterprise AI budget audits. All three accelerated this week. Here's what your journal says you should be watching next.</p>
+
+        <ul class="briefing-insights">
+          <li class="briefing-insight"><div class="bi-icon bullish">↑</div><div class="bi-text"><div class="bi-title">GPU Capacity Signal Confirmed</div><div class="bi-desc">You read the Azure reservation article 6 days before CoreWeave's S-1 filing confirmed the demand thesis. Your timing was in the top 8% of Pro readers.</div><div class="bi-proof">Proof Score: 92</div></div></li>
+          <li class="briefing-insight"><div class="bi-icon alert">!</div><div class="bi-text"><div class="bi-title">Blind Spot: Japan BOJ Activity</div><div class="bi-desc">You missed 3 articles on Japan's tech debt purchases. Based on your macro interest profile, this signal correlates strongly with themes you track. Recommended reading queued.</div><div class="bi-proof">Proof Score: 86</div></div></li>
+          <li class="briefing-insight"><div class="bi-icon bullish">↑</div><div class="bi-text"><div class="bi-title">Sector Conviction Rising: Defense Tech</div><div class="bi-desc">You've read 8 defense tech articles in the last 14 days — up 3x from your baseline. Anduril and Shield AI are both in your radar watchlist. Patent velocity signals strengthening.</div><div class="bi-proof">Proof Score: 88</div></div></li>
+          <li class="briefing-insight"><div class="bi-icon neutral">◆</div><div class="bi-text"><div class="bi-title">Portfolio Overlap Alert</div><div class="bi-desc">Your reading suggests heavy concentration in AI infrastructure. Consider balancing with energy and biotech — two sectors where Proof Scores are rising but your engagement is low.</div><div class="bi-proof">Diversification Score: 62</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- INTELLIGENCE FINGERPRINT -->
+    <div class="pj-card fade-in" style="animation-delay:.08s">
+      <div class="pj-card-header">
+        <div class="pj-card-title">Intelligence Fingerprint</div>
+        <div class="pj-card-meta">Updated daily</div>
+      </div>
+      <div class="pj-card-body">
+        <div class="fingerprint-wrap">
+          <div class="fingerprint-chart"><canvas id="fpChart"></canvas></div>
+          <div class="fingerprint-legend" id="fpLegend"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: SIGNALS CAUGHT VS MISSED -->
+  <div class="pj-full">
+    <div class="pj-card fade-in" style="animation-delay:.12s">
+      <div class="pj-card-header">
+        <div class="pj-card-title">Signals: Caught vs Missed</div>
+        <div class="pj-card-meta">Last 30 days · 23 caught · 4 missed</div>
+      </div>
+      <div class="pj-card-body">
+        <div class="signals-split" id="signalsSplit"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: READING HISTORY + PROOF DISTRIBUTION + VELOCITY -->
+  <div class="pj-grid">
+    <!-- READING HISTORY -->
+    <div class="pj-card fade-in" style="animation-delay:.16s">
+      <div class="pj-card-header">
+        <div class="pj-card-title">Reading History</div>
+        <div class="pj-card-meta">342 total reads</div>
+      </div>
+      <div class="pj-card-body">
+        <div class="history-filters" id="histFilters">
+          <button class="hf-btn active" data-filter="all">All</button>
+          <button class="hf-btn" data-filter="article">Articles</button>
+          <button class="hf-btn" data-filter="sip">Daily Sip</button>
+          <button class="hf-btn" data-filter="radar">Radar</button>
+          <button class="hf-btn" data-filter="tipsy">Tipsy</button>
+        </div>
+        <div class="history-timeline" id="histTimeline"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: STACKED CARDS -->
+    <div>
+      <!-- PROOF SCORE DISTRIBUTION -->
+      <div class="pj-card fade-in" style="animation-delay:.2s;margin-bottom:20px;">
+        <div class="pj-card-header">
+          <div class="pj-card-title">Your Proof Score Distribution</div>
+          <div class="pj-card-meta">Across 342 reads</div>
+        </div>
+        <div class="pj-card-body">
+          <div class="proof-dist-chart"><canvas id="proofDistChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- READING VELOCITY -->
+      <div class="pj-card fade-in" style="animation-delay:.24s">
+        <div class="pj-card-header">
+          <div class="pj-card-title">Reading Velocity</div>
+          <div class="pj-card-meta">Last 30 days</div>
+        </div>
+        <div class="pj-card-body">
+          <div class="rv-chart"><canvas id="rvChart"></canvas></div>
+          <div class="rv-stats">
+            <div class="rv-stat"><div class="rv-stat-val" style="color:var(--amber-light)">8.2</div><div class="rv-stat-label">Avg / Day</div></div>
+            <div class="rv-stat"><div class="rv-stat-val" style="color:var(--green)">14</div><div class="rv-stat-label">Peak Day</div></div>
+            <div class="rv-stat"><div class="rv-stat-val" style="color:var(--blue)">6:34 AM</div><div class="rv-stat-label">Usual Start</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUE STRIP -->
+  <div class="pj-value fade-in" style="animation-delay:.28s">
+    <div class="pj-value-left">
+      <h3>Your journal gets smarter every day.</h3>
+      <p>After 147 days of tracking your intelligence consumption, your Pour Journal has identified 23 confirmed signals before they went public, flagged 4 blind spots in your coverage, and built a personalized fingerprint across 7 sectors. The longer you stay, the sharper this becomes.</p>
+    </div>
+    <div class="pj-value-right">
+      <div class="pj-value-num">147</div>
+      <div class="pj-value-label">Days of Intelligence</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-copy">© 2026 Bourbon Pour Media Inc. · Pour Journal™ is encrypted and private</div>
+  <a href="index.html" class="footer-link">Back to The Pour</a>
+</footer>
+
+<script>
+// ===== FINGERPRINT RADAR CHART =====
+const fpData={
+  labels:['AI / ML','Fintech','Defense Tech','Cloud','Biotech','Energy','Crypto'],
+  values:[92,68,74,85,32,28,45],
+  colors:['#E74C3C','#2ECC71','#E67E22','#3498DB','#9B59B6','#F39C12','#C47A2A']
+};
+const fpCtx=document.getElementById('fpChart').getContext('2d');
+new Chart(fpCtx,{type:'radar',data:{labels:fpData.labels,datasets:[{data:fpData.values,backgroundColor:'rgba(196,122,42,0.15)',borderColor:'#C47A2A',borderWidth:2,pointBackgroundColor:'#E8A84C',pointBorderColor:'#C47A2A',pointRadius:4,pointHoverRadius:6}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{r:{angleLines:{color:'rgba(245,239,228,0.06)'},grid:{color:'rgba(245,239,228,0.06)'},pointLabels:{color:'rgba(245,239,228,0.5)',font:{family:'DM Mono',size:10}},ticks:{display:false},suggestedMin:0,suggestedMax:100}}}});
+
+// Legend
+const fpLeg=document.getElementById('fpLegend');
+fpData.labels.forEach((l,i)=>{
+  fpLeg.innerHTML+=`<div class="fp-legend-item"><div class="fp-legend-left"><div class="fp-legend-dot" style="background:${fpData.colors[i]}"></div><div class="fp-legend-name">${l}</div></div><div class="fp-legend-bar"><div class="fp-legend-bar-fill" style="width:${fpData.values[i]}%;background:${fpData.colors[i]}"></div></div><div class="fp-legend-val">${fpData.values[i]}%</div></div>`;
+});
+
+// ===== SIGNALS CAUGHT VS MISSED =====
+const caughtSignals=[
+  {name:'CoreWeave S-1 Filing',detail:'Read Feb 5 · Public Feb 27',proof:89},
+  {name:'Perplexity AI $250M Raise',detail:'Read Dec 22 · Public Jan 28',proof:96},
+  {name:'Stripe Treasury Expansion',detail:'Read Jan 16 · Public Feb 14',proof:93},
+  {name:'Goldman AI Budget 2x',detail:'Read Mar 20 · Public Mar 24',proof:91},
+  {name:'Enterprise AI Audit Wave',detail:'Read Mar 18 · Confirmed Mar 23',proof:88},
+  {name:'Anduril Patent Velocity',detail:'Read Feb 12 · Pending confirmation',proof:88},
+  {name:'Mistral EU Infrastructure',detail:'Read Feb 19 · Pending confirmation',proof:91}
+];
+const missedSignals=[
+  {name:'Japan BOJ Tech Debt Buys',detail:'3 articles published · 0 read',proof:86},
+  {name:'Form Energy Grid Storage',detail:'2 articles published · 0 read',proof:73},
+  {name:'Worldcoin Regulatory Pivot',detail:'1 article published · 0 read',proof:59},
+  {name:'Recursion Pharma Phase II',detail:'2 articles published · 0 read',proof:77}
+];
+const ss=document.getElementById('signalsSplit');
+ss.innerHTML=`<div class="signals-col"><div class="signals-col-title" style="color:var(--green)"><div class="dot" style="background:var(--green)"></div>Caught (${caughtSignals.length})</div>${caughtSignals.map(s=>`<div class="signal-item"><div class="si-indicator caught"></div><div class="si-content"><div class="si-name">${s.name}</div><div class="si-detail">${s.detail}</div><div class="si-proof">Proof: ${s.proof}</div></div></div>`).join('')}</div><div class="signals-col"><div class="signals-col-title" style="color:var(--red)"><div class="dot" style="background:var(--red)"></div>Missed (${missedSignals.length})</div>${missedSignals.map(s=>`<div class="signal-item"><div class="si-indicator missed"></div><div class="si-content"><div class="si-name">${s.name}</div><div class="si-detail">${s.detail}</div><div class="si-proof">Proof: ${s.proof}</div></div></div>`).join('')}</div>`;
+
+// ===== READING HISTORY =====
+const histData=[
+  {day:'Today — Mar 25',items:[
+    {time:'7:12',type:'sip',headline:'The Daily Sip #347 — AI Budget Audits, Japan BOJ, Azure GPU',proof:94},
+    {time:'7:28',type:'article',headline:'The Fed\'s Silence Is Louder Than Its Last Three Rate Decisions',proof:92},
+    {time:'8:04',type:'radar',headline:'Disruptor Radar: Perplexity AI moved to CRITICAL (96)',proof:96},
+    {time:'8:15',type:'tipsy',headline:'Nvidia\'s market cap just passed the GDP of Canada',proof:72},
+    {time:'9:32',type:'article',headline:'$40B AI Infrastructure Bet Nobody Is Talking About',proof:88},
+    {time:'11:18',type:'tipsy',headline:'OpenAI spending $2.4M per day on compute',proof:87}
+  ]},
+  {day:'Yesterday — Mar 24',items:[
+    {time:'6:48',type:'sip',headline:'The Daily Sip #346 — Goldman AI Budget, Defense Contracts',proof:91},
+    {time:'7:15',type:'article',headline:'Why Goldman Just Quietly Doubled Its AI Infrastructure Budget',proof:91},
+    {time:'8:02',type:'radar',headline:'Disruptor Radar: Anduril patent spike detected',proof:88},
+    {time:'9:44',type:'article',headline:'The Fintech Goldman\'s Analysts Are All Downloading Quietly',proof:79},
+    {time:'12:30',type:'tipsy',headline:'Goldman Sachs makes AI literacy mandatory for analysts',proof:78}
+  ]},
+  {day:'Mar 23',items:[
+    {time:'6:52',type:'sip',headline:'The Daily Sip #345 — CoreWeave IPO, Macro Calm, Crypto ETF',proof:89},
+    {time:'7:30',type:'article',headline:'CoreWeave S-1 Deep Dive: The GPU Cloud That Could',proof:89},
+    {time:'8:10',type:'radar',headline:'Disruptor Radar: Databricks IPO signals strengthening',proof:85},
+    {time:'10:05',type:'article',headline:'Three CFOs Told Us the Same Thing About AI ROI',proof:93}
+  ]}
+];
+
+let histFilter='all';
+function renderHistory(){
+  const tl=document.getElementById('histTimeline');
+  tl.innerHTML='';
+  histData.forEach(day=>{
+    const items=histFilter==='all'?day.items:day.items.filter(i=>i.type===histFilter);
+    if(!items.length)return;
+    tl.innerHTML+=`<div class="ht-day"><div class="ht-date">${day.day}</div>${items.map(i=>`<div class="ht-item"><span class="ht-time">${i.time}</span><span class="ht-type ${i.type}">${i.type}</span><span class="ht-headline">${i.headline}</span><span class="ht-proof">${i.proof}</span></div>`).join('')}</div>`;
+  });
+}
+document.querySelectorAll('.hf-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.hf-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    histFilter=btn.dataset.filter;
+    renderHistory();
+  });
+});
+renderHistory();
+
+// ===== PROOF SCORE DISTRIBUTION =====
+new Chart(document.getElementById('proofDistChart').getContext('2d'),{type:'bar',data:{labels:['0-39','40-59','60-74','75-89','90-100'],datasets:[{data:[3,12,48,156,123],backgroundColor:['rgba(231,76,60,0.6)','rgba(230,126,34,0.6)','rgba(196,122,42,0.6)','rgba(232,168,76,0.7)','rgba(46,204,113,0.7)'],borderColor:['#E74C3C','#E67E22','#C47A2A','#E8A84C','#2ECC71'],borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#15100A',borderColor:'#C47A2A',borderWidth:1,titleFont:{family:'DM Mono'},bodyFont:{family:'DM Mono'},titleColor:'#E8A84C',bodyColor:'#F5EFE4'}},scales:{x:{grid:{display:false},ticks:{color:'rgba(245,239,228,0.4)',font:{family:'DM Mono',size:10}}},y:{grid:{color:'rgba(245,239,228,0.03)'},ticks:{color:'rgba(245,239,228,0.3)',font:{family:'DM Mono',size:9}}}}}});
+
+// ===== READING VELOCITY =====
+const rvData=[6,8,7,9,12,5,3,8,10,7,6,9,11,14,8,7,6,10,9,8,7,11,13,9,8,7,6,10,8,9];
+new Chart(document.getElementById('rvChart').getContext('2d'),{type:'line',data:{labels:rvData.map((_,i)=>'D'+(i+1)),datasets:[{data:rvData,borderColor:'#C47A2A',borderWidth:1.5,pointRadius:0,tension:0.4,fill:true,backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,120);g.addColorStop(0,'rgba(196,122,42,0.2)');g.addColorStop(1,'rgba(196,122,42,0)');return g;}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proof Score™ — The Intelligence Standard | Bourbon Pour</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0805;--deep:#100C07;--card:#15100A;
+  --amber:#C47A2A;--amber-light:#E8A84C;--amber-pale:#F5D98B;
+  --text:#F5EFE4;--text-dim:rgba(245,239,228,0.72);--text-faint:rgba(245,239,228,0.38);
+  --border:rgba(196,122,42,0.22);
+  --green:#2ECC71;--red:#E74C3C;--blue:#3498DB;--orange:#E67E22;--purple:#9B59B6;
+  --font-display:'Playfair Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;
+  --nav-h:56px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.42;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--amber);border-radius:3px;}
+a{color:var(--amber);text-decoration:none;transition:color .2s;}
+a:hover{color:var(--amber-light);}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(10,8,5,0.94);backdrop-filter:blur(16px);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border);}
+.nav-left{display:flex;align-items:center;gap:12px;}
+.nav-logo{width:30px;height:30px;background:var(--amber);border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:16px;color:var(--bg);}
+.nav-wordmark{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);}
+.nav-sep{width:1px;height:20px;background:var(--border);margin:0 8px;}
+.nav-section{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-back{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);padding:6px 14px;border:1px solid var(--border);border-radius:3px;transition:all .2s;}
+.nav-back:hover{border-color:var(--amber);color:var(--amber);}
+.btn-primary{background:var(--amber);color:var(--bg);font-family:var(--font-mono);font-size:11px;font-weight:500;padding:8px 18px;border:none;border-radius:3px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.btn-primary:hover{background:var(--amber-light);transform:translateY(-1px);}
+
+/* LAYOUT */
+.container{max-width:1100px;margin:0 auto;padding:0 28px;}
+
+/* HERO */
+.ps-hero{margin-top:var(--nav-h);padding:80px 28px 60px;text-align:center;position:relative;overflow:hidden;}
+.ps-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(196,122,42,0.08) 0%,transparent 70%);pointer-events:none;}
+.ps-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(196,122,42,0.1);border:1px solid var(--border);border-radius:20px;padding:6px 18px;margin-bottom:24px;}
+.ps-hero-badge-text{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.ps-hero h1{font-family:var(--font-display);font-size:52px;font-weight:900;line-height:1.08;margin-bottom:16px;position:relative;}
+.ps-hero h1 em{color:var(--amber);font-style:italic;}
+.ps-hero-sub{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--text-dim);margin-bottom:24px;max-width:600px;margin-left:auto;margin-right:auto;}
+.ps-hero-desc{color:var(--text-dim);font-size:15px;line-height:1.7;max-width:640px;margin:0 auto 40px;}
+
+/* Giant score display */
+.ps-giant{display:flex;justify-content:center;align-items:center;gap:40px;margin-bottom:48px;}
+.ps-giant-score{position:relative;width:200px;height:200px;}
+.ps-giant-ring{width:200px;height:200px;border-radius:50%;position:relative;}
+.ps-giant-ring svg{transform:rotate(-90deg);width:200px;height:200px;}
+.ps-giant-ring circle{fill:none;stroke-width:6;}
+.ps-giant-ring .track{stroke:rgba(245,239,228,0.06);}
+.ps-giant-ring .fill{stroke:url(#amberGrad);stroke-linecap:round;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1);}
+.ps-giant-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ps-giant-val{font-family:var(--font-mono);font-size:64px;font-weight:500;color:var(--amber-light);line-height:1;}
+.ps-giant-label{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;}
+.ps-giant-meaning{text-align:left;}
+.ps-giant-meaning h3{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:8px;}
+.ps-giant-meaning p{font-size:14px;color:var(--text-dim);line-height:1.6;max-width:280px;}
+
+/* SCALE STRIP */
+.ps-scale{background:var(--deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 28px;}
+.ps-scale-title{text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:2px;margin-bottom:32px;}
+.ps-scale-bar{max-width:900px;margin:0 auto;}
+.ps-scale-track{height:8px;background:rgba(245,239,228,0.04);border-radius:4px;position:relative;margin-bottom:16px;}
+.ps-scale-gradient{position:absolute;inset:0;border-radius:4px;background:linear-gradient(90deg,rgba(231,76,60,0.6) 0%,rgba(230,126,34,0.6) 30%,rgba(196,122,42,0.7) 50%,rgba(232,168,76,0.8) 70%,rgba(245,217,139,0.9) 90%,rgba(46,204,113,1) 100%);}
+.ps-scale-markers{display:flex;justify-content:space-between;max-width:900px;margin:0 auto;}
+.ps-scale-mark{text-align:center;flex:1;}
+.ps-scale-mark-val{font-family:var(--font-mono);font-size:18px;font-weight:500;margin-bottom:4px;}
+.ps-scale-mark-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;}
+.ps-scale-mark-desc{font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
+
+/* HOW IT WORKS */
+.ps-how{padding:80px 28px;}
+.section-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;}
+.section-title{font-family:var(--font-display);font-size:36px;font-weight:700;margin-bottom:12px;}
+.section-sub{color:var(--text-dim);font-size:15px;margin-bottom:48px;max-width:600px;}
+
+/* Three pillars */
+.ps-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:60px;}
+.ps-pillar{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px 28px;position:relative;overflow:hidden;transition:all .25s;}
+.ps-pillar:hover{border-color:var(--amber);transform:translateY(-2px);}
+.ps-pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.ps-pillar:nth-child(1)::before{background:var(--green);}
+.ps-pillar:nth-child(2)::before{background:var(--blue);}
+.ps-pillar:nth-child(3)::before{background:var(--amber);}
+.ps-pillar-weight{font-family:var(--font-mono);font-size:36px;font-weight:500;margin-bottom:4px;}
+.ps-pillar:nth-child(1) .ps-pillar-weight{color:var(--green);}
+.ps-pillar:nth-child(2) .ps-pillar-weight{color:var(--blue);}
+.ps-pillar:nth-child(3) .ps-pillar-weight{color:var(--amber);}
+.ps-pillar-name{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:12px;}
+.ps-pillar-desc{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;}
+.ps-pillar-factors{list-style:none;}
+.ps-pillar-factors li{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);padding:6px 0;border-bottom:1px solid rgba(196,122,42,0.06);display:flex;align-items:center;gap:8px;}
+.ps-pillar-factors li:last-child{border-bottom:none;}
+.ps-pillar-factors li::before{content:'→';color:var(--amber);font-size:10px;}
+
+/* FORMULA */
+.ps-formula{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:40px;text-align:center;margin-bottom:60px;position:relative;overflow:hidden;}
+.ps-formula::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--blue),var(--amber));}
+.ps-formula-label{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;}
+.ps-formula-eq{font-family:var(--font-mono);font-size:24px;color:var(--text);margin-bottom:16px;letter-spacing:1px;}
+.ps-formula-eq .green{color:var(--green);}
+.ps-formula-eq .blue{color:var(--blue);}
+.ps-formula-eq .amber{color:var(--amber);}
+.ps-formula-eq .op{color:var(--text-faint);margin:0 4px;}
+.ps-formula-note{font-size:13px;color:var(--text-dim);max-width:500px;margin:0 auto;}
+
+/* LIVE SIMULATOR */
+.ps-sim{padding:60px 28px 80px;}
+.ps-sim-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+.ps-sim-controls{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px;position:relative;overflow:hidden;}
+.ps-sim-controls::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--amber-light),var(--amber-pale));}
+.ps-sim-title{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:24px;}
+.ps-slider-group{margin-bottom:24px;}
+.ps-slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.ps-slider-name{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;}
+.ps-slider-val{font-family:var(--font-mono);font-size:14px;font-weight:500;}
+.ps-slider{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;outline:none;margin-bottom:6px;}
+.ps-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--amber);border-radius:50%;cursor:pointer;transition:transform .15s;}
+.ps-slider::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.ps-slider.green{background:linear-gradient(90deg,rgba(46,204,113,0.3),rgba(46,204,113,0.1));}
+.ps-slider.green::-webkit-slider-thumb{background:var(--green);}
+.ps-slider.blue{background:linear-gradient(90deg,rgba(52,152,219,0.3),rgba(52,152,219,0.1));}
+.ps-slider.blue::-webkit-slider-thumb{background:var(--blue);}
+.ps-slider.amber{background:linear-gradient(90deg,rgba(196,122,42,0.3),rgba(196,122,42,0.1));}
+.ps-slider-sub{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);}
+
+/* Sim result */
+.ps-sim-result{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:40px;text-align:center;}
+.ps-sim-result-label{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+.ps-sim-score{font-family:var(--font-mono);font-size:96px;font-weight:500;line-height:1;margin-bottom:8px;transition:color .3s;}
+.ps-sim-verdict{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:20px;transition:color .3s;}
+.ps-sim-bar{height:8px;background:rgba(245,239,228,0.04);border-radius:4px;overflow:hidden;margin-bottom:24px;}
+.ps-sim-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amber),var(--amber-pale));transition:width .5s ease;}
+.ps-sim-breakdown{text-align:left;}
+.ps-sim-breakdown-title{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.ps-bk-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(196,122,42,0.06);}
+.ps-bk-row:last-child{border-bottom:none;}
+.ps-bk-label{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.ps-bk-val{font-family:var(--font-mono);font-size:13px;font-weight:500;}
+.ps-bk-bar{flex:1;margin:0 16px;height:3px;background:rgba(245,239,228,0.04);border-radius:2px;overflow:hidden;}
+.ps-bk-bar-fill{height:100%;border-radius:2px;transition:width .4s ease;}
+
+/* EXAMPLES */
+.ps-examples{background:var(--deep);padding:80px 28px;border-top:1px solid var(--border);}
+.ps-ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.ps-ex-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;transition:all .25s;position:relative;overflow:hidden;}
+.ps-ex-card:hover{border-color:var(--amber);transform:translateY(-2px);}
+.ps-ex-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.ps-ex-card.high::before{background:var(--green);}
+.ps-ex-card.mid::before{background:var(--amber);}
+.ps-ex-card.low::before{background:var(--red);}
+.ps-ex-type{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.ps-ex-card.high .ps-ex-type{color:var(--green);}
+.ps-ex-card.mid .ps-ex-type{color:var(--amber);}
+.ps-ex-card.low .ps-ex-type{color:var(--red);}
+.ps-ex-headline{font-family:var(--font-display);font-size:16px;font-weight:700;line-height:1.3;margin-bottom:12px;}
+.ps-ex-desc{font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:16px;}
+.ps-ex-score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ps-ex-score-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;}
+.ps-ex-score-val{font-family:var(--font-mono);font-size:22px;font-weight:500;}
+.ps-ex-bar{height:4px;background:rgba(245,239,228,0.04);border-radius:2px;overflow:hidden;margin-bottom:12px;}
+.ps-ex-bar-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.ps-ex-factors{display:flex;gap:8px;flex-wrap:wrap;}
+.ps-ex-factor{font-family:var(--font-mono);font-size:9px;padding:3px 8px;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);}
+
+/* WHY IT MATTERS */
+.ps-why{padding:80px 28px;}
+.ps-why-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.ps-why-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px;position:relative;}
+.ps-why-card::before{content:'';position:absolute;top:16px;left:0;width:3px;height:32px;background:var(--amber);border-radius:0 2px 2px 0;}
+.ps-why-num{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.ps-why-title{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:10px;}
+.ps-why-desc{font-size:14px;color:var(--text-dim);line-height:1.6;}
+
+/* CTA */
+.ps-cta{background:linear-gradient(135deg,rgba(196,122,42,0.12),rgba(196,122,42,0.04));padding:80px 28px;text-align:center;border-top:1px solid var(--border);}
+.ps-cta h2{font-family:var(--font-display);font-size:36px;font-weight:700;margin-bottom:12px;}
+.ps-cta h2 em{color:var(--amber);font-style:italic;}
+.ps-cta p{font-size:15px;color:var(--text-dim);margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;}
+.ps-cta-buttons{display:flex;gap:12px;justify-content:center;}
+.btn-ghost{background:transparent;color:var(--text-dim);font-family:var(--font-mono);font-size:11px;padding:10px 22px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+
+/* FOOTER */
+.footer{background:var(--deep);border-top:1px solid var(--border);padding:24px 28px;display:flex;justify-content:space-between;align-items:center;}
+.footer-copy{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.footer-standard{font-family:var(--font-mono);font-size:10px;color:var(--amber);}
+
+/* ANIMATIONS */
+@keyframes fade-up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fade-up 0.6s cubic-bezier(0.4,0,0.2,1) both;}
+
+@media(max-width:900px){
+  .ps-hero h1{font-size:36px;}
+  .ps-pillars{grid-template-columns:1fr;}
+  .ps-sim-layout{grid-template-columns:1fr;}
+  .ps-ex-grid{grid-template-columns:1fr;}
+  .ps-why-grid{grid-template-columns:1fr;}
+  .ps-giant{flex-direction:column;gap:24px;}
+  .ps-scale-markers{flex-direction:column;gap:16px;}
+  .ps-formula-eq{font-size:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG Gradient Defs -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C47A2A"/>
+      <stop offset="50%" stop-color="#E8A84C"/>
+      <stop offset="100%" stop-color="#F5D98B"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-left">
+    <div class="nav-logo">B</div>
+    <div class="nav-wordmark">Bourbon Pour</div>
+    <div class="nav-sep"></div>
+    <div class="nav-section">Proof Score™</div>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← The Pour</a>
+    <button class="btn-primary" onclick="window.location.href='index.html#sip'">Subscribe Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="ps-hero">
+  <div class="container">
+    <div class="ps-hero-badge fade-up"><span class="ps-hero-badge-text">The Intelligence Standard</span></div>
+    <h1 class="fade-up" style="animation-delay:.05s">The <em>Proof Score™</em></h1>
+    <p class="ps-hero-sub fade-up" style="animation-delay:.1s">Not all intelligence is created equal. Now you can measure it.</p>
+    <p class="ps-hero-desc fade-up" style="animation-delay:.15s">Every article, market call, and disruption signal on Bourbon Pour carries a Proof Score — a 0–100 rating measuring evidential strength. Data density, cross-reference count, and recency combine into a single number that tells you exactly how much weight to give any piece of intelligence.</p>
+
+    <div class="ps-giant fade-up" style="animation-delay:.25s">
+      <div class="ps-giant-score">
+        <div class="ps-giant-ring">
+          <svg viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="90"/><circle class="fill" id="heroRing" cx="100" cy="100" r="90"/></svg>
+        </div>
+        <div class="ps-giant-num">
+          <div class="ps-giant-val" id="heroScore">0</div>
+          <div class="ps-giant-label">Proof</div>
+        </div>
+      </div>
+      <div class="ps-giant-meaning">
+        <h3>94-Proof Intelligence</h3>
+        <p>This score means the underlying claim is supported by multiple verified data sources, cross-referenced with at least 3 independent signals, and sourced from data no older than 72 hours. Act on this with high confidence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCALE STRIP -->
+<section class="ps-scale">
+  <div class="ps-scale-title">The Proof Scale — From Rumor to Conviction</div>
+  <div class="ps-scale-bar">
+    <div class="ps-scale-track"><div class="ps-scale-gradient"></div></div>
+  </div>
+  <div class="ps-scale-markers">
+    <div class="ps-scale-mark"><div class="ps-scale-mark-val" style="color:var(--red)">0–39</div><div class="ps-scale-mark-label">Rumor</div><div class="ps-scale-mark-desc">Unverified. Single source. Treat as speculation.</div></div>
+    <div class="ps-scale-mark"><div class="ps-scale-mark-val" style="color:var(--orange)">40–59</div><div class="ps-scale-mark-label">Opinion</div><div class="ps-scale-mark-desc">Some evidence. Analyst interpretation. Monitor.</div></div>
+    <div class="ps-scale-mark"><div class="ps-scale-mark-val" style="color:var(--amber)">60–74</div><div class="ps-scale-mark-label">Signal</div><div class="ps-scale-mark-desc">Multiple data points. Pattern emerging. Watch closely.</div></div>
+    <div class="ps-scale-mark"><div class="ps-scale-mark-val" style="color:var(--amber-light)">75–89</div><div class="ps-scale-mark-label">Evidence</div><div class="ps-scale-mark-desc">Strong data. Cross-verified. High directional confidence.</div></div>
+    <div class="ps-scale-mark"><div class="ps-scale-mark-val" style="color:var(--green)">90–100</div><div class="ps-scale-mark-label">Conviction</div><div class="ps-scale-mark-desc">Hard data. Multi-source verified. Act on this.</div></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS — THREE PILLARS -->
+<section class="ps-how">
+  <div class="container">
+    <div class="section-eyebrow fade-up">Methodology</div>
+    <div class="section-title fade-up" style="animation-delay:.05s">Three pillars. One score.</div>
+    <div class="section-sub fade-up" style="animation-delay:.1s">Every Proof Score is calculated from three weighted dimensions — each measuring a different axis of evidential strength.</div>
+
+    <div class="ps-pillars">
+      <div class="ps-pillar fade-up" style="animation-delay:.15s">
+        <div class="ps-pillar-weight">40%</div>
+        <div class="ps-pillar-name">Data Density</div>
+        <div class="ps-pillar-desc">How much verifiable data underpins the claim. We count primary data points, quantitative evidence, and named sources.</div>
+        <ul class="ps-pillar-factors">
+          <li>Named data sources (SEC filings, earnings, etc.)</li>
+          <li>Quantitative claims with cited numbers</li>
+          <li>Primary vs. secondary source ratio</li>
+          <li>Statistical methodology quality</li>
+          <li>Data granularity and completeness</li>
+        </ul>
+      </div>
+      <div class="ps-pillar fade-up" style="animation-delay:.2s">
+        <div class="ps-pillar-weight">35%</div>
+        <div class="ps-pillar-name">Cross-Reference Count</div>
+        <div class="ps-pillar-desc">How many independent sources confirm the same signal. Single-source claims score lower regardless of how good the source is.</div>
+        <ul class="ps-pillar-factors">
+          <li>Number of independent confirming sources</li>
+          <li>Source diversity (industry, geography, type)</li>
+          <li>Corroboration strength between signals</li>
+          <li>Contradicting signal analysis</li>
+          <li>Signal independence verification</li>
+        </ul>
+      </div>
+      <div class="ps-pillar fade-up" style="animation-delay:.25s">
+        <div class="ps-pillar-weight">25%</div>
+        <div class="ps-pillar-name">Recency Weight</div>
+        <div class="ps-pillar-desc">How fresh is the underlying data. Markets move on new information — stale data gets discounted heavily.</div>
+        <ul class="ps-pillar-factors">
+          <li>Age of primary data sources</li>
+          <li>Time since last data refresh</li>
+          <li>Market regime relevance</li>
+          <li>Event proximity weighting</li>
+          <li>Decay curve applied to older signals</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FORMULA -->
+    <div class="ps-formula fade-up">
+      <div class="ps-formula-label">The Proof Score Formula</div>
+      <div class="ps-formula-eq">
+        <span class="green">DD(0.40)</span><span class="op">×</span>
+        <span class="blue">XR(0.35)</span><span class="op">×</span>
+        <span class="amber">RW(0.25)</span><span class="op">=</span>
+        <span style="color:var(--amber-light)">Proof Score</span>
+      </div>
+      <div class="ps-formula-note">Each dimension is scored 0–100 independently, then combined using weighted multiplication. A zero in any dimension caps the total score at 40, ensuring no single strong dimension can mask a weakness.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE SIMULATOR -->
+<section class="ps-sim">
+  <div class="container">
+    <div class="section-eyebrow">Interactive</div>
+    <div class="section-title" style="margin-bottom:8px;">Score Simulator</div>
+    <div class="section-sub">Drag the sliders to see how different evidence profiles produce different Proof Scores.</div>
+
+    <div class="ps-sim-layout">
+      <div class="ps-sim-controls">
+        <div class="ps-sim-title">Adjust Evidence Inputs</div>
+
+        <div class="ps-slider-group">
+          <div class="ps-slider-header"><span class="ps-slider-name" style="color:var(--green)">Data Density</span><span class="ps-slider-val" style="color:var(--green)" id="ddVal">72</span></div>
+          <input type="range" class="ps-slider green" id="ddSlider" min="0" max="100" value="72">
+          <div class="ps-slider-sub">Primary data points, quantitative evidence, named sources</div>
+        </div>
+
+        <div class="ps-slider-group">
+          <div class="ps-slider-header"><span class="ps-slider-name" style="color:var(--blue)">Cross-References</span><span class="ps-slider-val" style="color:var(--blue)" id="xrVal">65</span></div>
+          <input type="range" class="ps-slider blue" id="xrSlider" min="0" max="100" value="65">
+          <div class="ps-slider-sub">Independent confirming sources across different types</div>
+        </div>
+
+        <div class="ps-slider-group">
+          <div class="ps-slider-header"><span class="ps-slider-name" style="color:var(--amber)">Recency</span><span class="ps-slider-val" style="color:var(--amber)" id="rwVal">88</span></div>
+          <input type="range" class="ps-slider amber" id="rwSlider" min="0" max="100" value="88">
+          <div class="ps-slider-sub">Freshness of underlying data and market relevance</div>
+        </div>
+      </div>
+
+      <div class="ps-sim-result">
+        <div class="ps-sim-result-label">Calculated Proof Score</div>
+        <div class="ps-sim-score" id="simScore">74</div>
+        <div class="ps-sim-verdict" id="simVerdict">Signal-Grade Intelligence</div>
+        <div class="ps-sim-bar"><div class="ps-sim-bar-fill" id="simBar" style="width:74%"></div></div>
+        <div class="ps-sim-breakdown">
+          <div class="ps-sim-breakdown-title">Score Breakdown</div>
+          <div class="ps-bk-row"><span class="ps-bk-label">Data Density (40%)</span><div class="ps-bk-bar"><div class="ps-bk-bar-fill" id="bkDD" style="width:72%;background:var(--green)"></div></div><span class="ps-bk-val" style="color:var(--green)" id="bkDDv">28.8</span></div>
+          <div class="ps-bk-row"><span class="ps-bk-label">Cross-Refs (35%)</span><div class="ps-bk-bar"><div class="ps-bk-bar-fill" id="bkXR" style="width:65%;background:var(--blue)"></div></div><span class="ps-bk-val" style="color:var(--blue)" id="bkXRv">22.8</span></div>
+          <div class="ps-bk-row"><span class="ps-bk-label">Recency (25%)</span><div class="ps-bk-bar"><div class="ps-bk-bar-fill" id="bkRW" style="width:88%;background:var(--amber)"></div></div><span class="ps-bk-val" style="color:var(--amber)" id="bkRWv">22.0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL EXAMPLES -->
+<section class="ps-examples">
+  <div class="container">
+    <div class="section-eyebrow" style="text-align:center">In Practice</div>
+    <div class="section-title" style="text-align:center;margin-bottom:48px;">How real intelligence scores</div>
+
+    <div class="ps-ex-grid" id="exGrid"></div>
+  </div>
+</section>
+
+<!-- WHY IT MATTERS -->
+<section class="ps-why">
+  <div class="container">
+    <div class="section-eyebrow">Why It Matters</div>
+    <div class="section-title" style="margin-bottom:48px;">The case for evidence-scored media.</div>
+
+    <div class="ps-why-grid">
+      <div class="ps-why-card fade-up">
+        <div class="ps-why-num">01</div>
+        <div class="ps-why-title">Kill the noise</div>
+        <div class="ps-why-desc">The average finance professional encounters 400+ data points per day. Proof Score instantly tells you which 12 matter. Stop reading everything — start reading the right things.</div>
+      </div>
+      <div class="ps-why-card fade-up" style="animation-delay:.08s">
+        <div class="ps-why-num">02</div>
+        <div class="ps-why-title">Accountability in media</div>
+        <div class="ps-why-desc">Traditional finance media has no scoring. A viral tweet and a 50-page research report carry equal visual weight. Proof Score forces transparency about evidential backing.</div>
+      </div>
+      <div class="ps-why-card fade-up" style="animation-delay:.16s">
+        <div class="ps-why-num">03</div>
+        <div class="ps-why-title">Decision velocity</div>
+        <div class="ps-why-desc">When a signal crosses 90, you move. When it's at 55, you wait. Proof Score compresses the time between seeing information and knowing how to weight it in your decision framework.</div>
+      </div>
+      <div class="ps-why-card fade-up" style="animation-delay:.24s">
+        <div class="ps-why-num">04</div>
+        <div class="ps-why-title">Community calibration</div>
+        <div class="ps-why-desc">Through Proof of Work™, our community submits and scores their own analyses. Over time, this creates a shared intelligence standard where quality rises and noise sinks.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="ps-cta">
+  <div class="container">
+    <h2>Stop guessing. <em>Start proving.</em></h2>
+    <p>Every issue of The Daily Sip carries a Proof Score. Every Disruptor Radar signal is evidence-rated. Join 47,000+ professionals who read with conviction.</p>
+    <div class="ps-cta-buttons">
+      <button class="btn-primary" onclick="window.location.href='index.html#sip'">Subscribe to The Daily Sip — Free</button>
+      <button class="btn-ghost" onclick="window.location.href='index.html#pricing'">See All Plans</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-copy">© 2026 Bourbon Pour Media Inc.</div>
+  <div class="footer-standard">Proof Score™ — The Intelligence Standard</div>
+</footer>
+
+<script>
+// Hero ring animation
+setTimeout(()=>{
+  const ring=document.getElementById('heroRing');
+  const circumference=2*Math.PI*90;
+  ring.style.strokeDashoffset=circumference*(1-0.94);
+  // Counter
+  let cur=0;const target=94,el=document.getElementById('heroScore');
+  const iv=setInterval(()=>{cur+=Math.ceil((target-cur)*0.05)+1;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},30);
+},400);
+
+// Simulator
+function updateSim(){
+  const dd=+document.getElementById('ddSlider').value;
+  const xr=+document.getElementById('xrSlider').value;
+  const rw=+document.getElementById('rwSlider').value;
+  document.getElementById('ddVal').textContent=dd;
+  document.getElementById('xrVal').textContent=xr;
+  document.getElementById('rwVal').textContent=rw;
+
+  const ddW=dd*0.40, xrW=xr*0.35, rwW=rw*0.25;
+  let score=Math.round(ddW+xrW+rwW);
+  // Cap rule: if any dimension is 0, cap at 40
+  if(dd===0||xr===0||rw===0)score=Math.min(score,40);
+  score=Math.min(100,Math.max(0,score));
+
+  const scoreEl=document.getElementById('simScore');
+  const verdictEl=document.getElementById('simVerdict');
+  const barEl=document.getElementById('simBar');
+  scoreEl.textContent=score;
+  barEl.style.width=score+'%';
+
+  let color,verdict;
+  if(score>=90){color='var(--green)';verdict='Conviction-Grade Intelligence';}
+  else if(score>=75){color='var(--amber-light)';verdict='Evidence-Grade Intelligence';}
+  else if(score>=60){color='var(--amber)';verdict='Signal-Grade Intelligence';}
+  else if(score>=40){color='var(--orange)';verdict='Opinion-Grade Intelligence';}
+  else{color='var(--red)';verdict='Rumor-Grade — Treat as Speculation';}
+  scoreEl.style.color=color;
+  verdictEl.style.color=color;
+
+  document.getElementById('bkDD').style.width=dd+'%';
+  document.getElementById('bkXR').style.width=xr+'%';
+  document.getElementById('bkRW').style.width=rw+'%';
+  document.getElementById('bkDDv').textContent=ddW.toFixed(1);
+  document.getElementById('bkXRv').textContent=xrW.toFixed(1);
+  document.getElementById('bkRWv').textContent=rwW.toFixed(1);
+}
+['ddSlider','xrSlider','rwSlider'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',updateSim);
+});
+updateSim();
+
+// Examples
+const examples=[
+  {type:'Conviction',cls:'high',headline:'CoreWeave S-1 Filing Detection',score:89,dd:92,xr:85,rw:91,desc:'Detected through SEC pre-filing communications, secondary market activity, and infrastructure build signals across 4 independent data streams.',factors:['SEC EDGAR signals','Secondary market data','Infrastructure permits','Insider activity patterns']},
+  {type:'Evidence',cls:'high',headline:'Enterprise AI Budget Acceleration',score:84,dd:88,xr:82,rw:78,desc:'Three Fortune 100 CFO interviews cross-referenced with cloud provider capacity data and enterprise software contract filings.',factors:['CFO interviews (3)','Cloud capacity data','Contract filings','Earnings call NLP']},
+  {type:'Signal',cls:'mid',headline:'Japan BOJ Tech Debt Purchases',score:72,dd:78,xr:62,rw:80,desc:'Detected through central bank disclosure filings and cross-referenced with DTCC settlement data. Limited independent confirmation.',factors:['BOJ disclosures','DTCC data','FX flow analysis']},
+  {type:'Signal',cls:'mid',headline:'Fintech Regulatory Pivot Signals',score:67,dd:70,xr:58,rw:78,desc:'State banking charter applications detected via regulatory databases. Pattern consistent but limited to 3 data points.',factors:['State filings','Regulatory DB','Hiring patterns']},
+  {type:'Opinion',cls:'low',headline:'Crypto ETF Approval Timeline',score:48,dd:42,xr:55,rw:50,desc:'Based primarily on analyst interpretation of SEC meeting notes and historical pattern matching. No primary source confirmation.',factors:['SEC meeting notes','Historical patterns','Analyst calls']},
+  {type:'Rumor',cls:'low',headline:'Unnamed Mega-Merger Speculation',score:28,dd:18,xr:30,rw:42,desc:'Single anonymous source claiming two major tech companies in preliminary discussions. No filing, no corroboration, no timeline.',factors:['Anonymous source','No corroboration']}
+];
+const eg=document.getElementById('exGrid');
+examples.forEach((e,i)=>{
+  const barColor=e.cls==='high'?'var(--green)':e.cls==='mid'?'var(--amber)':'var(--red)';
+  const scoreColor=e.score>=75?'var(--green)':e.score>=60?'var(--amber)':'var(--red)';
+  eg.innerHTML+=`<div class="ps-ex-card ${e.cls} fade-up" style="animation-delay:${i*0.06}s">
+    <div class="ps-ex-type">${e.type}-Grade</div>
+    <div class="ps-ex-headline">${e.headline}</div>
+    <div class="ps-ex-desc">${e.desc}</div>
+    <div class="ps-ex-score-row"><span class="ps-ex-score-label">Proof Score</span><span class="ps-ex-score-val" style="color:${scoreColor}">${e.score}</span></div>
+    <div class="ps-ex-bar"><div class="ps-ex-bar-fill" data-w="${e.score}" style="background:${barColor}"></div></div>
+    <div class="ps-ex-factors">${e.factors.map(f=>`<span class="ps-ex-factor">${f}</span>`).join('')}</div>
+  </div>`;
+});
+
+// Animate example bars on scroll
+const exObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.ps-ex-bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});exObs.unobserve(e.target);}});},{threshold:0.2});
+exObs.observe(document.getElementById('exGrid'));
+</script>
+</body>
+</html>

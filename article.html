@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Article — Bourbon Pour</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0805;--deep:#100C07;--card:#15100A;
+  --amber:#C47A2A;--amber-light:#E8A84C;--amber-pale:#F5D98B;
+  --text:#F5EFE4;--text-dim:rgba(245,239,228,0.72);--text-faint:rgba(245,239,228,0.38);
+  --border:rgba(196,122,42,0.22);
+  --green:#2ECC71;--red:#E74C3C;--blue:#3498DB;--orange:#E67E22;--purple:#9B59B6;
+  --font-display:'Playfair Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;
+  --nav-h:56px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.42;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--amber);border-radius:3px;}
+a{color:var(--amber);text-decoration:none;transition:color .2s;}a:hover{color:var(--amber-light);}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(10,8,5,0.94);backdrop-filter:blur(16px);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border);}
+.nav-left{display:flex;align-items:center;gap:12px;}
+.nav-logo{width:30px;height:30px;background:var(--amber);border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:16px;color:var(--bg);}
+.nav-wordmark{font-family:var(--font-display);font-size:15px;font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.nav-back{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);padding:6px 14px;border:1px solid var(--border);border-radius:3px;transition:all .2s;}
+.nav-back:hover{border-color:var(--amber);color:var(--amber);}
+.btn-primary{background:var(--amber);color:var(--bg);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:7px 16px;border:none;border-radius:3px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.btn-primary:hover{background:var(--amber-light);}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:var(--nav-h);left:0;right:0;height:2px;z-index:999;background:transparent;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--amber-pale));width:0;transition:width .1s linear;}
+
+/* ARTICLE HEADER */
+.art-header{margin-top:calc(var(--nav-h) + 2px);padding:60px 28px 40px;max-width:780px;margin-left:auto;margin-right:auto;}
+.art-cat-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;}
+.art-cat-dot{width:8px;height:8px;border-radius:50%;}
+.art-cat-text{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;}
+.art-h1{font-family:var(--font-display);font-size:42px;font-weight:900;line-height:1.12;margin-bottom:16px;letter-spacing:-0.5px;}
+.art-subtitle{font-family:var(--font-display);font-style:italic;font-size:20px;color:var(--text-dim);line-height:1.5;margin-bottom:24px;}
+.art-meta-bar{display:flex;align-items:center;gap:20px;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);padding-bottom:24px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.art-meta-bar .sep{width:1px;height:14px;background:var(--border);}
+
+/* PROOF SCORE HEADER CARD */
+.proof-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin:28px auto;max-width:780px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden;}
+.proof-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;}
+.proof-card.high::before{background:var(--green);}
+.proof-card.mid::before{background:var(--amber);}
+.proof-card.low::before{background:var(--red);}
+.proof-main{flex-shrink:0;text-align:center;}
+.proof-score-big{font-family:var(--font-mono);font-size:42px;font-weight:500;line-height:1;}
+.proof-label{font-family:var(--font-mono);font-size:8px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.proof-details{flex:1;}
+.proof-verdict{font-family:var(--font-mono);font-size:11px;margin-bottom:10px;font-weight:500;}
+.proof-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.proof-bar-item{}
+.proof-bar-label{font-family:var(--font-mono);font-size:8px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:flex;justify-content:space-between;}
+.proof-bar-track{height:3px;background:rgba(245,239,228,0.06);border-radius:2px;overflow:hidden;}
+.proof-bar-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.proof-sources{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);margin-top:10px;}
+
+/* SHARE BAR */
+.share-bar{display:flex;gap:6px;margin-left:auto;flex-shrink:0;}
+.share-btn{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);padding:5px 10px;border:1px solid var(--border);border-radius:3px;cursor:pointer;background:transparent;transition:all .15s;text-transform:uppercase;letter-spacing:0.5px;}
+.share-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+/* ARTICLE BODY */
+.art-content{max-width:680px;margin:0 auto;padding:40px 28px 60px;}
+.art-content p{font-size:17px;color:var(--text-dim);line-height:1.85;margin-bottom:24px;font-family:var(--font-body);}
+.art-content p:first-of-type::first-letter{font-family:var(--font-display);font-size:56px;float:left;line-height:0.8;margin-right:8px;margin-top:6px;color:var(--amber);}
+.art-content h2{font-family:var(--font-display);font-size:26px;font-weight:700;margin:40px 0 16px;line-height:1.2;padding-top:20px;border-top:1px solid var(--border);}
+.art-content h3{font-family:var(--font-display);font-size:20px;font-weight:700;margin:32px 0 12px;}
+.art-content strong{color:var(--text);font-weight:500;}
+.art-content em{color:var(--amber-light);font-style:italic;}
+
+/* DATA CALLOUTS */
+.data-callout{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:0 6px 6px 0;padding:20px 24px;margin:28px 0;position:relative;}
+.dc-label{font-family:var(--font-mono);font-size:9px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.dc-value{font-family:var(--font-mono);font-size:28px;font-weight:500;color:var(--amber-light);margin-bottom:4px;}
+.dc-context{font-size:14px;color:var(--text-dim);line-height:1.5;}
+.dc-source{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);margin-top:8px;}
+
+/* SIGNAL BOX */
+.signal-box{background:rgba(196,122,42,0.06);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin:28px 0;}
+.signal-box-title{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.signal-dot{width:6px;height:6px;background:var(--amber);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(196,122,42,0.4);}50%{box-shadow:0 0 0 5px rgba(196,122,42,0);}}
+.signal-text{font-size:15px;color:var(--text-dim);line-height:1.7;font-style:italic;}
+
+/* QUOTE BLOCK */
+.pull-quote{border-left:3px solid var(--amber);padding:20px 28px;margin:36px 0;background:rgba(196,122,42,0.03);}
+.pull-quote p{font-family:var(--font-display);font-size:22px;font-style:italic;color:var(--text);line-height:1.4;margin-bottom:8px!important;}
+.pull-quote cite{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);font-style:normal;text-transform:uppercase;letter-spacing:1px;}
+
+/* SOURCE BLOCK */
+.sources-block{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:24px;margin:40px auto;max-width:680px;}
+.sources-title{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
+.source-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(196,122,42,0.06);}
+.source-item:last-child{border-bottom:none;}
+.source-num{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);min-width:20px;margin-top:2px;}
+.source-text{font-size:13px;color:var(--text-dim);line-height:1.5;}
+.source-type{font-family:var(--font-mono);font-size:8px;text-transform:uppercase;letter-spacing:0.5px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.source-type.primary{background:rgba(46,204,113,0.1);color:var(--green);}
+.source-type.secondary{background:rgba(52,152,219,0.1);color:var(--blue);}
+.source-type.analysis{background:rgba(196,122,42,0.1);color:var(--amber);}
+
+/* RELATED */
+.related{max-width:780px;margin:0 auto;padding:0 28px 40px;}
+.related-title{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.rel-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;transition:all .25s;cursor:pointer;}
+.rel-card:hover{border-color:var(--amber);transform:translateY(-2px);}
+.rel-cat{font-family:var(--font-mono);font-size:8px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.rel-headline{font-family:var(--font-display);font-size:14px;font-weight:700;line-height:1.3;margin-bottom:8px;}
+.rel-meta{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);}
+
+/* NEWSLETTER CTA */
+.art-nl{max-width:680px;margin:0 auto 60px;background:linear-gradient(135deg,rgba(196,122,42,0.12),rgba(196,122,42,0.04));border:1px solid var(--border);border-radius:8px;padding:36px;text-align:center;position:relative;overflow:hidden;}
+.art-nl::before{content:'\201C';font-family:var(--font-display);font-size:200px;color:rgba(196,122,42,0.04);position:absolute;top:-40px;left:20px;pointer-events:none;}
+.art-nl h3{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;position:relative;}
+.art-nl h3 em{color:var(--amber);font-style:italic;}
+.art-nl p{font-size:14px;color:var(--text-dim);margin-bottom:20px;position:relative;}
+.art-nl-form{display:flex;gap:8px;justify-content:center;position:relative;}
+.nl-input{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:10px 16px;font-family:var(--font-mono);font-size:11px;color:var(--text);outline:none;width:240px;transition:border .2s;}
+.nl-input::placeholder{color:var(--text-faint);}
+.nl-input:focus{border-color:var(--amber);}
+
+/* FOOTER */
+.footer{background:var(--deep);border-top:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;}
+.footer-copy{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.footer-link{font-family:var(--font-mono);font-size:10px;color:var(--amber);}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--amber);border-radius:6px;padding:14px 28px;font-family:var(--font-mono);font-size:12px;color:var(--amber-light);z-index:10000;transition:transform .4s cubic-bezier(0.4,0,0.2,1);pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fade-up .5s cubic-bezier(0.4,0,0.2,1) both;}
+
+@media(max-width:900px){
+  .art-h1{font-size:28px;}
+  .art-content p{font-size:16px;}
+  .related-grid{grid-template-columns:1fr;}
+  .proof-card{flex-direction:column;align-items:flex-start;}
+  .proof-bars{grid-template-columns:1fr;}
+  .share-bar{margin-left:0;}
+  .art-nl-form{flex-direction:column;align-items:center;}
+  .nl-input{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-left">
+    <a href="index.html" style="display:flex;align-items:center;gap:12px;color:var(--text);">
+      <div class="nav-logo">B</div><div class="nav-wordmark">Bourbon Pour</div>
+    </a>
+  </div>
+  <div class="nav-right">
+    <a href="articles.html" class="nav-back">← Intelligence Desk</a>
+    <button class="btn-primary" onclick="window.location.href='index.html#sip'">Subscribe Free</button>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ARTICLE (rendered by JS) -->
+<div id="articleRoot"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== SAME ARTICLE DATA AS HUB =====
+const articles=[
+  {id:'ai-infrastructure-bet',cat:'ai',catLabel:'AI / ML',catColor:'var(--red)',headline:"The $40B AI Infrastructure Bet Nobody Is Talking About",subtitle:"While everyone watches the model wars, the real AI play is happening in the plumbing.",proof:92,dd:94,xr:88,rw:91,time:'4 hours ago',read:'6 min',date:'Mar 25, 2026',dataPoints:14,crossRefs:5,
+   sources:[{text:'Azure GPU capacity reservation data — Q1 2026 allocation reports',type:'primary'},{text:'NVIDIA distribution and shipment filings — SEC quarterly reports',type:'primary'},{text:'Cloud procurement contract analysis — enterprise software database',type:'analysis'},{text:'Fortune 50 financial services firm infrastructure filings',type:'primary'},{text:'Comparable cloud infrastructure cost modeling',type:'analysis'}],
+   content:`<p>Microsoft's Azure GPU reservations hit an all-time high last week. That alone isn't surprising — demand has been climbing for 18 months straight, and every earnings call from Satya Nadella includes the phrase "unprecedented demand" at least twice. What's surprising is the <em>pattern.</em></p>
+<p>A single enterprise customer appears to have reserved roughly 40% of all new GPU capacity added in Q1 2026. Not 10%. Not 20%. <strong>Forty percent.</strong> That's not a customer running a few experiments with copilots. That's someone building a foundation model — in-house, behind closed doors, at a scale that rivals what OpenAI was doing 18 months ago.</p>
+
+<div class="data-callout"><div class="dc-label">Key Data Point</div><div class="dc-value">40%</div><div class="dc-context">Share of new Azure GPU capacity reserved by a single enterprise customer in Q1 2026 — the largest single-customer allocation in Azure's history.</div><div class="dc-source">Source: Azure capacity API data, cross-referenced with NVIDIA distribution filings</div></div>
+
+<p>We cross-referenced Azure capacity data with cloud procurement filings and NVIDIA's distribution schedules. The math eliminates most obvious candidates. It's not Microsoft itself (they use separate internal allocations). It's not OpenAI (they have dedicated Azure capacity under a different contract structure). It's not a hyperscaler — Google and Amazon build their own.</p>
+
+<h2>The Financial Services Signal</h2>
+
+<p>The evidence points to a Fortune 50 financial services firm building an internal foundation model for risk assessment and trade execution. Three data points converge:</p>
+
+<p><strong>First,</strong> the GPU reservation pattern matches internal model training, not inference. The allocation is front-loaded — massive compute blocks reserved for 8-week periods with option to extend. That's a training cadence, not a deployment pattern.</p>
+
+<p><strong>Second,</strong> enterprise software contract filings show a major financial services firm signed a $200M+ multi-year Azure commitment in late Q4 2025 — one of the largest non-tech enterprise cloud deals ever recorded. The timing aligns perfectly with the capacity reservations.</p>
+
+<div class="signal-box"><div class="signal-box-title"><div class="signal-dot"></div> Disruptor Radar Signal</div><div class="signal-text">This pattern was flagged by our Disruptor Radar 14 days before this article published. The signal type: "Compute Infrastructure Anomaly" in the Financial Services sector. Proof Score at detection: 78. Current score with additional evidence: 92.</div></div>
+
+<p><strong>Third,</strong> and this is the piece that locks it in — hiring data. A Fortune 50 financial services firm (which we're choosing not to name until we have filing confirmation) has hired 34 machine learning engineers from Google DeepMind, Meta FAIR, and Anthropic in the last 90 days. That's not an "AI strategy" hire. That's a foundation model team.</p>
+
+<h2>What This Means</h2>
+
+<p>If a major bank is building its own foundation model, the implications cascade through the entire AI value chain. First, it validates the thesis that <em>inference economics will matter more than model capabilities</em> within 18 months. A bank doesn't build its own model because GPT-5 isn't good enough — they build it because they can't send proprietary trading data to someone else's API.</p>
+
+<div class="pull-quote"><p>A bank doesn't build its own model because GPT-5 isn't good enough. They build it because they can't send proprietary trading data to someone else's API.</p><cite>Bourbon Pour Analysis</cite></div>
+
+<p>Second, it means GPU demand isn't peaking — it's <strong>bifurcating.</strong> We're entering a world where the AI compute market splits between model providers (OpenAI, Anthropic, Google) and enterprise builders who need sovereign compute. CoreWeave's IPO timing suddenly makes even more sense.</p>
+
+<p>Third, watch the talent pipeline. If one bank is building, others are watching. Goldman, JPMorgan, and Citadel all have the balance sheet to follow. The AI talent war is about to get a new front — and compensation in AI just got a new ceiling.</p>
+
+<h2>The Bottom Line</h2>
+
+<p>The biggest AI infrastructure bet of 2026 isn't happening in Silicon Valley. It's happening on a trading floor. And by the time it becomes public, the market will have already moved.</p>
+
+<p>We'll be tracking this signal through the Disruptor Radar. Set your alerts for Financial Services sector, compute infrastructure anomaly type, at 80+ Proof Score threshold. When the announcement comes — and it will — you'll know 30 days before everyone else.</p>`},
+
+  {id:'fed-silence',cat:'markets',catLabel:'Markets',catColor:'var(--amber)',headline:"The Fed's Silence Is Louder Than Its Last Three Rate Decisions Combined",subtitle:"Powell hasn't spoken in 23 days. Every time this has happened, markets weren't ready for what came next.",proof:94,dd:96,xr:90,rw:93,time:'6 hours ago',read:'8 min',date:'Mar 25, 2026',dataPoints:18,crossRefs:6,
+   sources:[{text:'Federal Reserve communication records — historical analysis 1994–2026',type:'primary'},{text:'FOMC meeting transcripts and minutes',type:'primary'},{text:'Bond market positioning data — CFTC weekly reports',type:'primary'},{text:'Fed funds futures curves — CME FedWatch',type:'primary'},{text:'Historical silence-to-policy-shift correlation analysis',type:'analysis'},{text:'Treasury market microstructure data',type:'analysis'}],
+   content:`<p>Jerome Powell has not made a public statement in 23 days. No press conferences, no Congressional testimony, no off-the-record briefings, no carefully worded speeches at economic conferences. Twenty-three days of silence from the most powerful central banker on Earth.</p>
+<p>That's the longest silence from a sitting Fed Chair since Ben Bernanke's 19-day stretch in May 2013 — which preceded the Taper Tantrum, a bond market sell-off that wiped out <strong>$1.4 trillion</strong> in global bond value in 8 weeks.</p>
+
+<div class="data-callout"><div class="dc-label">Historical Pattern</div><div class="dc-value">8 of 9</div><div class="dc-context">Times a Fed Chair silence of 14+ days preceded a policy shift that surprised markets (since 1994). The only exception: Yellen's 16-day stretch in 2015, which preceded a widely telegraphed rate hike.</div><div class="dc-source">Source: Federal Reserve communication records, FOMC historical analysis</div></div>
+
+<p>We analyzed every Fed Chair silence longer than 14 days since 1994. There have been 9 instances. In <strong>8 of those 9 cases,</strong> the silence preceded a policy shift that caught markets off guard. The one exception was Yellen's 16-day silence in late 2015, which preceded the most telegraphed rate hike in modern history — and even then, the <em>pace</em> of subsequent hikes surprised the market.</p>
+
+<h2>What the Bond Market Already Knows</h2>
+
+<p>Here's the part nobody is writing about: the bond market is already pricing something in. Fed funds futures have shifted 12 basis points in the last 10 trading days despite no new economic data, no Fed communication, and no meaningful change in inflation expectations. That's the bond market moving on the <em>absence</em> of information — treating the silence itself as a signal.</p>
+
+<p>CFTC positioning data shows net short positions in 10-year Treasury futures at 18-month highs. The smart money isn't waiting for Powell to speak. They're positioning for what they think he'll say when he finally does.</p>
+
+<div class="pull-quote"><p>The bond market is moving on the absence of information — treating the silence itself as a signal.</p><cite>Bourbon Pour Analysis</cite></div>
+
+<p>The question isn't <em>whether</em> Powell's next statement will move markets. It's whether you're positioned correctly before it happens. The 10-year Treasury yield has traded in a 5 basis point range for 12 consecutive sessions — the tightest range since 2019. Historically, that kind of calm breaks violently. Direction unknown. Magnitude? Usually 40+ basis points.</p>
+
+<p>Set your alerts. The silence won't last forever — and when it breaks, it will break fast.</p>`}
+];
+
+// Get article ID from URL
+const params=new URLSearchParams(window.location.search);
+const articleId=params.get('id')||'ai-infrastructure-bet';
+const article=articles.find(a=>a.id===articleId)||articles[0];
+
+// Set page title
+document.title=article.headline+' — Bourbon Pour';
+
+// Proof level
+const proofLevel=article.proof>=85?'high':article.proof>=65?'mid':'low';
+const proofColor=article.proof>=85?'var(--green)':article.proof>=65?'var(--amber)':'var(--red)';
+const verdict=article.proof>=90?'Conviction-grade intelligence — act with high confidence':article.proof>=80?'Evidence-grade — strong data backing':article.proof>=65?'Signal-grade — emerging pattern':'Developing — monitor for confirmation';
+
+// Render
+const root=document.getElementById('articleRoot');
+root.innerHTML=`
+  <!-- HEADER -->
+  <div class="art-header fade-in">
+    <div class="art-cat-badge"><div class="art-cat-dot" style="background:${article.catColor}"></div><div class="art-cat-text" style="color:${article.catColor}">${article.catLabel}</div></div>
+    <h1 class="art-h1">${article.headline}</h1>
+    <p class="art-subtitle">${article.subtitle}</p>
+    <div class="art-meta-bar">
+      <span>${article.date}</span><div class="sep"></div>
+      <span>${article.read} read</span><div class="sep"></div>
+      <span>${article.dataPoints} data points</span><div class="sep"></div>
+      <span>${article.crossRefs} independent sources</span>
+    </div>
+  </div>
+
+  <!-- PROOF SCORE CARD -->
+  <div class="proof-card ${proofLevel} fade-in" style="animation-delay:.1s">
+    <div class="proof-main">
+      <div class="proof-score-big" style="color:${proofColor}">${article.proof}</div>
+      <div class="proof-label">Proof Score</div>
+    </div>
+    <div class="proof-details">
+      <div class="proof-verdict" style="color:${proofColor}">${verdict}</div>
+      <div class="proof-bars">
+        <div class="proof-bar-item"><div class="proof-bar-label"><span>Data Density</span><span style="color:var(--green)">${article.dd}</span></div><div class="proof-bar-track"><div class="proof-bar-fill" style="width:${article.dd}%;background:var(--green)"></div></div></div>
+        <div class="proof-bar-item"><div class="proof-bar-label"><span>Cross-References</span><span style="color:var(--blue)">${article.xr}</span></div><div class="proof-bar-track"><div class="proof-bar-fill" style="width:${article.xr}%;background:var(--blue)"></div></div></div>
+        <div class="proof-bar-item"><div class="proof-bar-label"><span>Recency</span><span style="color:var(--amber)">${article.rw}</span></div><div class="proof-bar-track"><div class="proof-bar-fill" style="width:${article.rw}%;background:var(--amber)"></div></div></div>
+      </div>
+      <div class="proof-sources">${article.sources.length} sources cited · <a href="proof-score.html">How Proof Score works →</a></div>
+    </div>
+    <div class="share-bar">
+      <button class="share-btn" onclick="showToast('Link copied 🥃')">Share ↗</button>
+      <button class="share-btn" onclick="showToast('Saved to reading list')">Save ✦</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <article class="art-content fade-in" style="animation-delay:.15s" id="articleBody">
+    ${article.content}
+  </article>
+
+  <!-- SOURCES -->
+  <div class="sources-block fade-in" style="animation-delay:.2s">
+    <div class="sources-title">Sources & Evidence (${article.sources.length})</div>
+    ${article.sources.map((s,i)=>`<div class="source-item"><span class="source-num">${String(i+1).padStart(2,'0')}</span><span class="source-text">${s.text}<span class="source-type ${s.type}">${s.type}</span></span></div>`).join('')}
+  </div>
+
+  <!-- RELATED -->
+  <div class="related fade-in" style="animation-delay:.25s">
+    <div class="related-title">Continue Reading</div>
+    <div class="related-grid">
+      ${articles.filter(a=>a.id!==articleId).slice(0,3).map(a=>{
+        const c=a.proof>=85?'var(--green)':a.proof>=65?'var(--amber)':'var(--text-dim)';
+        return `<div class="rel-card" onclick="window.location.href='article.html?id=${a.id}'"><div class="rel-cat" style="color:${a.catColor}">${a.catLabel}</div><div class="rel-headline">${a.headline}</div><div class="rel-meta"><span style="color:${c}">${a.proof}-proof</span> · ${a.read}</div></div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- NEWSLETTER CTA -->
+  <div class="art-nl">
+    <h3>Intelligence like this. <em>Every morning.</em></h3>
+    <p>The Daily Sip delivers evidence-scored intelligence to 47,000+ professionals at 6:30 AM ET. Free forever.</p>
+    <div class="art-nl-form">
+      <input type="email" class="nl-input" id="nlEmail" placeholder="your@email.com">
+      <button class="btn-primary" style="padding:10px 20px;" id="nlSubmit">Pour Me In</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-copy">© 2026 Bourbon Pour Media Inc.</div>
+    <a href="articles.html" class="footer-link">← Back to Intelligence Desk</a>
+  </footer>
+`;
+
+// ===== PROGRESS BAR =====
+window.addEventListener('scroll',()=>{
+  const body=document.getElementById('articleBody');
+  if(!body)return;
+  const rect=body.getBoundingClientRect();
+  const total=body.scrollHeight;
+  const scrolled=Math.max(0,-rect.top);
+  const pct=Math.min(100,Math.max(0,(scrolled/total)*100));
+  document.getElementById('progressFill').style.width=pct+'%';
+});
+
+// ===== NEWSLETTER =====
+document.getElementById('nlSubmit')?.addEventListener('click',()=>{
+  const email=document.getElementById('nlEmail').value.trim();
+  if(!email||!email.includes('@')){showToast('Enter a valid email');return;}
+  document.getElementById('nlEmail').value='';
+  showToast("You're in. First Sip drops tomorrow at 6:30 AM ET 🥃");
+});
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>{t.classList.remove('show');},2800);}
+</script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bourbon Pour — Data Is The New Currency™</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0805;--deep:#100C07;--card:#15100A;
+  --amber:#C47A2A;--amber-light:#E8A84C;--amber-pale:#F5D98B;
+  --text:#F5EFE4;--text-dim:rgba(245,239,228,0.72);--text-faint:rgba(245,239,228,0.38);
+  --border:rgba(196,122,42,0.22);
+  --green:#2ECC71;--red:#E74C3C;--blue:#3498DB;
+  --font-display:'Playfair Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;
+  --nav-h:64px;--ticker-h:36px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.42;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--amber);border-radius:3px;}
+a{color:var(--amber);text-decoration:none;transition:color .2s;}
+a:hover{color:var(--amber-light);}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(10,8,5,0.92);backdrop-filter:blur(16px);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid var(--border);}
+.nav-brand{display:flex;align-items:center;gap:12px;}
+.nav-logo{width:36px;height:36px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:20px;color:var(--bg);}
+.nav-wordmark{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.3px;}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;transition:color .2s;}
+.nav-links a:hover{color:var(--amber);}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse-dot 2s infinite;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(46,204,113,0.5);}50%{box-shadow:0 0 0 6px rgba(46,204,113,0);}}
+.nav-live{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--green);}
+.nav-clock{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+.btn-primary{background:var(--amber);color:var(--bg);font-family:var(--font-mono);font-size:12px;font-weight:500;padding:10px 22px;border:none;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.btn-primary:hover{background:var(--amber-light);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--text-dim);font-family:var(--font-mono);font-size:12px;font-weight:400;padding:10px 22px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+
+/* TICKER */
+.ticker-bar{position:fixed;top:var(--nav-h);left:0;right:0;height:var(--ticker-h);background:var(--deep);border-bottom:1px solid var(--border);overflow:hidden;z-index:999;}
+.ticker-track{display:flex;animation:ticker-scroll 40s linear infinite;white-space:nowrap;}
+@keyframes ticker-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;height:var(--ticker-h);font-family:var(--font-mono);font-size:11px;}
+.ticker-sym{color:var(--amber);font-weight:500;}
+.ticker-val{color:var(--text-dim);}
+.ticker-chg{font-weight:500;}
+.ticker-chg.up{color:var(--green);}
+.ticker-chg.down{color:var(--red);}
+.ticker-sep{color:var(--text-faint);margin:0 4px;}
+
+/* SECTIONS */
+main{margin-top:calc(var(--nav-h) + var(--ticker-h));}
+section{padding:80px 32px;}
+.container{max-width:1240px;margin:0 auto;}
+.section-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;}
+.section-title{font-family:var(--font-display);font-size:36px;font-weight:700;margin-bottom:12px;}
+.section-sub{color:var(--text-dim);font-size:15px;margin-bottom:48px;max-width:600px;}
+
+/* HERO */
+.hero{padding:100px 32px 80px;}
+.hero .container{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.hero-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;}
+.hero h1{font-family:var(--font-display);font-size:56px;font-weight:900;line-height:1.08;letter-spacing:-1px;margin-bottom:16px;}
+.hero h1 em{font-style:italic;color:var(--amber);}
+.hero-sub{font-family:var(--font-display);font-style:italic;font-size:20px;color:var(--text-dim);margin-bottom:20px;}
+.hero-desc{color:var(--text-dim);font-size:15px;line-height:1.7;margin-bottom:32px;max-width:480px;}
+.hero-ctas{display:flex;gap:16px;margin-bottom:40px;}
+.hero-stats{display:flex;gap:40px;}
+.hero-stat-val{font-family:var(--font-mono);font-size:28px;font-weight:500;color:var(--amber-light);}
+.hero-stat-label{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* DATA PULSE CARD */
+.dp-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative;}
+.dp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--amber-light),var(--amber-pale));}
+.dp-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);}
+.dp-title{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.dp-time{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.dp-gauges{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px;}
+.gauge{background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:14px 16px;}
+.gauge-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.gauge-val{font-family:var(--font-mono);font-size:32px;font-weight:500;line-height:1;}
+.gauge-arrow{font-size:14px;margin-left:4px;}
+.gauge-bar{height:3px;background:rgba(245,239,228,0.08);border-radius:2px;margin-top:10px;overflow:hidden;}
+.gauge-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+.gauge-note{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);margin-top:8px;line-height:1.4;}
+.dp-chart{padding:12px 20px 16px;}
+.dp-chart canvas{width:100%!important;height:120px!important;}
+.dp-proof{padding:12px 20px 16px;border-top:1px solid var(--border);}
+.dp-proof-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;justify-content:space-between;}
+.proof-bar-track{height:6px;background:rgba(245,239,228,0.06);border-radius:3px;overflow:hidden;}
+.proof-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--amber-light),var(--amber-pale));width:0;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+
+/* DISRUPTOR RADAR */
+.radar-section{background:var(--deep);}
+.radar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.radar-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px 20px;border-left:3px solid;transition:all .25s;cursor:pointer;position:relative;overflow:hidden;}
+.radar-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.radar-card.hot{border-left-color:var(--red);}
+.radar-card.rising{border-left-color:var(--amber);}
+.radar-card.watch{border-left-color:var(--blue);}
+.radar-tag{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.radar-name{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:6px;}
+.radar-signal{font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.radar-footer{display:flex;justify-content:space-between;align-items:center;}
+.radar-proof{font-family:var(--font-mono);font-size:13px;font-weight:500;}
+.radar-badge{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:3px;font-weight:500;}
+.badge-hot{background:rgba(231,76,60,0.18);color:var(--red);}
+.badge-rising{background:rgba(196,122,42,0.18);color:var(--amber);}
+.badge-watch{background:rgba(52,152,219,0.18);color:var(--blue);}
+.radar-cta{text-align:center;margin-top:40px;}
+
+/* LATEST POURS */
+.pours-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;}
+.pour-card{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all .25s;cursor:pointer;}
+.pour-card:hover{border-color:var(--amber);transform:translateY(-2px);}
+.pour-card-inner{padding:24px;}
+.pour-cat{font-family:var(--font-mono);font-size:9px;color:var(--amber);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;display:inline-block;}
+.pour-proof-badge{font-family:var(--font-mono);font-size:10px;color:var(--amber-light);float:right;}
+.pour-headline{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.25;margin-bottom:12px;}
+.pour-card:first-child .pour-headline{font-size:28px;}
+.pour-excerpt{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;}
+.pour-meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.pour-score-bar{height:3px;background:rgba(245,239,228,0.06);border-radius:2px;margin-top:16px;overflow:hidden;}
+.pour-score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--amber),var(--amber-pale));width:0;transition:width 1s ease;}
+
+/* ================================================ */
+/*  THE DAILY SIP™                                  */
+/* ================================================ */
+.sip-section{background:var(--deep);position:relative;overflow:hidden;padding:100px 32px;}
+.sip-section::before{content:'☕';font-size:340px;position:absolute;top:-50px;right:-50px;opacity:0.02;pointer-events:none;line-height:1;}
+.sip-layout{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:start;}
+
+/* Badge */
+.sip-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(196,122,42,0.1);border:1px solid var(--border);border-radius:20px;padding:6px 16px;margin-bottom:20px;}
+.sip-badge-dot{width:6px;height:6px;background:var(--amber);border-radius:50%;animation:pulse-dot 2s infinite;}
+.sip-badge-text{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+
+.sip-title{font-family:var(--font-display);font-size:44px;font-weight:900;line-height:1.1;margin-bottom:8px;}
+.sip-title em{color:var(--amber);font-style:italic;}
+.sip-subtitle{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--text-dim);margin-bottom:24px;}
+.sip-desc{color:var(--text-dim);font-size:14px;line-height:1.7;margin-bottom:32px;max-width:520px;}
+
+/* Signup */
+.sip-form{display:flex;gap:10px;margin-bottom:24px;max-width:480px;}
+.sip-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--text);outline:none;transition:border .2s;}
+.sip-input::placeholder{color:var(--text-faint);}
+.sip-input:focus{border-color:var(--amber);}
+.sip-submit{background:var(--amber);color:var(--bg);font-family:var(--font-mono);font-size:11px;font-weight:500;padding:12px 24px;border:none;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.sip-submit:hover{background:var(--amber-light);transform:translateY(-1px);}
+
+.sip-trust{display:flex;gap:24px;align-items:center;margin-bottom:36px;}
+.sip-trust-item{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.sip-trust-icon{color:var(--amber);font-size:11px;}
+
+/* Streak */
+.sip-streak{display:inline-flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px 22px;margin-bottom:36px;}
+.sip-streak-fire{font-size:24px;}
+.sip-streak-num{font-family:var(--font-mono);font-size:30px;font-weight:500;color:var(--amber-light);line-height:1;}
+.sip-streak-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* Archive */
+.sip-archive-title{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.sip-archive-list{display:flex;flex-direction:column;gap:6px;}
+.sip-archive-item{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:4px;transition:all .2s;cursor:pointer;}
+.sip-archive-item:hover{border-color:var(--amber);transform:translateX(4px);}
+.sip-archive-left{display:flex;align-items:center;gap:12px;overflow:hidden;}
+.sip-archive-date{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);min-width:52px;flex-shrink:0;}
+.sip-archive-headline{font-size:12px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sip-archive-proof{font-family:var(--font-mono);font-size:11px;color:var(--amber);font-weight:500;flex-shrink:0;margin-left:8px;}
+
+/* Today preview card */
+.sip-preview{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative;}
+.sip-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--amber-light),var(--amber-pale));}
+.sip-preview-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);}
+.sip-preview-label{font-family:var(--font-mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.sip-preview-date{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.sip-preview-body{padding:24px;}
+.sip-issue-num{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.sip-issue-headline{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.25;margin-bottom:20px;}
+.sip-issue-bullets{list-style:none;margin-bottom:24px;}
+.sip-issue-bullets li{font-size:13px;color:var(--text-dim);padding:10px 0;border-bottom:1px solid rgba(196,122,42,0.08);display:flex;align-items:flex-start;gap:12px;line-height:1.55;}
+.sip-issue-bullets li:last-child{border-bottom:none;}
+.sip-bullet-num{color:var(--amber);font-family:var(--font-mono);font-size:10px;font-weight:500;flex-shrink:0;margin-top:2px;width:18px;}
+.sip-issue-proof{display:flex;align-items:center;gap:12px;margin-bottom:0;}
+.sip-issue-proof-label{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.sip-issue-proof-bar{flex:1;height:4px;background:rgba(245,239,228,0.06);border-radius:2px;overflow:hidden;}
+.sip-issue-proof-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--amber),var(--amber-pale));width:0;transition:width 1.2s ease;}
+.sip-issue-proof-val{font-family:var(--font-mono);font-size:13px;color:var(--amber-light);font-weight:500;}
+.sip-preview-cta{display:block;text-align:center;padding:14px;font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;border-top:1px solid var(--border);transition:all .2s;cursor:pointer;background:transparent;border-left:none;border-right:none;border-bottom:none;width:100%;}
+.sip-preview-cta:hover{background:rgba(196,122,42,0.06);color:var(--amber-light);}
+
+/* ================================================ */
+/*  TIPSY READS™                                    */
+/* ================================================ */
+.tipsy-section{padding:100px 32px;position:relative;overflow:hidden;}
+.tipsy-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;}
+.tipsy-filters{display:flex;gap:5px;flex-wrap:wrap;}
+.tipsy-filter{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);padding:5px 14px;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all .15s;background:transparent;text-transform:uppercase;letter-spacing:0.5px;}
+.tipsy-filter:hover{border-color:var(--amber);color:var(--amber);}
+.tipsy-filter.active{border-color:var(--amber);color:var(--amber);background:rgba(196,122,42,0.08);}
+
+.tipsy-feed{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.tipsy-card{background:var(--card);border:1px solid var(--border);border-radius:8px;transition:all .3s;cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.tipsy-card:hover{border-color:var(--amber);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.35);}
+.tipsy-accent{height:3px;width:100%;}
+.tipsy-accent.markets{background:var(--green);}
+.tipsy-accent.tech{background:var(--blue);}
+.tipsy-accent.crypto{background:var(--amber);}
+.tipsy-accent.culture{background:#9B59B6;}
+.tipsy-accent.ai{background:var(--red);}
+.tipsy-accent.energy{background:#E67E22;}
+.tipsy-body{padding:22px;flex:1;display:flex;flex-direction:column;}
+.tipsy-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.tipsy-tag{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:3px;}
+.tipsy-tag.markets{background:rgba(46,204,113,0.12);color:var(--green);}
+.tipsy-tag.tech{background:rgba(52,152,219,0.12);color:var(--blue);}
+.tipsy-tag.crypto{background:rgba(196,122,42,0.12);color:var(--amber);}
+.tipsy-tag.culture{background:rgba(155,89,182,0.12);color:#9B59B6;}
+.tipsy-tag.ai{background:rgba(231,76,60,0.12);color:var(--red);}
+.tipsy-tag.energy{background:rgba(230,126,34,0.12);color:#E67E22;}
+.tipsy-time{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);}
+.tipsy-text{font-size:14px;color:var(--text-dim);line-height:1.65;flex:1;margin-bottom:16px;}
+.tipsy-text strong{color:var(--text);font-weight:500;}
+.tipsy-foot{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(196,122,42,0.08);}
+.tipsy-proof{font-family:var(--font-mono);font-size:10px;display:flex;align-items:center;gap:6px;color:var(--amber);}
+.tipsy-proof-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);}
+.tipsy-share{font-family:var(--font-mono);font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border:1px solid var(--border);border-radius:3px;transition:all .15s;background:transparent;cursor:pointer;}
+.tipsy-share:hover{border-color:var(--amber);color:var(--amber);}
+
+.tipsy-load-wrap{text-align:center;margin-top:40px;}
+.tipsy-load-btn{background:transparent;color:var(--text-dim);font-family:var(--font-mono);font-size:11px;padding:12px 32px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+.tipsy-load-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+/* Tipsy CTA */
+.tipsy-cta{margin-top:52px;background:linear-gradient(135deg,rgba(196,122,42,0.1),rgba(196,122,42,0.03));border:1px solid var(--border);border-radius:8px;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px;}
+.tipsy-cta-headline{font-family:var(--font-display);font-size:20px;font-weight:700;}
+.tipsy-cta-headline em{color:var(--amber);font-style:italic;}
+.tipsy-cta-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-top:4px;}
+.tipsy-cta-form{display:flex;gap:8px;flex-shrink:0;}
+
+/* MANIFESTO */
+.manifesto{background:linear-gradient(135deg,rgba(196,122,42,0.12),rgba(196,122,42,0.04));position:relative;overflow:hidden;}
+.manifesto::before{content:'\201C';font-family:var(--font-display);font-size:400px;color:rgba(196,122,42,0.06);position:absolute;top:-80px;left:40px;line-height:1;pointer-events:none;}
+.manifesto .container{position:relative;z-index:1;max-width:800px;}
+.manifesto h2{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1.15;margin-bottom:24px;}
+.manifesto h2 em{color:var(--amber);font-style:italic;}
+.manifesto p{color:var(--text-dim);font-size:16px;line-height:1.8;margin-bottom:28px;max-width:620px;}
+.btn-dark{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:12px;padding:12px 28px;border:none;border-radius:4px;cursor:pointer;transition:all .2s;letter-spacing:0.5px;}
+.btn-dark:hover{background:var(--deep);transform:translateY(-1px);}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px 24px;display:flex;flex-direction:column;transition:all .25s;position:relative;}
+.price-card.popular{border-color:var(--amber);}
+.price-popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;background:var(--amber);color:var(--bg);padding:4px 14px;border-radius:20px;font-weight:500;}
+.price-tier{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.price-name{font-family:var(--font-display);font-size:22px;font-weight:700;margin-bottom:16px;}
+.price-amount{font-family:var(--font-display);font-size:44px;font-weight:900;color:var(--amber-light);margin-bottom:4px;}
+.price-amount span{font-size:16px;color:var(--text-faint);font-weight:400;}
+.price-desc{font-size:13px;color:var(--text-dim);margin-bottom:24px;line-height:1.5;}
+.price-divider{height:1px;background:var(--border);margin-bottom:20px;}
+.price-features{list-style:none;flex:1;margin-bottom:24px;}
+.price-features li{font-size:13px;color:var(--text-dim);padding:6px 0;display:flex;align-items:flex-start;gap:10px;}
+.price-features li::before{content:'—';color:var(--amber);font-weight:700;flex-shrink:0;}
+.price-card .btn-primary,.price-card .btn-ghost{width:100%;text-align:center;display:block;}
+
+/* FOOTER */
+.footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 32px 24px;}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+.footer-brand-text{font-size:13px;color:var(--text-dim);line-height:1.6;margin-top:12px;margin-bottom:12px;}
+.footer-tagline{font-family:var(--font-mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.footer-col-title{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+.footer-col a{display:block;font-size:13px;color:var(--text-dim);padding:4px 0;transition:color .2s;}
+.footer-col a:hover{color:var(--amber);}
+.footer-bar{border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;align-items:center;}
+.footer-copy{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+.footer-standard{font-family:var(--font-mono);font-size:10px;color:var(--amber);}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--amber);border-radius:6px;padding:14px 28px;font-family:var(--font-mono);font-size:12px;color:var(--amber-light);z-index:10000;transition:transform .4s cubic-bezier(0.4,0,0.2,1);pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ANIMATIONS */
+@keyframes fade-up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fade-up 0.6s cubic-bezier(0.4,0,0.2,1) both;}
+
+/* MOBILE */
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .hero .container{grid-template-columns:1fr;gap:40px;}
+  .radar-grid{grid-template-columns:1fr 1fr;}
+  .pours-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr 1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .hero h1{font-size:36px;}
+  .manifesto h2{font-size:28px;}
+  section{padding:60px 20px;}
+  .sip-section{padding:60px 20px;}
+  .sip-layout{grid-template-columns:1fr;}
+  .sip-title{font-size:32px;}
+  .tipsy-feed{grid-template-columns:1fr;}
+  .tipsy-header{flex-direction:column;align-items:flex-start;gap:16px;}
+  .tipsy-cta{flex-direction:column;text-align:center;}
+  .tipsy-cta-form{width:100%;}
+}
+@media(max-width:600px){
+  .radar-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .hero-stats{flex-direction:column;gap:16px;}
+  .dp-gauges{grid-template-columns:1fr;}
+  .sip-form{flex-direction:column;}
+  .sip-trust{flex-direction:column;align-items:flex-start;gap:8px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">B</div>
+    <div class="nav-wordmark">Bourbon Pour</div>
+  </div>
+  <div class="nav-links">
+    <a href="#sip">Daily Sip</a>
+    <a href="#tipsy">Tipsy Reads</a>
+    <a href="articles.html">Intelligence Desk</a>
+    <a href="data-pulse.html">Data Pulse</a>
+    <a href="#radar">Disruptor Radar</a>
+    <a href="proof-score.html">Proof Score</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-live"><div class="live-dot"></div> Markets Live</div>
+    <div class="nav-clock" id="navClock">--:--:-- ET</div>
+    <button class="btn-primary" onclick="document.getElementById('sip').scrollIntoView({behavior:'smooth'})">Subscribe Free</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-bar"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="pulse">
+  <div class="container">
+    <div class="hero-left">
+      <div class="hero-eyebrow fade-up">Finance & Technology Intelligence</div>
+      <h1 class="fade-up" style="animation-delay:.1s">Data Is The<br><em>New Currency.</em></h1>
+      <p class="hero-sub fade-up" style="animation-delay:.2s">Most people are still paying in cash.</p>
+      <p class="hero-desc fade-up" style="animation-delay:.25s">Bourbon Pour delivers institutional-grade market intelligence, disruption signals, and evidence-scored analysis — daily. Built for the sharpest minds in finance and technology.</p>
+      <div class="hero-ctas fade-up" style="animation-delay:.3s">
+        <button class="btn-primary" onclick="document.getElementById('sip').scrollIntoView({behavior:'smooth'})">Pour Your First Issue — Free</button>
+        <button class="btn-ghost" onclick="document.getElementById('radar').scrollIntoView({behavior:'smooth'})">See the Platform</button>
+      </div>
+      <div class="hero-stats fade-up" style="animation-delay:.4s">
+        <div><div class="hero-stat-val">47K</div><div class="hero-stat-label">Subscribers</div></div>
+        <div><div class="hero-stat-val">94</div><div class="hero-stat-label">Avg Proof Score</div></div>
+        <div><div class="hero-stat-val">6h</div><div class="hero-stat-label">Radar Refresh</div></div>
+      </div>
+    </div>
+    <div class="hero-right fade-up" style="animation-delay:.35s">
+      <div class="dp-card">
+        <div class="dp-header"><a href="data-pulse.html" style="color:var(--amber)"><div class="dp-title">Data Pulse™ — Live ↗</div></a><div class="dp-time" id="dpTime">--:--:-- ET</div></div>
+        <div class="dp-gauges" id="gauges">
+          <div class="gauge" data-base="84"><div class="gauge-label">AI Spend Velocity</div><div class="gauge-val" style="color:var(--green)"><span class="g-val">84</span><span class="gauge-arrow">↑</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:84%;background:var(--green)"></div></div><div class="gauge-note">Enterprise AI budgets accelerating Q1</div></div>
+          <div class="gauge" data-base="52"><div class="gauge-label">Fed Sentiment Index</div><div class="gauge-val" style="color:var(--amber)"><span class="g-val">52</span><span class="gauge-arrow">◆</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:52%;background:var(--amber)"></div></div><div class="gauge-note">Neutral — markets pricing 2 cuts by Dec</div></div>
+          <div class="gauge" data-base="71"><div class="gauge-label">Startup Funding Heat</div><div class="gauge-val" style="color:var(--green)"><span class="g-val">71</span><span class="gauge-arrow">↑</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:71%;background:var(--green)"></div></div><div class="gauge-note">AI vertical pulling total numbers up</div></div>
+          <div class="gauge" data-base="38"><div class="gauge-label">Macro Stress Score</div><div class="gauge-val" style="color:var(--red)"><span class="g-val">38</span><span class="gauge-arrow">↓</span></div><div class="gauge-bar"><div class="gauge-fill" style="width:38%;background:var(--red)"></div></div><div class="gauge-note">Low stress — risk appetite elevated</div></div>
+        </div>
+        <div class="dp-chart"><canvas id="spChart"></canvas></div>
+        <div class="dp-proof"><div class="dp-proof-label"><span>Proof Score™</span><span>91 / 100</span></div><div class="proof-bar-track"><div class="proof-bar-fill" id="proofBar"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISRUPTOR RADAR -->
+<section class="radar-section" id="radar">
+  <div class="container">
+    <div class="section-eyebrow">Disruptor Radar™</div>
+    <div class="section-title">Who's moving before the market knows.</div>
+    <div class="section-sub">Pre-market disruption signals detected an average of 38 days before public news. 84% confirmed accuracy rate.</div>
+    <div class="radar-grid" id="radarGrid"></div>
+    <div class="radar-cta"><a href="disruptor-radar.html" class="btn-primary" style="display:inline-block;">Access Full Radar — 32 Companies Live →</a></div>
+  </div>
+</section>
+
+<!-- LATEST POURS -->
+<section id="pours">
+  <div class="container">
+    <div class="section-eyebrow">Latest Intelligence</div>
+    <div class="section-title" style="margin-bottom:40px;">Today's Pours</div>
+    <div class="pours-grid" id="poursGrid"></div>
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!--  THE DAILY SIP™                                  -->
+<!-- ================================================ -->
+<section class="sip-section" id="sip">
+  <div class="container">
+    <div class="sip-layout">
+      <div class="sip-left">
+        <div class="sip-badge fade-up"><div class="sip-badge-dot"></div><div class="sip-badge-text">Delivered 5x / week at 6:30 AM ET</div></div>
+        <h2 class="sip-title fade-up" style="animation-delay:.05s">The Daily <em>Sip™</em></h2>
+        <p class="sip-subtitle fade-up" style="animation-delay:.1s">Your morning intelligence briefing — before the market opens.</p>
+        <p class="sip-desc fade-up" style="animation-delay:.15s">Every weekday, The Daily Sip delivers the 3 things you need to know, the 1 thing nobody's talking about, and the data that proves it. Every issue carries a Proof Score. No fluff. No filler. Just the sharpest five-minute read in finance.</p>
+
+        <div class="fade-up" style="animation-delay:.2s">
+          <div class="sip-form"><input type="email" class="sip-input" id="sipEmail" placeholder="your@email.com" autocomplete="email"><button class="sip-submit" id="sipSubmit">Pour Me In</button></div>
+        </div>
+
+        <div class="sip-trust fade-up" style="animation-delay:.25s">
+          <div class="sip-trust-item"><span class="sip-trust-icon">✦</span> 47,000+ subscribers</div>
+          <div class="sip-trust-item"><span class="sip-trust-icon">✦</span> Free forever</div>
+          <div class="sip-trust-item"><span class="sip-trust-icon">✦</span> Unsubscribe anytime</div>
+        </div>
+
+        <div class="sip-streak fade-up" style="animation-delay:.3s">
+          <div class="sip-streak-fire">🔥</div>
+          <div><div class="sip-streak-num" id="streakCount">0</div><div class="sip-streak-label">Consecutive issues published</div></div>
+        </div>
+
+        <div class="fade-up" style="animation-delay:.35s">
+          <div class="sip-archive-title">Recent Issues</div>
+          <div class="sip-archive-list" id="archiveList"></div>
+        </div>
+      </div>
+
+      <div class="sip-right fade-up" style="animation-delay:.2s">
+        <div class="sip-preview">
+          <div class="sip-preview-header"><div class="sip-preview-label">Today's Sip — Preview</div><div class="sip-preview-date" id="sipDate"></div></div>
+          <div class="sip-preview-body">
+            <div class="sip-issue-num">Issue #347</div>
+            <h3 class="sip-issue-headline">The $40B Signal Nobody's Watching, Japan's Quiet Power Move, and Why Your AI Budget Just Got Audited</h3>
+            <ul class="sip-issue-bullets">
+              <li><span class="sip-bullet-num">01</span><span>Microsoft's Azure GPU reservations hit an all-time high last week — but the booking pattern suggests a single customer took 40% of new capacity. The math points to one company, and it's not OpenAI.</span></li>
+              <li><span class="sip-bullet-num">02</span><span>The Bank of Japan quietly purchased $2.1B in US tech debt instruments on Thursday. This is the third stealth buy in 8 weeks. No major outlet has connected the dots yet.</span></li>
+              <li><span class="sip-bullet-num">03</span><span>Enterprise AI spend audits are coming. Three Fortune 100 CFOs told us their boards are demanding ROI proof by Q3 — and 60% of current AI projects can't provide it.</span></li>
+            </ul>
+            <div class="sip-issue-proof">
+              <div class="sip-issue-proof-label">Issue Proof Score</div>
+              <div class="sip-issue-proof-bar"><div class="sip-issue-proof-fill" id="sipProofFill"></div></div>
+              <div class="sip-issue-proof-val">94</div>
+            </div>
+          </div>
+          <button class="sip-preview-cta" id="sipPreviewCta">Read full issue — subscribe free ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!--  TIPSY READS™                                    -->
+<!-- ================================================ -->
+<section class="tipsy-section" id="tipsy">
+  <div class="container">
+    <div class="tipsy-header">
+      <div class="tipsy-header-left">
+        <div class="section-eyebrow">Tipsy Reads™</div>
+        <div class="section-title" style="margin-bottom:4px;">Quick pours. Sharp takes.</div>
+        <div class="section-sub" style="margin-bottom:0;">Bite-sized market intelligence you'll actually want to share. Updated throughout the day.</div>
+      </div>
+      <div class="tipsy-filters" id="tipsyFilters">
+        <button class="tipsy-filter active" data-filter="all">All</button>
+        <button class="tipsy-filter" data-filter="markets">Markets</button>
+        <button class="tipsy-filter" data-filter="tech">Tech</button>
+        <button class="tipsy-filter" data-filter="ai">AI</button>
+        <button class="tipsy-filter" data-filter="crypto">Crypto</button>
+        <button class="tipsy-filter" data-filter="culture">Culture</button>
+      </div>
+    </div>
+    <div class="tipsy-feed" id="tipsyFeed"></div>
+    <div class="tipsy-load-wrap"><button class="tipsy-load-btn" id="tipsyLoadMore">Load more reads ↓</button></div>
+    <div class="tipsy-cta">
+      <div><div class="tipsy-cta-headline">Get Tipsy Reads in your inbox. <em>Free.</em></div><div class="tipsy-cta-sub">The best bites from the week — every Friday at noon ET.</div></div>
+      <div class="tipsy-cta-form"><input type="email" class="sip-input" placeholder="your@email.com" id="tipsyEmail"><button class="sip-submit" id="tipsySubmit">Subscribe</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="container">
+    <h2>Data is the new currency.<br><em>Most people are still paying in cash.</em></h2>
+    <p>Every day, billions of dollars move on information that most people never see. Not because it's hidden — because it's buried in noise. Bourbon Pour exists to cut through it. We don't do hot takes. We don't hedge. Every piece of intelligence we publish carries a Proof Score — so you know exactly how much weight to give it.</p>
+    <p>We built the Disruptor Radar so you'd never be the last to know. We created Data Pulse so you could feel the market moving before it moves. This isn't a newsletter. It's an edge.</p>
+    <button class="btn-dark">Read the full manifesto →</button>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-eyebrow" style="text-align:center;">Pricing</div>
+    <div class="section-title" style="text-align:center;margin-bottom:48px;">Choose your proof level.</div>
+    <div class="pricing-grid" id="pricingGrid"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-brand" style="margin-bottom:4px;"><div class="nav-logo">B</div><div class="nav-wordmark">Bourbon Pour</div></div>
+        <p class="footer-brand-text">Sharp, evidence-scored finance and technology intelligence for the sharpest minds in the room.</p>
+        <div class="footer-tagline">Data Is The New Currency™</div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Content</div>
+        <a href="#sip">The Daily Sip™</a><a href="#tipsy">Tipsy Reads™</a><a href="#pours">Latest Pours</a><a href="proof-of-work.html">Proof of Work™</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Platform</div>
+        <a href="data-pulse.html">Data Pulse™</a><a href="disruptor-radar.html">Disruptor Radar™</a><a href="proof-score.html">Proof Score™</a><a href="pour-journal.html">Pour Journal™</a><a href="#pricing">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <a href="#">About</a><a href="#">Manifesto</a><a href="#">Careers</a><a href="#">Privacy</a><a href="#">Terms</a>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <div class="footer-copy">© 2026 Bourbon Pour Media Inc. All rights reserved.</div>
+      <div class="footer-standard"><a href="proof-score.html" style="color:var(--amber)">Proof Score™ — The Intelligence Standard</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== CLOCK =====
+function updateClock(){
+  const n=new Date(),et=new Date(n.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const t=String(et.getHours()).padStart(2,'0')+':'+String(et.getMinutes()).padStart(2,'0')+':'+String(et.getSeconds()).padStart(2,'0')+' ET';
+  document.getElementById('navClock').textContent=t;
+  document.getElementById('dpTime').textContent=t;
+}
+setInterval(updateClock,1000);updateClock();
+
+// ===== TICKER =====
+const tickers=[
+  {sym:'SPX',val:'5,487.32',chg:'+0.42%',up:true},{sym:'NDX',val:'19,241.88',chg:'+0.67%',up:true},
+  {sym:'NVDA',val:'892.14',chg:'+2.31%',up:true},{sym:'AAPL',val:'178.52',chg:'-0.18%',up:false},
+  {sym:'BTC',val:'68,412',chg:'+1.84%',up:true},{sym:'DXY',val:'104.23',chg:'+0.12%',up:true},
+  {sym:'10Y',val:'4.28%',chg:'+2bps',up:false},{sym:'Gold',val:'2,342',chg:'+0.53%',up:true},
+  {sym:'WTI',val:'78.41',chg:'-0.34%',up:false},{sym:'EUR/USD',val:'1.0847',chg:'-0.08%',up:false},
+  {sym:'META',val:'502.18',chg:'+1.12%',up:true},{sym:'MSFT',val:'421.90',chg:'+0.38%',up:true},
+  {sym:'AMZN',val:'186.37',chg:'+0.91%',up:true},{sym:'TSLA',val:'174.88',chg:'-1.24%',up:false}
+];
+let th='';for(let r=0;r<2;r++)tickers.forEach(t=>{th+=`<span class="ticker-item"><span class="ticker-sym">${t.sym}</span><span class="ticker-val">${t.val}</span><span class="ticker-chg ${t.up?'up':'down'}">${t.chg}</span></span><span class="ticker-sep">·</span>`;});
+document.getElementById('tickerTrack').innerHTML=th;
+
+// ===== GAUGES =====
+setInterval(()=>{document.querySelectorAll('.gauge').forEach(g=>{const b=+g.dataset.base,v=b+Math.round((Math.random()-0.5)*3);g.querySelector('.g-val').textContent=v;g.querySelector('.gauge-fill').style.width=v+'%';});},4000);
+
+// ===== PROOF BAR =====
+setTimeout(()=>{document.getElementById('proofBar').style.width='91%';},600);
+
+// ===== S&P CHART =====
+const spData=[5380,5392,5405,5388,5401,5378,5395,5412,5428,5419,5435,5442,5430,5448,5456,5441,5460,5472,5465,5480,5478,5490,5487,5495,5488,5502,5498,5487,5492,5487];
+new Chart(document.getElementById('spChart').getContext('2d'),{type:'line',data:{labels:spData.map((_,i)=>'D'+(i+1)),datasets:[{data:spData,borderColor:'#C47A2A',borderWidth:2,pointRadius:0,tension:0.4,fill:true,backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,120);g.addColorStop(0,'rgba(196,122,42,0.25)');g.addColorStop(1,'rgba(196,122,42,0)');return g;}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+
+// ===== RADAR CARDS =====
+const radarData=[
+  {name:'Perplexity AI',sector:'AI',signal:'Unusual Series C activity, talent acquisition from Google DeepMind accelerating',proof:94,badge:'HOT',cls:'hot'},
+  {name:'Stripe Treasury',sector:'Fintech',signal:'Regulatory filing surge — banking infrastructure build signals $1B facility',proof:87,badge:'HOT',cls:'hot'},
+  {name:'Anduril',sector:'Defense Tech',signal:'Patent velocity spike in autonomous systems, DOD procurement signals',proof:81,badge:'RISING',cls:'rising'},
+  {name:'Mistral AI',sector:'AI',signal:'European compute infrastructure scaling, partnership signals with major cloud',proof:78,badge:'RISING',cls:'rising'},
+  {name:'Figure AI',sector:'AI',signal:'Humanoid robotics talent migration, secondary market premium growing',proof:72,badge:'RISING',cls:'rising'},
+  {name:'Databricks',sector:'Cloud',signal:'IPO preparation signals, governance restructuring detected',proof:69,badge:'WATCH',cls:'watch'},
+  {name:'xAI Grok',sector:'AI',signal:'GitHub commit velocity unusual — new model architecture signals',proof:66,badge:'WATCH',cls:'watch'},
+  {name:'CoreWeave',sector:'Cloud',signal:'GPU infrastructure expansion, S-1 preparation underway',proof:61,badge:'WATCH',cls:'watch'}
+];
+const rg=document.getElementById('radarGrid');
+radarData.forEach((c,i)=>{rg.innerHTML+=`<div class="radar-card ${c.cls} fade-up" style="animation-delay:${0.1+i*0.06}s"><div class="radar-tag">${c.sector}</div><div class="radar-name">${c.name}</div><div class="radar-signal">${c.signal}</div><div class="radar-footer"><span class="radar-proof" style="color:${c.cls==='hot'?'var(--red)':c.cls==='rising'?'var(--amber)':'var(--blue)'}">${c.proof}</span><span class="radar-badge badge-${c.cls}">${c.badge}</span></div></div>`;});
+
+// ===== LATEST POURS =====
+const pours=[
+  {cat:'Markets',proof:92,headline:"The Fed's Silence Is Louder Than Its Last Three Rate Decisions Combined",excerpt:"Powell's calculated absence from the discourse says more than 12 FOMC statements combined. Here's what the silence pattern tells institutional traders — and why the bond market is already pricing it in.",time:'4 hours ago'},
+  {cat:'Technology',proof:88,headline:"$40B AI Infrastructure Bet Nobody Is Talking About",excerpt:"While everyone watches OpenAI, a quiet GPU build-out is reshaping enterprise compute.",time:'6 hours ago'},
+  {cat:'Disruptors',proof:79,headline:"The Fintech Goldman's Analysts Are All Downloading Quietly",excerpt:"Internal adoption metrics tell a story Wall Street isn't ready to hear.",time:'8 hours ago'}
+];
+const pg=document.getElementById('poursGrid');
+pours.forEach((p,i)=>{pg.innerHTML+=`<div class="pour-card fade-up" style="animation-delay:${0.1+i*0.08}s"><div class="pour-card-inner"><span class="pour-cat">${p.cat}</span><span class="pour-proof-badge">${p.proof}-proof</span><h3 class="pour-headline">${p.headline}</h3><p class="pour-excerpt">${p.excerpt}</p><div class="pour-meta"><span>${p.time}</span><span>Read · 6 min</span></div><div class="pour-score-bar"><div class="pour-score-fill" data-w="${p.proof}"></div></div></div></div>`;});
+setTimeout(()=>{document.querySelectorAll('.pour-score-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});},800);
+
+// ===== DAILY SIP — Date + Archive =====
+document.getElementById('sipDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
+const archiveData=[
+  {date:'Mar 24',headline:'Why Goldman Just Quietly Doubled Its AI Infrastructure Budget',proof:91},
+  {date:'Mar 21',headline:"The Sovereign Wealth Fund That's Buying Every AI Startup's Secondary Shares",proof:88},
+  {date:'Mar 20',headline:'Three CFOs Told Us the Same Thing About AI ROI — And It\'s Not Good',proof:93},
+  {date:'Mar 19',headline:"Japan's $400B Carry Trade Unwind Is Closer Than You Think",proof:86},
+  {date:'Mar 18',headline:'The Defense Tech Company That Just Stole 14 Engineers From Lockheed',proof:82}
+];
+const al=document.getElementById('archiveList');
+archiveData.forEach(a=>{al.innerHTML+=`<div class="sip-archive-item"><div class="sip-archive-left"><span class="sip-archive-date">${a.date}</span><span class="sip-archive-headline">${a.headline}</span></div><span class="sip-archive-proof">${a.proof}</span></div>`;});
+
+// Sip proof bar — animate on scroll
+const sipObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){document.getElementById('sipProofFill').style.width='94%';sipObs.unobserve(e.target);}});},{threshold:0.3});
+sipObs.observe(document.querySelector('.sip-preview'));
+
+// Streak counter — animate on scroll
+let streakDone=false;
+const streakObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!streakDone){streakDone=true;let cur=0;const target=347,el=document.getElementById('streakCount');const iv=setInterval(()=>{cur+=Math.ceil((target-cur)*0.06)+1;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},25);streakObs.unobserve(e.target);}});},{threshold:0.5});
+streakObs.observe(document.querySelector('.sip-streak'));
+
+// ===== TIPSY READS =====
+const tipsyData=[
+  {cat:'markets',tag:'Markets',time:'2h ago',text:`<strong>Nvidia's market cap just passed the GDP of Canada.</strong> Canada has not commented. To be fair, Canada rarely does. But here's the thing: NVDA added the equivalent of Argentina's entire economy in the last 90 days alone. At this rate, Jensen Huang will be eligible for a seat at the G7 by December.`,proof:72},
+  {cat:'ai',tag:'AI',time:'3h ago',text:`A 23-year-old made <strong>$4.2M shorting a stock recommended by an AI chatbot.</strong> The chatbot has not been fired. The 23-year-old has started a hedge fund called "Inverse GPT Capital." We wish we were joking. His thesis: "If the AI is bullish, reality is probably more complicated." He's not wrong.`,proof:68},
+  {cat:'crypto',tag:'Crypto',time:'4h ago',text:`<strong>Bitcoin just spent 47 consecutive days above $65K</strong> — the longest sustained run in its history. And the weirdest part? Search interest for "Bitcoin" on Google is at a 2-year low. The retail crowd isn't here yet. Institutional wallets are doing all the heavy lifting. When retail figures this out, things get interesting.`,proof:84},
+  {cat:'culture',tag:'Culture',time:'5h ago',text:`<strong>Goldman Sachs just made "AI literacy" a requirement for all incoming analysts.</strong> Not optional. Not a suggested Coursera course. Mandatory. Starting June 2026, every new analyst must pass an internal AI proficiency exam before their first day on the desk. The finance industry is about to have a very awkward summer.`,proof:78},
+  {cat:'tech',tag:'Tech',time:'6h ago',text:`<strong>Apple's App Store rejected 14 AI apps last week</strong> — all for the same reason: "insufficient human oversight." None of the rejections were made public. We found them buried in developer forum complaints. The pattern suggests Apple is quietly building a moat around "human-first AI" as a brand differentiator.`,proof:81},
+  {cat:'energy',tag:'Energy',time:'7h ago',text:`A single <strong>hyperscale data center in Virginia now consumes more electricity than the entire city of Richmond.</strong> The data center has 340 employees. Richmond has 230,000 residents. Amazon, which operates the facility, has applied for permits to build three more in the same county.`,proof:89},
+  {cat:'markets',tag:'Markets',time:'8h ago',text:`<strong>The 10-year Treasury yield has moved less than 5 basis points in 12 consecutive sessions.</strong> That's the longest period of calm since 2019. Every time this has happened in the last 30 years, a significant move followed within 3 weeks. Direction unknown. Magnitude? Usually 40+ bps. Set your alerts.`,proof:91},
+  {cat:'ai',tag:'AI',time:'9h ago',text:`<strong>OpenAI is now spending $2.4M per day on compute.</strong> That's $876M annualized, up from $560M last year. At current trajectory, their compute costs will exceed the R&D budgets of Ford, General Motors, and Stellantis combined by Q4. The question isn't whether this is sustainable. The question is: what are they building that requires this?`,proof:87},
+  {cat:'tech',tag:'Tech',time:'10h ago',text:`<strong>Spotify just quietly acquired a podcast analytics company for $40M.</strong> Nobody covered it. The company — AudioGraph — had 6 employees and one product: an AI that predicts podcast ad performance before the episode airs. Accuracy rate? 84%. Spotify's ad revenue is about to get very interesting.`,proof:74}
+];
+
+let tipsyFilter='all',tipsyVisible=6;
+
+function renderTipsy(){
+  const feed=document.getElementById('tipsyFeed');
+  const filtered=tipsyFilter==='all'?tipsyData:tipsyData.filter(t=>t.cat===tipsyFilter);
+  const shown=filtered.slice(0,tipsyVisible);
+  feed.innerHTML='';
+  shown.forEach((t,i)=>{
+    feed.innerHTML+=`<div class="tipsy-card fade-up" style="animation-delay:${i*0.04}s">
+      <div class="tipsy-accent ${t.cat}"></div>
+      <div class="tipsy-body">
+        <div class="tipsy-top"><span class="tipsy-tag ${t.cat}">${t.tag}</span><span class="tipsy-time">${t.time}</span></div>
+        <div class="tipsy-text">${t.text}</div>
+        <div class="tipsy-foot">
+          <div class="tipsy-proof"><div class="tipsy-proof-dot"></div> ${t.proof}-proof</div>
+          <button class="tipsy-share" onclick="showToast('Link copied — share that Tipsy Read 🥃')">Share ↗</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('tipsyLoadMore').style.display=shown.length>=filtered.length?'none':'inline-block';
+}
+
+document.querySelectorAll('.tipsy-filter').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tipsy-filter').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    tipsyFilter=btn.dataset.filter;
+    tipsyVisible=6;
+    renderTipsy();
+  });
+});
+document.getElementById('tipsyLoadMore').addEventListener('click',()=>{tipsyVisible+=6;renderTipsy();});
+renderTipsy();
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>{t.classList.remove('show');},2500);
+}
+
+// ===== SIGNUP HANDLERS =====
+function handleSignup(emailId,label){
+  const email=document.getElementById(emailId).value.trim();
+  if(!email||!email.includes('@')){showToast('Enter a valid email address');return;}
+  document.getElementById(emailId).value='';
+  showToast(`You're in. First ${label} drops tomorrow at 6:30 AM ET 🥃`);
+}
+document.getElementById('sipSubmit').addEventListener('click',()=>handleSignup('sipEmail','Sip'));
+document.getElementById('tipsySubmit').addEventListener('click',()=>handleSignup('tipsyEmail','Tipsy Reads digest'));
+document.getElementById('sipPreviewCta').addEventListener('click',()=>{document.getElementById('sipEmail').focus();document.getElementById('sipEmail').scrollIntoView({behavior:'smooth',block:'center'});});
+document.getElementById('sipEmail').addEventListener('keydown',e=>{if(e.key==='Enter')handleSignup('sipEmail','Sip');});
+document.getElementById('tipsyEmail').addEventListener('keydown',e=>{if(e.key==='Enter')handleSignup('tipsyEmail','Tipsy Reads digest');});
+
+// ===== PRICING =====
+const plans=[
+  {tier:'Free',name:'The Pour',price:'$0',per:'',desc:'The daily edge, on us.',popular:false,features:['The Daily Sip™ 5x/week','Tipsy Reads™ feed access','3 Data Pulse gauges','Proof Score on all articles','Weekly Radar snapshot'],cta:'btn-ghost',label:'Start Free'},
+  {tier:'Pro',name:'Proof Pro',price:'$19',per:'/mo',desc:'Full intelligence access for serious professionals.',popular:true,features:['Everything in Free','Full Data Pulse — all 6 gauges live','Live Disruptor Radar — 32 companies','Pour Journal™ AI intelligence log','Proof of Work™ community access','No advertisements'],cta:'btn-primary',label:'Go Pro'},
+  {tier:'Intelligence',name:'Proof Intelligence',price:'$99',per:'/mo',desc:'For analysts who need the deepest edge.',popular:false,features:['Everything in Pro','Sector-specific Radars','Custom alert thresholds','Data API access','Analyst Q&A sessions','Exportable intelligence reports'],cta:'btn-ghost',label:'Get Intelligence'},
+  {tier:'Institutional',name:'Proof Institutional',price:'$999',per:'/mo',desc:'Enterprise intelligence infrastructure.',popular:false,features:['Everything in Intelligence','White-label Data Pulse','Custom monitoring dashboards','Dedicated analyst support','Bloomberg Terminal integration'],cta:'btn-ghost',label:'Contact Sales'}
+];
+const prg=document.getElementById('pricingGrid');
+plans.forEach(p=>{prg.innerHTML+=`<div class="price-card${p.popular?' popular':''}">${p.popular?'<div class="price-popular-badge">Most Popular</div>':''}<div class="price-tier">${p.tier}</div><div class="price-name">${p.name}</div><div class="price-amount">${p.price}<span>${p.per}</span></div><p class="price-desc">${p.desc}</p><div class="price-divider"></div><ul class="price-features">${p.features.map(f=>'<li>'+f+'</li>').join('')}</ul><button class="${p.cta}">${p.label}</button></div>`;});
+</script>
+</body>
+</html>
