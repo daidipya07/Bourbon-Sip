@@ -46,7 +46,7 @@ export default function DisruptorRadarPage() {
           <div className="container">
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Showing 8 of 32 signals — Free tier
+                Current signals — Updated every 6 hours
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {(['hot', 'rising', 'watch'] as const).map(cls => (
@@ -77,19 +77,16 @@ export default function DisruptorRadarPage() {
               ))}
             </div>
 
-            {/* Locked content teaser */}
+            {/* More signals coming */}
             <div style={{ background: 'linear-gradient(135deg, rgba(196,122,42,0.12), rgba(196,122,42,0.04))', border: '1px solid var(--border)', borderRadius: '8px', padding: '48px', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>24 more signals locked</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Coming Soon</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 700, marginBottom: '8px' }}>
-                Access the full Disruptor Radar
+                More signals in development
               </h3>
               <p style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '28px', maxWidth: '440px', margin: '0 auto 28px', lineHeight: 1.7 }}>
-                32 companies tracked live. Sector filters. Custom alert thresholds. Historical signal accuracy by company. Upgrade to Proof Pro.
+                Sector filters, custom alert thresholds, and historical signal accuracy tracking are currently in development.
               </p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <Link href="/#pricing" className="btn-primary">Upgrade to Pro — $19/mo</Link>
-                <Link href="/#sip" className="btn-ghost">Subscribe Free</Link>
-              </div>
+              <Link href="/#sip" className="btn-primary">Subscribe Free</Link>
             </div>
           </div>
         </section>

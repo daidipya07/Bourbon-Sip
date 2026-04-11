@@ -46,17 +46,14 @@ export default function PourJournalPage() {
             </div>
 
             <div style={{ background: 'linear-gradient(135deg, rgba(196,122,42,0.12), rgba(196,122,42,0.04))', border: '1px solid var(--border)', borderRadius: '8px', padding: '48px', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Pro Feature</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Coming Soon</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 700, marginBottom: '8px' }}>
-                Unlock Pour Journal™
+                Pour Journal™ is in development
               </h3>
               <p style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '28px', maxWidth: '420px', margin: '0 auto 28px', lineHeight: 1.7 }}>
-                Available to Proof Pro subscribers. Start your intelligence portfolio today.
+                Subscribe to the Daily Sip to be first to know when Pour Journal launches.
               </p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <Link href="/#pricing" className="btn-primary">Upgrade to Pro — $19/mo</Link>
-                <Link href="/#sip" className="btn-ghost">Subscribe Free</Link>
-              </div>
+              <Link href="/#sip" className="btn-primary">Subscribe Free</Link>
             </div>
           </div>
         </section>

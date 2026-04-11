@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import GaugeGrid from '@/components/GaugeGrid'
@@ -66,19 +65,15 @@ export default function DataPulsePage() {
                 ))}
               </div>
 
-              {/* Upgrade CTA */}
+              {/* Coming Soon */}
               <div style={{ background: 'linear-gradient(135deg, rgba(196,122,42,0.12), rgba(196,122,42,0.04))', border: '1px solid var(--border)', borderRadius: '8px', padding: '40px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Pro Feature</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Coming Soon</div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-                  Full Data Pulse — 6 live gauges + sector overlays
+                  Expanded Dashboard — More gauges + sector overlays
                 </h3>
                 <p style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '24px', maxWidth: '440px', margin: '0 auto 24px' }}>
-                  Upgrade to Proof Pro for the complete dashboard: Energy Stress, Credit Spread Index, sector-specific heat maps, and custom alert thresholds.
+                  Energy Stress, Credit Spread Index, sector-specific heat maps, and custom alert thresholds — currently in development.
                 </p>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                  <Link href="/#pricing" className="btn-primary">Upgrade to Pro — $19/mo</Link>
-                  <Link href="/#sip" className="btn-ghost">Subscribe Free</Link>
-                </div>
               </div>
             </div>
           </div>
