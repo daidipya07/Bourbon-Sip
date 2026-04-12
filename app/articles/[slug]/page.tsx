@@ -97,6 +97,7 @@ export default async function ArticlePage({ params }: Props) {
         dataPoints: mdArticle.dataPoints,
         sourcesCount: mdArticle.sourcesCount,
         sources: mdArticle.sources,
+        heroImage: mdArticle.heroImage,
         contentHtml: mdArticle.contentHtml,
       }
     : {
@@ -114,6 +115,7 @@ export default async function ArticlePage({ params }: Props) {
         dataPoints: legacy!.dataPoints,
         sourcesCount: legacy!.sources.length,
         sources: legacy!.sources,
+        heroImage: undefined,
         contentHtml: legacy!.content,
       }
 
@@ -146,6 +148,13 @@ export default async function ArticlePage({ params }: Props) {
             <span>{article.sourcesCount} independent sources</span>
           </div>
         </div>
+
+        {/* Hero image */}
+        {article.heroImage && (
+          <div className="art-hero">
+            <img src={article.heroImage} alt={article.headline} />
+          </div>
+        )}
 
         {/* Proof score card */}
         <div className={`proof-card ${proofLevel(article.proof)} fade-in`} style={{ animationDelay: '.1s' }}>

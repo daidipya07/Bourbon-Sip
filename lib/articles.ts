@@ -23,6 +23,7 @@ export interface ArticleMeta {
   sourcesCount: number
   excerpt: string
   featured: boolean
+  heroImage?: string
 }
 
 export interface ArticleSource {
@@ -67,6 +68,7 @@ export function getAllArticles(): ArticleMeta[] {
       sourcesCount: (data.sources || []).length,
       excerpt: data.excerpt || '',
       featured: data.featured || false,
+      heroImage: data.heroImage || undefined,
     } as ArticleMeta
   })
 
@@ -121,6 +123,7 @@ export async function getArticleBySlug(slug: string): Promise<FullArticle | null
     sourcesCount: (data.sources || []).length,
     excerpt: data.excerpt || '',
     featured: data.featured || false,
+    heroImage: data.heroImage || undefined,
     contentHtml,
     sources: data.sources || [],
   }

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+  <defs>
+    <radialGradient id="bg2" cx="75%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1c1208"/>
+      <stop offset="100%" stop-color="#0A0805"/>
+    </radialGradient>
+    <radialGradient id="bar-glow" cx="0%" cy="50%" r="100%">
+      <stop offset="0%" stop-color="#E8A94B" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#C47A2A" stop-opacity="0.55"/>
+    </radialGradient>
+    <linearGradient id="bar5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C47A2A" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#E8A94B" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="bar4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C47A2A" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#C47A2A" stop-opacity="0.55"/>
+    </linearGradient>
+    <filter id="glow-bar">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="vignette2" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0A0805" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0A0805" stop-opacity="0.65"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="400" fill="url(#bg2)"/>
+
+  <!-- Subtle dot grid -->
+  <g fill="#C47A2A" opacity="0.06">
+    <circle cx="50" cy="50" r="1.5"/><circle cx="150" cy="50" r="1.5"/><circle cx="250" cy="50" r="1.5"/><circle cx="350" cy="50" r="1.5"/><circle cx="450" cy="50" r="1.5"/><circle cx="550" cy="50" r="1.5"/><circle cx="650" cy="50" r="1.5"/><circle cx="750" cy="50" r="1.5"/><circle cx="850" cy="50" r="1.5"/><circle cx="950" cy="50" r="1.5"/><circle cx="1050" cy="50" r="1.5"/><circle cx="1150" cy="50" r="1.5"/>
+    <circle cx="50" cy="150" r="1.5"/><circle cx="150" cy="150" r="1.5"/><circle cx="250" cy="150" r="1.5"/><circle cx="350" cy="150" r="1.5"/><circle cx="450" cy="150" r="1.5"/><circle cx="550" cy="150" r="1.5"/><circle cx="650" cy="150" r="1.5"/><circle cx="750" cy="150" r="1.5"/><circle cx="850" cy="150" r="1.5"/><circle cx="950" cy="150" r="1.5"/><circle cx="1050" cy="150" r="1.5"/><circle cx="1150" cy="150" r="1.5"/>
+    <circle cx="50" cy="250" r="1.5"/><circle cx="150" cy="250" r="1.5"/><circle cx="250" cy="250" r="1.5"/><circle cx="350" cy="250" r="1.5"/><circle cx="450" cy="250" r="1.5"/><circle cx="550" cy="250" r="1.5"/><circle cx="650" cy="250" r="1.5"/><circle cx="750" cy="250" r="1.5"/><circle cx="850" cy="250" r="1.5"/><circle cx="950" cy="250" r="1.5"/><circle cx="1050" cy="250" r="1.5"/><circle cx="1150" cy="250" r="1.5"/>
+    <circle cx="50" cy="350" r="1.5"/><circle cx="150" cy="350" r="1.5"/><circle cx="250" cy="350" r="1.5"/><circle cx="350" cy="350" r="1.5"/><circle cx="450" cy="350" r="1.5"/><circle cx="550" cy="350" r="1.5"/><circle cx="650" cy="350" r="1.5"/><circle cx="750" cy="350" r="1.5"/><circle cx="850" cy="350" r="1.5"/><circle cx="950" cy="350" r="1.5"/><circle cx="1050" cy="350" r="1.5"/><circle cx="1150" cy="350" r="1.5"/>
+  </g>
+
+  <!-- Title -->
+  <text x="60" y="54" font-family="monospace" font-size="11" fill="#C47A2A" letter-spacing="2" opacity="0.9">CONTEXT WINDOW SIZE EVOLUTION  —  2020 → 2024</text>
+
+  <!-- Bar rows: label area x=60-190, bar area x=200-1080, value x=1090 -->
+  <!-- Row 1: GPT-3, 2020, 2K — bar width 0px (show as 4px sliver) -->
+  <text x="185" y="104" font-family="monospace" font-size="11" fill="#3a2e22" text-anchor="end">GPT-3</text>
+  <text x="185" y="116" font-family="monospace" font-size="9" fill="#2a2016" text-anchor="end">2020</text>
+  <rect x="200" y="92" width="4" height="26" rx="2" fill="#1a1208" stroke="#C47A2A" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="210" y="109" font-family="monospace" font-size="10" fill="#2a2016">2K</text>
+
+  <!-- Row 2: GPT-3.5, 2022, 4K — log bar width 11.2% of 880 = 99px -->
+  <text x="185" y="155" font-family="monospace" font-size="11" fill="#4a3a28" text-anchor="end">GPT-3.5</text>
+  <text x="185" y="167" font-family="monospace" font-size="9" fill="#3a2e22" text-anchor="end">2022</text>
+  <rect x="200" y="143" width="99" height="26" rx="2" fill="#1e1508" stroke="#C47A2A" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="305" y="160" font-family="monospace" font-size="10" fill="#4a3a28">4K</text>
+
+  <!-- Row 3: GPT-4, 2023, 8K — 22.4% = 197px -->
+  <text x="185" y="206" font-family="monospace" font-size="11" fill="#6a5035" text-anchor="end">GPT-4</text>
+  <text x="185" y="218" font-family="monospace" font-size="9" fill="#4a3a28" text-anchor="end">2023</text>
+  <rect x="200" y="194" width="197" height="26" rx="2" fill="#221808" stroke="#C47A2A" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="403" y="211" font-family="monospace" font-size="10" fill="#6a5035">8K</text>
+
+  <!-- Row 4: GPT-4 Turbo, 2023, 128K — 66.9% = 589px -->
+  <text x="185" y="257" font-family="monospace" font-size="11" fill="#9a7848" text-anchor="end">GPT-4 Turbo</text>
+  <text x="185" y="269" font-family="monospace" font-size="9" fill="#6a5035" text-anchor="end">2023</text>
+  <rect x="200" y="245" width="589" height="26" rx="2" fill="url(#bar4)"/>
+  <text x="795" y="262" font-family="monospace" font-size="10" fill="#9a7848">128K</text>
+
+  <!-- Row 5: Claude 3.5, 2024, 200K — 74% = 651px -->
+  <text x="185" y="308" font-family="monospace" font-size="11" fill="#C47A2A" text-anchor="end">Claude 3.5</text>
+  <text x="185" y="320" font-family="monospace" font-size="9" fill="#9a7848" text-anchor="end">2024</text>
+  <rect x="200" y="296" width="651" height="26" rx="2" fill="url(#bar4)"/>
+  <text x="857" y="313" font-family="monospace" font-size="10" fill="#C47A2A">200K</text>
+
+  <!-- Row 6: Gemini 1.5 Pro, 2024, 1M — 100% = 880px, glowing -->
+  <text x="185" y="359" font-family="monospace" font-size="11" fill="#E8A94B" text-anchor="end">Gemini 1.5 Pro</text>
+  <text x="185" y="371" font-family="monospace" font-size="9" fill="#C47A2A" text-anchor="end">2024</text>
+  <!-- Glow layer -->
+  <rect x="200" y="347" width="880" height="26" rx="2" fill="#C47A2A" fill-opacity="0.15" filter="url(#glow-bar)"/>
+  <!-- Bar -->
+  <rect x="200" y="347" width="880" height="26" rx="2" fill="url(#bar5)"/>
+  <!-- End cap glow -->
+  <rect x="1055" y="347" width="25" height="26" rx="2" fill="#E8A94B" fill-opacity="0.5"/>
+  <text x="1092" y="364" font-family="monospace" font-size="11" fill="#E8A94B" font-weight="bold">1M</text>
+
+  <!-- Log scale note -->
+  <text x="600" y="395" font-family="monospace" font-size="9" fill="#3a2e22" text-anchor="middle" letter-spacing="1">LOG SCALE  ·  1M TOKENS ≈ 750,000 WORDS</text>
+
+  <!-- Vignette -->
+  <rect width="1200" height="400" fill="url(#vignette2)"/>
+  <!-- Bottom accent line -->
+  <line x1="0" y1="399" x2="1200" y2="399" stroke="#C47A2A" stroke-width="1" opacity="0.25"/>
+</svg>

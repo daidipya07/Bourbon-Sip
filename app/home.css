@@ -249,6 +249,12 @@
 .nl-input { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px 16px; font-family: var(--font-mono); font-size: 11px; color: var(--text); outline: none; width: 240px; transition: border .2s; }
 .nl-input::placeholder { color: var(--text-faint); }
 .nl-input:focus { border-color: var(--amber); }
+.art-hero { max-width: 780px; margin: 0 auto 28px; padding: 0 28px; }
+.art-hero img { width: 100%; border-radius: 8px; display: block; border: 1px solid var(--border); }
+.vis-block { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px 20px 14px; margin: 32px 0; overflow: hidden; clear: both; }
+.vis-block svg { width: 100%; display: block; }
+.vis-label { font-family: var(--font-mono); font-size: 9px; color: var(--amber); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+.vis-source { font-family: var(--font-mono); font-size: 9px; color: var(--text-faint); margin-top: 10px; text-align: right; }
 .progress-bar { position: fixed; top: var(--nav-h); left: 0; right: 0; height: 2px; z-index: 999; background: transparent; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--amber), var(--amber-pale)); width: 0; transition: width .1s linear; }
 
