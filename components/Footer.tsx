@@ -8,7 +8,7 @@ export default function Footer({ variant = 'full' }: FooterProps) {
   if (variant === 'minimal') {
     return (
       <footer className="footer-minimal">
-        <span className="footer-copy">© 2026 Bourbon Pour Media Inc.</span>
+        <span className="footer-copy">© 2026 Bourbon Pour</span>
         <Link href="/articles" className="footer-link">← Back to Intelligence Desk</Link>
       </footer>
     )
@@ -44,15 +44,15 @@ export default function Footer({ variant = 'full' }: FooterProps) {
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Company</div>
-            <Link href="#">About</Link>
-            <Link href="#">Manifesto</Link>
-            <Link href="#">Careers</Link>
+            <Link href="/about">About</Link>
+            <Link href="/manifesto">Manifesto</Link>
+            <Link href="/rss.xml">RSS Feed</Link>
             <Link href="#">Privacy</Link>
             <Link href="#">Terms</Link>
           </div>
         </div>
         <div className="footer-bar">
-          <div className="footer-copy">© 2026 Bourbon Pour Media Inc. All rights reserved.</div>
+          <div className="footer-copy">© 2026 Bourbon Pour All rights reserved.</div>
           <div className="footer-standard">
             <Link href="/proof-score" style={{ color: 'var(--amber)' }}>
               Proof Score™ — The Intelligence Standard

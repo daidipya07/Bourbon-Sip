@@ -34,7 +34,7 @@ export default function ProofOfWorkPage() {
               Coming Soon
             </h2>
             <p style={{ fontSize: '15px', color: 'var(--text-dim)', marginBottom: '32px', lineHeight: 1.7, maxWidth: '500px', margin: '0 auto 32px' }}>
-              Proof of Work™ is the community intelligence layer currently in development. Submit signals, validate community tips, and earn contributor credit when your intelligence proves accurate.
+              Proof of Work™ is the community intelligence layer currently in development. Submit signals, validate community tips, and receive recognition when your intelligence proves accurate.
             </p>
             <Link href="/#sip" className="btn-primary">Subscribe Free</Link>
           </div>

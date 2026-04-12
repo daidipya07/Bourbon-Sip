@@ -7,7 +7,7 @@ import { getAllArticles } from '@/lib/articles'
 import { articles as legacyArticles } from '@/lib/data/articles'
 
 export const metadata: Metadata = {
-  title: 'Intelligence Desk — Bourbon Pour',
+  title: 'Intelligence Desk',
   description: 'Evidence-scored finance and technology intelligence. Every article carries a Proof Score.',
 }
 
@@ -17,10 +17,25 @@ function proofColor(score: number) {
   return 'var(--red)'
 }
 
-export default function ArticlesPage() {
+const CATEGORIES = [
+  { id: 'all',     label: 'All' },
+  { id: 'markets', label: 'Markets' },
+  { id: 'tech',    label: 'Technology' },
+  { id: 'ai',      label: 'AI / ML' },
+  { id: 'crypto',  label: 'Crypto' },
+  { id: 'macro',   label: 'Macro' },
+]
+
+interface Props {
+  searchParams: Promise<{ category?: string }>
+}
+
+export default async function ArticlesPage({ searchParams }: Props) {
+  const { category } = await searchParams
+  const activeCategory = category && category !== 'all' ? category : null
+
   const mdArticles = getAllArticles()
 
-  // Merge markdown articles with legacy hardcoded ones, deduplicating by slug
   const mdSlugs = new Set(mdArticles.map(a => a.slug))
   const legacyMapped = legacyArticles
     .filter(a => !mdSlugs.has(a.id))
@@ -44,6 +59,9 @@ export default function ArticlesPage() {
     }))
 
   const allArticles = [...mdArticles, ...legacyMapped]
+  const filtered = activeCategory
+    ? allArticles.filter(a => a.category === activeCategory)
+    : allArticles
 
   return (
     <>
@@ -64,33 +82,65 @@ export default function ArticlesPage() {
           </div>
         </div>
 
-        {/* Article grid */}
-        <section style={{ padding: '60px 32px' }}>
+        {/* Category filter */}
+        <div style={{ borderBottom: '1px solid var(--border)', background: 'var(--deep)' }}>
           <div className="container">
-            {allArticles.length === 0 ? (
-              <p style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '14px' }}>
-                No articles yet — drop a .md file in content/daily-sip/ to publish your first.
-              </p>
+            <div style={{ display: 'flex', gap: '4px', paddingBottom: '0', overflowX: 'auto' }}>
+              {CATEGORIES.map(cat => {
+                const isActive = cat.id === 'all' ? !activeCategory : activeCategory === cat.id
+                return (
+                  <Link
+                    key={cat.id}
+                    href={cat.id === 'all' ? '/articles' : `/articles?category=${cat.id}`}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1.5px',
+                      padding: '14px 18px',
+                      color: isActive ? 'var(--amber)' : 'var(--text-faint)',
+                      textDecoration: 'none',
+                      borderBottom: isActive ? '2px solid var(--amber)' : '2px solid transparent',
+                      whiteSpace: 'nowrap',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                  >
+                    {cat.label}
+                  </Link>
+                )
+              })}
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', paddingRight: '4px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
+                  {filtered.length} article{filtered.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Article list */}
+        <section style={{ padding: '40px 32px' }}>
+          <div className="container">
+            {filtered.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '80px 0' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '16px' }}>
+                  No articles in this category yet.
+                </p>
+                <Link href="/articles" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textDecoration: 'none' }}>
+                  ← View all articles
+                </Link>
+              </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {allArticles.map((a, i) => (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {filtered.map((a, i) => (
                   <Link key={a.slug} href={`/articles/${a.slug}`} style={{ textDecoration: 'none' }}>
                     <div
                       className="pour-card fade-up"
-                      style={{
-                        animationDelay: `${i * 0.05}s`,
-                        display: 'grid',
-                        gridTemplateColumns: '1fr auto',
-                        alignItems: 'center',
-                        gap: '24px',
-                      }}
+                      style={{ animationDelay: `${i * 0.04}s` }}
                     >
-                      <div className="pour-card-inner" style={{ padding: '24px' }}>
+                      <div className="pour-card-inner">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <span
-                            className="pour-cat"
-                            style={{ color: a.categoryColor, fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.5px' }}
-                          >
+                          <span style={{ color: a.categoryColor, fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                             {a.categoryLabel}
                           </span>
                           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
@@ -124,7 +174,7 @@ export default function ArticlesPage() {
                 Intelligence like this. <em style={{ color: 'var(--amber)' }}>Every morning.</em>
               </h3>
               <p style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '24px' }}>
-                The Daily Sip delivers evidence-scored intelligence to 47,000+ professionals at 6:30 AM ET. Free forever.
+                The Daily Sip delivers evidence-scored intelligence at 6:30 AM ET. Free, always.
               </p>
               <Link href="/#sip" className="btn-primary">Subscribe Free →</Link>
             </div>

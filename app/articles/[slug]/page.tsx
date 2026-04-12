@@ -235,7 +235,7 @@ export default async function ArticlePage({ params }: Props) {
         {/* Newsletter CTA */}
         <div className="art-nl">
           <h3>Intelligence like this. <em>Every morning.</em></h3>
-          <p>The Daily Sip delivers evidence-scored intelligence to 47,000+ professionals at 6:30 AM ET. Free forever.</p>
+          <p>The Daily Sip delivers evidence-scored intelligence to sharp professionals every morning. Free, always.</p>
           <div className="art-nl-form">
             <EmailSignupForm
               source="article-cta"

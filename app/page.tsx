@@ -207,7 +207,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="sip-trust fade-up" style={{ animationDelay: '.25s' }}>
-                  <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> 47,000+ subscribers</div>
+                  <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Growing daily</div>
                   <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Free forever</div>
                   <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Unsubscribe anytime</div>
                 </div>
