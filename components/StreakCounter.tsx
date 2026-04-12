@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const TARGET = 347
+const TARGET = 5
 
 export default function StreakCounter() {
   const [count, setCount] = useState(0)
@@ -42,7 +42,7 @@ export default function StreakCounter() {
       <div className="sip-streak-fire">🔥</div>
       <div>
         <div className="sip-streak-num">{count}</div>
-        <div className="sip-streak-label">Consecutive issues published</div>
+        <div className="sip-streak-label">Articles published</div>
       </div>
     </div>
   )

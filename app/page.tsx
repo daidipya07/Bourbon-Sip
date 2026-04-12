@@ -242,7 +242,7 @@ export default async function HomePage() {
                     <div className="sip-preview-date">{todayDate}</div>
                   </div>
                   <div className="sip-preview-body">
-                    <div className="sip-issue-num">Issue #347</div>
+                    <div className="sip-issue-num">Latest Issue</div>
                     <h3 className="sip-issue-headline">
                       The $40B Signal Nobody&apos;s Watching, Japan&apos;s Quiet Power Move, and Why Your AI Budget Just Got Audited
                     </h3>
@@ -257,7 +257,7 @@ export default async function HomePage() {
                       </li>
                       <li>
                         <span className="sip-bullet-num">03</span>
-                        <span>Enterprise AI spend audits are coming. Three Fortune 100 CFOs told us their boards are demanding ROI proof by Q3 — and 60% of current AI projects can&apos;t provide it.</span>
+                        <span>Enterprise AI spend audits are coming. Boards are demanding ROI proof by Q3 — and most current AI projects can&apos;t provide it.</span>
                       </li>
                     </ul>
                     <div className="sip-issue-proof">
