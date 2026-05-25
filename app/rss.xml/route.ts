@@ -2,7 +2,7 @@ import { getAllArticles } from '@/lib/articles'
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://bourbonpour.vercel.app'
-  const articles = getAllArticles()
+  const articles = await getAllArticles()
 
   const items = articles
     .map(a => {

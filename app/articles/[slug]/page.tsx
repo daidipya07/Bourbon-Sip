@@ -15,7 +15,7 @@ interface Props {
 
 export async function generateStaticParams() {
   // Slugs from markdown files
-  const mdSlugs = getAllArticleSlugs().map(slug => ({ slug }))
+  const mdSlugs = (await getAllArticleSlugs()).map(slug => ({ slug }))
   // Slugs from legacy hardcoded articles
   const legacySlugs = legacyArticles.map(a => ({ slug: a.id }))
   // Deduplicate
@@ -120,7 +120,7 @@ export default async function ArticlePage({ params }: Props) {
       }
 
   // Related articles (exclude current)
-  const allArticles = getAllArticles()
+  const allArticles = await getAllArticles()
   const relatedMd = allArticles.filter(a => a.slug !== slug).slice(0, 3)
 
   return (

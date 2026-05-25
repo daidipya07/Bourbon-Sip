@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next'
 import { getAllArticles } from '@/lib/articles'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://bourbonpour.vercel.app'
-  const articles = getAllArticles()
+  const articles = await getAllArticles()
 
   const articleUrls: MetadataRoute.Sitemap = articles.map(a => ({
     url: `${siteUrl}/articles/${a.slug}`,

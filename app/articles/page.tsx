@@ -34,7 +34,7 @@ export default async function ArticlesPage({ searchParams }: Props) {
   const { category } = await searchParams
   const activeCategory = category && category !== 'all' ? category : null
 
-  const mdArticles = getAllArticles()
+  const mdArticles = await getAllArticles()
 
   const mdSlugs = new Set(mdArticles.map(a => a.slug))
   const legacyMapped = legacyArticles
@@ -56,6 +56,8 @@ export default async function ArticlesPage({ searchParams }: Props) {
       sourcesCount: a.sources.length,
       excerpt: a.excerpt,
       featured: false,
+      heroImage: undefined as string | undefined,
+      source: 'markdown' as const,
     }))
 
   const allArticles = [...mdArticles, ...legacyMapped]
@@ -136,7 +138,7 @@ export default async function ArticlesPage({ searchParams }: Props) {
                   <Link key={a.slug} href={`/articles/${a.slug}`} style={{ textDecoration: 'none' }}>
                     <div
                       className="pour-card fade-up"
-                      style={{ animationDelay: `${i * 0.04}s` }}
+                      style={{ animationDelay: `${i * 0.04}s`, display: 'grid', gridTemplateColumns: a.heroImage ? '1fr 200px' : '1fr', overflow: 'hidden' }}
                     >
                       <div className="pour-card-inner">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -158,6 +160,11 @@ export default async function ArticlesPage({ searchParams }: Props) {
                           </span>
                         </div>
                       </div>
+                      {a.heroImage && (
+                        <div style={{ overflow: 'hidden' }}>
+                          <img src={a.heroImage} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                      )}
                     </div>
                   </Link>
                 ))}

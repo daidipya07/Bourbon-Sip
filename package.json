@@ -9,8 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.106.1",
+    "@tiptap/extension-image": "^3.23.6",
+    "@tiptap/extension-link": "^3.23.6",
+    "@tiptap/extension-placeholder": "^3.23.6",
+    "@tiptap/pm": "^3.23.6",
+    "@tiptap/react": "^3.23.6",
+    "@tiptap/starter-kit": "^3.23.6",
     "chart.js": "^4.4.1",
     "gray-matter": "^4.0.3",
+    "jose": "^6.2.3",
     "next": "15.3.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

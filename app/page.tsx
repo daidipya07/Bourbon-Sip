@@ -15,7 +15,7 @@ import { articles as legacyArticles } from '@/lib/data/articles'
 
 export default async function HomePage() {
   // Real articles from markdown files
-  const recentArticles = getRecentArticles(5)
+  const recentArticles = await getRecentArticles(5)
 
   // "Latest Pours" — use real articles if available, else fall back to legacy data
   const pours = recentArticles.length > 0
@@ -26,6 +26,7 @@ export default async function HomePage() {
         excerpt: a.excerpt,
         time: a.date,
         slug: a.slug,
+        heroImage: a.heroImage,
       }))
     : legacyArticles.slice(0, 3).map(a => ({
         cat: a.catLabel,
@@ -34,6 +35,7 @@ export default async function HomePage() {
         excerpt: a.excerpt,
         time: a.time,
         slug: a.id,
+        heroImage: undefined as string | undefined,
       }))
 
   // Archive list — real articles if available
@@ -155,6 +157,11 @@ export default async function HomePage() {
               {pours.map((p, i) => (
                 <Link key={i} href={`/articles/${p.slug}`} style={{ textDecoration: 'none' }}>
                   <div className={`pour-card fade-up`} style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
+                    {p.heroImage && (
+                      <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '6px 6px 0 0' }}>
+                        <img src={p.heroImage} alt={p.headline} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      </div>
+                    )}
                     <div className="pour-card-inner">
                       <span className="pour-cat">{p.cat}</span>
                       <span className="pour-proof-badge">{p.proof}-proof</span>
