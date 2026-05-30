@@ -6,8 +6,8 @@ import SparklineChart from '@/components/charts/SparklineChart'
 import ProofBarAnimated from '@/components/ProofBarAnimated'
 
 export const metadata: Metadata = {
-  title: 'Data Pulse™ — Live Market Intelligence | Bourbon Pour',
-  description: 'Real-time market intelligence gauges. AI Spend Velocity, Fed Sentiment Index, Startup Funding Heat, and Macro Stress Score.',
+  title: 'Data Pulse™ — Market Intelligence Dashboard | Bourbon Pour',
+  description: 'Market intelligence indicators — in development. AI Spend Velocity, Fed Sentiment, Startup Funding Heat, and Macro Stress Score.',
 }
 
 export default function DataPulsePage() {
@@ -19,7 +19,7 @@ export default function DataPulsePage() {
         {/* Hero */}
         <div style={{ background: 'var(--deep)', padding: '60px 32px 48px', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
-            <div className="section-eyebrow">Live Intelligence</div>
+            <div className="section-eyebrow">In Development</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 900, marginBottom: '8px' }}>
               Data Pulse™
             </h1>
@@ -36,8 +36,8 @@ export default function DataPulsePage() {
               {/* Main gauge card */}
               <div className="dp-card" style={{ marginBottom: '32px' }}>
                 <div className="dp-header">
-                  <div className="dp-title">Data Pulse™ — Live</div>
-                  <div className="dp-time">Updates every 4 seconds</div>
+                  <div className="dp-title">Data Pulse™</div>
+                  <div className="dp-time">Preview — live data coming soon</div>
                 </div>
                 <GaugeGrid />
                 <SparklineChart />

@@ -86,8 +86,8 @@ export default async function HomePage() {
               </div>
               <div className="fade-up" style={{ display: 'flex', gap: '40px', animationDelay: '.4s' }}>
                 <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>5</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Articles Live</div></div>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>94</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Avg Proof Score</div></div>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>6h</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Radar Refresh</div></div>
+                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>4</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Proof Pillars</div></div>
+                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>Free</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Always</div></div>
               </div>
             </div>
 
@@ -96,7 +96,7 @@ export default async function HomePage() {
               <div className="dp-card">
                 <div className="dp-header">
                   <Link href="/data-pulse" style={{ color: 'var(--amber)' }}>
-                    <div className="dp-title">Data Pulse™ — Live ↗</div>
+                    <div className="dp-title">Data Pulse™ ↗</div>
                   </Link>
                   <div className="dp-time" id="dpTime" />
                 </div>
@@ -118,7 +118,7 @@ export default async function HomePage() {
           <div className="container">
             <div className="section-eyebrow">Disruptor Radar™</div>
             <div className="section-title">Who's moving before the market knows.</div>
-            <div className="section-sub">Pre-market disruption signals detected an average of 38 days before public news. 84% confirmed accuracy rate.</div>
+            <div className="section-sub">Companies we are watching closely — curated signals based on public data, filings, and hiring patterns.</div>
             <div className="radar-grid">
               {radarData.map((c, i) => (
                 <div
@@ -142,7 +142,7 @@ export default async function HomePage() {
             </div>
             <div className="radar-cta">
               <Link href="/disruptor-radar" className="btn-primary" style={{ display: 'inline-block' }}>
-                Access Full Radar — 32 Companies Live →
+                View Full Radar →
               </Link>
             </div>
           </div>
@@ -250,30 +250,39 @@ export default async function HomePage() {
                   </div>
                   <div className="sip-preview-body">
                     <div className="sip-issue-num">Latest Issue</div>
-                    <h3 className="sip-issue-headline">
-                      The $40B Signal Nobody&apos;s Watching, Japan&apos;s Quiet Power Move, and Why Your AI Budget Just Got Audited
-                    </h3>
-                    <ul className="sip-issue-bullets">
-                      <li>
-                        <span className="sip-bullet-num">01</span>
-                        <span>Microsoft&apos;s Azure GPU reservations hit an all-time high last week — but the booking pattern suggests a single customer took 40% of new capacity. The math points to one company, and it&apos;s not OpenAI.</span>
-                      </li>
-                      <li>
-                        <span className="sip-bullet-num">02</span>
-                        <span>The Bank of Japan quietly purchased $2.1B in US tech debt instruments on Thursday. This is the third stealth buy in 8 weeks. No major outlet has connected the dots yet.</span>
-                      </li>
-                      <li>
-                        <span className="sip-bullet-num">03</span>
-                        <span>Enterprise AI spend audits are coming. Boards are demanding ROI proof by Q3 — and most current AI projects can&apos;t provide it.</span>
-                      </li>
-                    </ul>
-                    <div className="sip-issue-proof">
-                      <div className="sip-issue-proof-label">Issue Proof Score</div>
-                      <div className="sip-issue-proof-bar">
-                        <ProofBarAnimated target={94} observeParent />
+                    {recentArticles[0] ? (
+                      <>
+                        <h3 className="sip-issue-headline">{recentArticles[0].title}</h3>
+                        <ul className="sip-issue-bullets">
+                          <li>
+                            <span className="sip-bullet-num">01</span>
+                            <span>{recentArticles[0].excerpt}</span>
+                          </li>
+                          {recentArticles[1] && (
+                            <li>
+                              <span className="sip-bullet-num">02</span>
+                              <span>{recentArticles[1].excerpt}</span>
+                            </li>
+                          )}
+                        </ul>
+                        <div className="sip-issue-proof">
+                          <div className="sip-issue-proof-label">Issue Proof Score</div>
+                          <div className="sip-issue-proof-bar">
+                            <ProofBarAnimated target={recentArticles[0].proofScore} observeParent />
+                          </div>
+                          <div className="sip-issue-proof-val">{recentArticles[0].proofScore}</div>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ padding: '32px 0', textAlign: 'center' }}>
+                        <p style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7, marginBottom: '20px' }}>
+                          Evidence-scored intelligence on finance and technology — delivered to your inbox.
+                        </p>
+                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          First issue coming soon
+                        </p>
                       </div>
-                      <div className="sip-issue-proof-val">94</div>
-                    </div>
+                    )}
                   </div>
                   <Link href="#sip" className="sip-preview-cta" style={{ display: 'block', textAlign: 'center', padding: '14px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid var(--border)' }}>
                     Read full issue — subscribe free ↗
@@ -320,7 +329,7 @@ export default async function HomePage() {
             <h2>Data is the new currency.<br /><em>Most people are still paying in cash.</em></h2>
             <p>Every day, billions of dollars move on information that most people never see. Not because it&apos;s hidden — because it&apos;s buried in noise. Bourbon Pour exists to cut through it. We don&apos;t do hot takes. We don&apos;t hedge. Every piece of intelligence we publish carries a Proof Score — so you know exactly how much weight to give it.</p>
             <p>We built the Disruptor Radar so you&apos;d never be the last to know. We created Data Pulse so you could feel the market moving before it moves. This isn&apos;t a newsletter. It&apos;s an edge.</p>
-            <button className="btn-dark">Read the full manifesto →</button>
+            <Link href="/manifesto" className="btn-dark">Read the full manifesto →</Link>
           </div>
         </section>
 

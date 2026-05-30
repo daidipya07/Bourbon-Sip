@@ -5,8 +5,8 @@ import Footer from '@/components/Footer'
 import { radarData } from '@/lib/data/radar'
 
 export const metadata: Metadata = {
-  title: 'Disruptor Radar™ — Pre-Market Disruption Signals | Bourbon Pour',
-  description: 'Pre-market disruption signals detected an average of 38 days before public news. 84% confirmed accuracy rate.',
+  title: 'Disruptor Radar™ — Companies Worth Watching | Bourbon Pour',
+  description: 'Curated signals on companies worth watching — based on public filings, hiring patterns, and data analysis.',
 }
 
 export default function DisruptorRadarPage() {
@@ -18,19 +18,18 @@ export default function DisruptorRadarPage() {
         {/* Header */}
         <div style={{ background: 'var(--deep)', padding: '60px 32px 48px', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
-            <div className="section-eyebrow">Live Signals</div>
+            <div className="section-eyebrow">Curated Signals</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 900, marginBottom: '12px' }}>
               Disruptor Radar™
             </h1>
             <p style={{ fontSize: '16px', color: 'var(--text-dim)', maxWidth: '560px', lineHeight: 1.7 }}>
-              Who&apos;s moving before the market knows. Pre-market disruption signals detected an average of 38 days before public news. 84% confirmed accuracy rate.
+              Companies worth watching — curated based on public filings, hiring patterns, patent activity, and data signals. Updated as new information becomes available.
             </p>
             <div style={{ display: 'flex', gap: '32px', marginTop: '32px' }}>
               {[
-                { val: '38d', label: 'Avg lead time' },
-                { val: '84%', label: 'Accuracy rate' },
-                { val: '32',  label: 'Companies tracked' },
-                { val: '6h',  label: 'Refresh cycle' },
+                { val: `${radarData.length}`, label: 'Companies tracked' },
+                { val: 'Public', label: 'Data sources' },
+                { val: 'Manual', label: 'Curation' },
               ].map(s => (
                 <div key={s.label}>
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>{s.val}</div>
@@ -46,7 +45,7 @@ export default function DisruptorRadarPage() {
           <div className="container">
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Current signals — Updated every 6 hours
+                Current signals — Manually curated
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {(['hot', 'rising', 'watch'] as const).map(cls => (
