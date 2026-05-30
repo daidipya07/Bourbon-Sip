@@ -53,7 +53,7 @@ const sections = [
   },
   {
     title: 'Contact',
-    body: `For any questions about these terms, contact: bourbonpour@proton.me`,
+    body: `For any questions about these terms, contact: espresso.daily.news@gmail.com`,
   },
 ]
 

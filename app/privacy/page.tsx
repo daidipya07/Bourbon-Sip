@@ -45,7 +45,7 @@ const sections = [
   },
   {
     title: 'Contact',
-    body: `For any privacy-related questions or data deletion requests, contact: bourbonpour@proton.me`,
+    body: `For any privacy-related questions or data deletion requests, contact: espresso.daily.news@gmail.com`,
   },
 ]
 
