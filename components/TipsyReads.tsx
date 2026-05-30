@@ -40,6 +40,11 @@ export default function TipsyReads() {
 
       {/* Feed */}
       <div className="tipsy-feed" id="tipsyFeed">
+        {shown.length === 0 && (
+          <div style={{ padding: '48px 0', textAlign: 'center', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+            Curated reads coming soon — check back shortly.
+          </div>
+        )}
         {shown.map((t, i) => (
           <div className="tipsy-card fade-up" key={i} style={{ animationDelay: `${i * 0.04}s` }}>
             <div className={`tipsy-accent ${t.cat}`} />

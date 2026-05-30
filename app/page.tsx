@@ -78,10 +78,10 @@ export default async function HomePage() {
                 Most people are still paying in cash.
               </p>
               <p className="fade-up" style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7, marginBottom: '32px', maxWidth: '480px', animationDelay: '.25s' }}>
-                Bourbon Pour delivers institutional-grade market intelligence, disruption signals, and evidence-scored analysis — daily. Built for the sharpest minds in finance and technology.
+                Bourbon Pour delivers evidence-scored finance and technology analysis — clearly sourced, proof-rated, and free. Built for curious, critical thinkers.
               </p>
               <div className="fade-up" style={{ display: 'flex', gap: '16px', marginBottom: '40px', animationDelay: '.3s' }}>
-                <Link href="#sip" className="btn-primary">Pour Your First Issue — Free</Link>
+                <Link href="#sip" className="btn-primary">Subscribe Free →</Link>
                 <Link href="#radar" className="btn-ghost">See the Platform</Link>
               </div>
               <div className="fade-up" style={{ display: 'flex', gap: '40px', animationDelay: '.4s' }}>

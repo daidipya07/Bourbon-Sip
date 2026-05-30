@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Bourbon Pour is evidence-scored finance and technology intelligence for professionals who need to understand what is actually happening — not just what was reported.',
+  description: 'Bourbon Pour is a personal, non-commercial project publishing evidence-scored finance and technology analysis.',
 }
 
 export default function AboutPage() {
@@ -19,11 +19,14 @@ export default function AboutPage() {
           <div className="container" style={{ maxWidth: '780px' }}>
             <div className="section-eyebrow">About</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '48px', fontWeight: 900, marginBottom: '16px', lineHeight: 1.1 }}>
-              We built what we wanted to read.
+              Built what I wanted to read.
             </h1>
             <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: '20px', color: 'var(--text-dim)', lineHeight: 1.6 }}>
-              Most financial and technology media tells you what happened. We tell you what it means — and we prove it.
+              A personal project exploring finance and technology through evidence-scored analysis.
             </p>
+            <div style={{ marginTop: '20px', padding: '14px 20px', background: 'rgba(200,150,62,0.08)', border: '1px solid rgba(200,150,62,0.2)', borderRadius: '6px', fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.7 }}>
+              Bourbon Pour is a personal, non-commercial educational project. Nothing here constitutes financial advice. <Link href="/terms" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Terms of Use</Link> · <Link href="/privacy" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Privacy Policy</Link>
+            </div>
           </div>
         </div>
 
