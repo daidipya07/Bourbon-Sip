@@ -21,7 +21,7 @@ async function getHomepageTipsyReads() {
   const supabase = createClient(url, key, { auth: { persistSession: false } })
   const { data } = await supabase
     .from('tipsy_reads')
-    .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight, published_at, created_at')
+    .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight, og_image, published_at, created_at')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(6)

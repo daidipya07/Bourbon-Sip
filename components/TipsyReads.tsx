@@ -52,6 +52,12 @@ export default function TipsyReads({ initialItems = [] }: { initialItems?: any[]
             <div className="tipsy-card fade-up" style={{ animationDelay: `${i * 0.04}s` }}>
               <div className={`tipsy-accent`} style={{ background: catColor[t.category] || '#c8963e' }} />
               <div className="tipsy-body">
+                {t.og_image && (
+                  <div style={{ margin: '-16px -16px 14px', borderRadius: '6px 6px 0 0', overflow: 'hidden', aspectRatio: '16/9' }}>
+                    <img src={t.og_image} alt={t.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                )}
                 <div className="tipsy-top">
                   <span className="tipsy-tag" style={{ color: catColor[t.category] || '#c8963e' }}>
                     {t.category?.toUpperCase()}
