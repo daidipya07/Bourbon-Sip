@@ -12,10 +12,28 @@ import ToastProvider from '@/components/Toast'
 import { getRecentArticles } from '@/lib/articles'
 import { radarData } from '@/lib/data/radar'
 import { articles as legacyArticles } from '@/lib/data/articles'
+import { createClient } from '@supabase/supabase-js'
+
+async function getHomepageTipsyReads() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !key) return []
+  const supabase = createClient(url, key, { auth: { persistSession: false } })
+  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const { data } = await supabase
+    .from('tipsy_reads')
+    .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight')
+    .eq('status', 'published')
+    .gte('published_at', cutoff)
+    .order('published_at', { ascending: false })
+    .limit(6)
+  return data || []
+}
 
 export default async function HomePage() {
   // Real articles from markdown files
   const recentArticles = await getRecentArticles(5)
+  const tipsyItems = await getHomepageTipsyReads()
 
   // "Latest Pours" — use real articles if available, else fall back to legacy data
   const pours = recentArticles.length > 0
@@ -304,7 +322,7 @@ export default async function HomePage() {
               </div>
               {/* Filters are inside TipsyReads component */}
             </div>
-            <TipsyReads />
+            <TipsyReads initialItems={tipsyItems} />
             <div className="tipsy-cta">
               <div>
                 <div className="tipsy-cta-headline">Get Tipsy Reads in your inbox. <em>Free.</em></div>

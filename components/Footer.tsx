@@ -31,7 +31,7 @@ export default function Footer({ variant = 'full' }: FooterProps) {
           <div className="footer-col">
             <div className="footer-col-title">Content</div>
             <Link href="/#sip">The Daily Sip™</Link>
-            <Link href="/#tipsy">Tipsy Reads™</Link>
+            <Link href="/tipsy-reads">Tipsy Reads™</Link>
             <Link href="/articles">Intelligence Desk</Link>
             <Link href="/#pours">Latest Pours</Link>
           </div>
