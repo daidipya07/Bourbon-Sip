@@ -20,9 +20,17 @@ export async function PUT(
   const supabase = getAdminClient()
   const body = await request.json()
 
+  const now = new Date().toISOString()
+  const update: Record<string, unknown> = { ...body, updated_at: now }
+
+  // Set published_at when status first becomes 'published'
+  if (body.status === 'published') {
+    update.published_at = update.published_at || now
+  }
+
   const { data, error } = await supabase
     .from('tipsy_reads')
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update(update)
     .eq('id', id)
     .select()
     .single()

@@ -20,9 +20,15 @@ export async function POST(request: Request) {
   const supabase = getAdminClient()
   const body = await request.json()
 
+  const now = new Date().toISOString()
+  const record: Record<string, unknown> = { ...body }
+  if (body.status === 'published' && !body.published_at) {
+    record.published_at = now
+  }
+
   const { data, error } = await supabase
     .from('tipsy_reads')
-    .insert([body])
+    .insert([record])
     .select()
     .single()
 

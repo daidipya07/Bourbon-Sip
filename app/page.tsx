@@ -19,13 +19,11 @@ async function getHomepageTipsyReads() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !key) return []
   const supabase = createClient(url, key, { auth: { persistSession: false } })
-  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data } = await supabase
     .from('tipsy_reads')
-    .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight')
+    .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight, published_at, created_at')
     .eq('status', 'published')
-    .gte('published_at', cutoff)
-    .order('published_at', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(6)
   return data || []
 }

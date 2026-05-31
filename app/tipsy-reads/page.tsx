@@ -47,13 +47,11 @@ async function getPublishedReads() {
   if (!url || !key) return []
 
   const supabase = createClient(url, key, { auth: { persistSession: false } })
-  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data } = await supabase
     .from('tipsy_reads')
     .select('*')
     .eq('status', 'published')
-    .gte('published_at', cutoff)
-    .order('published_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
   return data || []
 }

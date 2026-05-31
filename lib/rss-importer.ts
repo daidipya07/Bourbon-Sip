@@ -92,7 +92,11 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
   for (const item of top) {
     try {
       const og = await fetchOGData(item.url)
-      const finalTitle = og.title || item.title
+
+      // Prefer the RSS title — it's clean and pre-formatted by the publisher.
+      // OG title often has " | Site Name" appended, or returns paywall junk.
+      // Only fall back to OG title if RSS gave us nothing.
+      const finalTitle = item.title || og.title
       if (isJunkTitle(finalTitle)) { skipped.push(item.url); continue }
 
       const { error } = await supabase.from('tipsy_reads').insert({
