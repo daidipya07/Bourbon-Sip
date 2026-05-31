@@ -37,6 +37,8 @@ export default function AdminTipsyReads() {
   const [loading, setLoading] = useState(true)
   const [publishing, setPublishing] = useState<string | null>(null)
   const [discarding, setDiscarding] = useState<string | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [importMsg, setImportMsg] = useState<string | null>(null)
 
   async function load(status: Status) {
     setLoading(true)
@@ -90,16 +92,31 @@ export default function AdminTipsyReads() {
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#e8dcc8', marginBottom: '2px' }}>RSS Import Pipeline</div>
           <div style={{ fontSize: '12px', color: '#555' }}>Runs automatically at 6 AM ET · 20 RSS feeds · ~25 articles suggested daily</div>
         </div>
-        <button
-          onClick={async () => {
-            const res = await fetch('/api/cron/import-tipsy', {
-              headers: { authorization: `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || ''}` },
-            })
-            if (res.ok) { load('suggested') }
-          }}
-          style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#888', padding: '8px 14px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>
-          Run Now
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+          <button
+            disabled={importing}
+            onClick={async () => {
+              setImporting(true)
+              setImportMsg(null)
+              try {
+                const res = await fetch('/api/admin/run-rss-import', { method: 'POST' })
+                const data = await res.json()
+                if (res.ok) {
+                  setImportMsg(`✓ Imported — ${data.saved ?? 0} new articles suggested`)
+                  load('suggested')
+                } else {
+                  setImportMsg(`✗ Error: ${data.error || 'Unknown error'}`)
+                }
+              } catch {
+                setImportMsg('✗ Network error')
+              }
+              setImporting(false)
+            }}
+            style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: importing ? '#444' : '#888', padding: '8px 14px', borderRadius: '6px', fontSize: '12px', cursor: importing ? 'not-allowed' : 'pointer' }}>
+            {importing ? 'Importing…' : 'Run Now'}
+          </button>
+          {importMsg && <div style={{ fontSize: '11px', color: importMsg.startsWith('✓') ? '#4caf50' : '#e05252' }}>{importMsg}</div>}
+        </div>
       </div>
 
       {/* Tabs */}

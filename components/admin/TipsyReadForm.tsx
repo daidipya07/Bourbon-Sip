@@ -145,7 +145,7 @@ export default function TipsyReadForm({ initialData, mode }: Props) {
         </h1>
         <div style={{ flex: 1 }} />
         {mode === 'edit' && (
-          <button onClick={handleAnalyze} disabled={analyzing || !process.env.NEXT_PUBLIC_OPENAI_ENABLED}
+          <button onClick={handleAnalyze} disabled={analyzing}
             style={{ background: analyzing ? '#333' : '#1a2a1a', border: '1px solid #2a4a2a', color: analyzing ? '#666' : '#4caf50', padding: '9px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: analyzing ? 'not-allowed' : 'pointer' }}>
             {analyzing ? '⟳ Analyzing…' : '✦ AI Analyze'}
           </button>

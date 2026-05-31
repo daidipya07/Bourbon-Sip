@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { verifyAdminToken } from '@/lib/auth'
 import { getAdminClient } from '@/lib/supabase'
 import { analyzeArticle } from '@/lib/tipsy-analyzer'
 
@@ -6,6 +8,12 @@ export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('admin_token')?.value
+  if (!token || !(await verifyAdminToken(token))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { id } = await params
   const supabase = getAdminClient()
 
