@@ -33,24 +33,30 @@ export default function GaugeGrid() {
   }, [])
 
   return (
-    <div className="dp-gauges" id="gauges">
-      {gauges.map((g, i) => (
-        <div className="gauge" key={g.label}>
-          <div className="gauge-label">{g.label}</div>
-          <div className="gauge-val" style={{ color: g.color }}>
-            <span ref={el => { valRefs.current[i] = el }}>{g.base}</span>
-            <span className="gauge-arrow">{g.arrow}</span>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', padding: '8px 12px', background: 'rgba(200,150,62,0.06)', border: '1px solid rgba(200,150,62,0.15)', borderRadius: '5px' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>⚠ Illustrative only</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>— Values are editorial estimates, not real-time data. Not a basis for financial decisions.</span>
+      </div>
+      <div className="dp-gauges" id="gauges">
+        {gauges.map((g, i) => (
+          <div className="gauge" key={g.label}>
+            <div className="gauge-label">{g.label}</div>
+            <div className="gauge-val" style={{ color: g.color }}>
+              <span ref={el => { valRefs.current[i] = el }}>{g.base}</span>
+              <span className="gauge-arrow">{g.arrow}</span>
+            </div>
+            <div className="gauge-bar">
+              <div
+                className="gauge-fill"
+                style={{ width: g.base + '%', background: g.color }}
+                ref={el => { fillRefs.current[i] = el }}
+              />
+            </div>
+            <div className="gauge-note">{g.note}</div>
           </div>
-          <div className="gauge-bar">
-            <div
-              className="gauge-fill"
-              style={{ width: g.base + '%', background: g.color }}
-              ref={el => { fillRefs.current[i] = el }}
-            />
-          </div>
-          <div className="gauge-note">{g.note}</div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

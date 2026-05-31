@@ -43,7 +43,7 @@ export default function DisruptorRadarPage() {
         {/* Radar grid */}
         <section style={{ padding: '60px 32px' }}>
           <div className="container">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Current signals — Manually curated
               </div>
@@ -52,6 +52,10 @@ export default function DisruptorRadarPage() {
                   <span key={cls} className={`radar-badge badge-${cls}`}>{cls.toUpperCase()}</span>
                 ))}
               </div>
+            </div>
+            <div style={{ marginBottom: '28px', padding: '10px 14px', background: 'rgba(200,150,62,0.05)', border: '1px solid rgba(200,150,62,0.12)', borderRadius: '5px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--amber)' }}>Editorial disclaimer: </span>
+              All signals and assessments on this page are independent editorial opinions based on publicly available information. They are speculative in nature and do not constitute factual reporting, investment advice, or endorsement of any company. Always conduct your own research.
             </div>
 
             <div className="radar-grid" style={{ marginBottom: '48px' }}>
