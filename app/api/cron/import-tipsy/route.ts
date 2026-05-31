@@ -16,9 +16,22 @@ const KEYWORDS = [
   'geopolitics', 'china', 'semiconductor', 'energy', 'oil', 'data',
 ]
 
+// Titles returned by paywalls / Cloudflare / redirect pages — skip these
+const JUNK_TITLES = [
+  'just a moment', 'access denied', 'subscribe to read', 'sign in',
+  'please enable javascript', '403 forbidden', '404 not found',
+  'page not found', 'attention required', 'are you a robot',
+  'verify you are human', 'loading...', 'redirecting',
+]
+
 function isRelevant(title: string, description: string): boolean {
   const text = `${title} ${description}`.toLowerCase()
   return KEYWORDS.some(kw => text.includes(kw))
+}
+
+function isJunkTitle(title: string): boolean {
+  const t = title.toLowerCase().trim()
+  return !t || JUNK_TITLES.some(j => t.includes(j)) || t.length < 10
 }
 
 export async function GET(request: Request) {
@@ -98,9 +111,17 @@ export async function GET(request: Request) {
   for (const item of top) {
     try {
       const og = await fetchOGData(item.url)
+      const finalTitle = og.title || item.title
+
+      // Skip paywall/bot-check pages
+      if (isJunkTitle(finalTitle)) {
+        skipped.push(item.url)
+        continue
+      }
+
       const { error } = await supabase.from('tipsy_reads').insert({
         url:              item.url,
-        title:            og.title || item.title,
+        title:            finalTitle,
         publication:      og.siteName || item.publication,
         description:      og.description || item.description,
         og_image:         og.image,
@@ -123,7 +144,7 @@ export async function GET(request: Request) {
     .lt('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
 
   return NextResponse.json({
-    imported: imported.length,
+    saved: imported.length,
     skipped: skipped.length,
     total_feeds: RSS_FEEDS.length,
   })
