@@ -55,7 +55,11 @@ export async function middleware(request: NextRequest) {
     <div class="logo">B</div>
     <h1>Bourbon Pour</h1>
     <div class="bar"></div>
-    <p>We&rsquo;re currently offline for maintenance.<br />Check back soon.</p>
+    <p>
+      This site is temporarily unavailable while we complete
+      required compliance and regulatory review.
+      We appreciate your patience.
+    </p>
   </div>
 </body>
 </html>`,
