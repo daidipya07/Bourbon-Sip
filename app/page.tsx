@@ -11,7 +11,7 @@ import ProofBarAnimated from '@/components/ProofBarAnimated'
 import ToastProvider from '@/components/Toast'
 import { getRecentArticles } from '@/lib/articles'
 import { radarData } from '@/lib/data/radar'
-import { articles as legacyArticles } from '@/lib/data/articles'
+
 import { createClient } from '@supabase/supabase-js'
 
 async function getHomepageTipsyReads() {
@@ -33,42 +33,24 @@ export default async function HomePage() {
   const recentArticles = await getRecentArticles(5)
   const tipsyItems = await getHomepageTipsyReads()
 
-  // "Latest Pours" — use real articles if available, else fall back to legacy data
-  const pours = recentArticles.length > 0
-    ? recentArticles.slice(0, 3).map(a => ({
-        cat: a.categoryLabel,
-        proof: a.proofScore,
-        headline: a.title,
-        excerpt: a.excerpt,
-        time: a.date,
-        slug: a.slug,
-        heroImage: a.heroImage,
-      }))
-    : legacyArticles.slice(0, 3).map(a => ({
-        cat: a.catLabel,
-        proof: a.proof,
-        headline: a.headline,
-        excerpt: a.excerpt,
-        time: a.time,
-        slug: a.id,
-        heroImage: undefined as string | undefined,
-      }))
+  // "Latest Pours" — real articles only
+  const pours = recentArticles.slice(0, 3).map(a => ({
+    cat: a.categoryLabel,
+    proof: a.proofScore,
+    headline: a.title,
+    excerpt: a.excerpt,
+    time: a.date,
+    slug: a.slug,
+    heroImage: a.heroImage,
+  }))
 
-  // Archive list — real articles if available
-  const archiveItems = recentArticles.length > 0
-    ? recentArticles.map(a => ({
-        date: new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        headline: a.title,
-        proof: a.proofScore,
-        slug: a.slug,
-      }))
-    : [
-        { date: 'Mar 24', headline: 'Why Goldman Just Quietly Doubled Its AI Infrastructure Budget', proof: 91, slug: 'ai-infrastructure-bet' },
-        { date: 'Mar 21', headline: "The Sovereign Wealth Fund That's Buying Every AI Startup's Secondary Shares", proof: 88, slug: 'fed-silence' },
-        { date: 'Mar 20', headline: "Three CFOs Told Us the Same Thing About AI ROI — And It's Not Good", proof: 93, slug: 'ai-infrastructure-bet' },
-        { date: 'Mar 19', headline: "Japan's $400B Carry Trade Unwind Is Closer Than You Think", proof: 86, slug: 'fed-silence' },
-        { date: 'Mar 18', headline: 'The Defense Tech Company That Just Stole 14 Engineers From Lockheed', proof: 82, slug: 'ai-infrastructure-bet' },
-      ]
+  // Archive list — real articles only
+  const archiveItems = recentArticles.map(a => ({
+    date: new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    headline: a.title,
+    proof: a.proofScore,
+    slug: a.slug,
+  }))
 
   const todayDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'short', day: 'numeric', year: 'numeric',
@@ -101,7 +83,7 @@ export default async function HomePage() {
                 <Link href="#radar" className="btn-ghost">See the Platform</Link>
               </div>
               <div className="fade-up" style={{ display: 'flex', gap: '40px', animationDelay: '.4s' }}>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>5</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Articles Live</div></div>
+                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>{recentArticles.length || '—'}</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Articles Live</div></div>
                 <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>4</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Proof Pillars</div></div>
                 <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>Free</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Always</div></div>
               </div>
@@ -236,7 +218,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="fade-up" style={{ animationDelay: '.3s' }}>
-                  <StreakCounter />
+                  <StreakCounter target={recentArticles.length} />
                 </div>
 
                 <div className="fade-up" style={{ animationDelay: '.35s' }}>

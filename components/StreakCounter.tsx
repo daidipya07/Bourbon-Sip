@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const TARGET = 5
-
-export default function StreakCounter() {
+export default function StreakCounter({ target }: { target: number }) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const done = useRef(false)
@@ -20,9 +18,9 @@ export default function StreakCounter() {
             done.current = true
             let cur = 0
             const iv = setInterval(() => {
-              cur += Math.ceil((TARGET - cur) * 0.06) + 1
-              if (cur >= TARGET) {
-                cur = TARGET
+              cur += Math.ceil((target - cur) * 0.06) + 1
+              if (cur >= target) {
+                cur = target
                 clearInterval(iv)
               }
               setCount(cur)
@@ -35,7 +33,7 @@ export default function StreakCounter() {
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [target])
 
   return (
     <div className="sip-streak" ref={ref}>

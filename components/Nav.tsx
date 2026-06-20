@@ -83,7 +83,7 @@ export default function Nav({
       </Link>
       <div className="nav-links">
         <Link href="/#sip">Daily Sip</Link>
-        <Link href="/#tipsy">Tipsy Reads</Link>
+        <Link href="/tipsy-reads">Tipsy Reads</Link>
         <Link href="/articles">Intelligence Desk</Link>
         <Link href="/data-pulse">Data Pulse</Link>
         <Link href="/#radar">Disruptor Radar</Link>

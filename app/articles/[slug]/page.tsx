@@ -183,10 +183,6 @@ export default async function ArticlePage({ params }: Props) {
               <Link href="/proof-score">How Proof Score works →</Link>
             </div>
           </div>
-          <div className="share-bar">
-            <button className="share-btn">Share ↗</button>
-            <button className="share-btn">Save ✦</button>
-          </div>
         </div>
 
         {/* Article body */}
