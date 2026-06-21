@@ -46,6 +46,18 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
+      {/* Quick nav */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '40px', flexWrap: 'wrap' }}>
+        {[
+          { label: 'Tipsy Reads', href: '/admin/tipsy-reads' },
+          { label: 'Weekly Signals', href: '/admin/weekly-signals' },
+        ].map(l => (
+          <Link key={l.href} href={l.href} style={{ fontFamily: 'monospace', fontSize: '12px', color: '#c8963e', border: '1px solid #c8963e33', borderRadius: '5px', padding: '8px 16px', textDecoration: 'none' }}>
+            {l.label} →
+          </Link>
+        ))}
+      </div>
+
       {/* Actions */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>Articles</h2>

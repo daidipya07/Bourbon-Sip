@@ -1,80 +1,111 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
-import GaugeGrid from '@/components/GaugeGrid'
-import SparklineChart from '@/components/charts/SparklineChart'
-import ProofBarAnimated from '@/components/ProofBarAnimated'
+import MarketStrip from '@/components/data-pulse/MarketStrip'
+import RegimeIndicator from '@/components/data-pulse/RegimeIndicator'
+import StressGauges from '@/components/data-pulse/StressGauges'
+import ProofLeaderboard from '@/components/data-pulse/ProofLeaderboard'
+import WeeklySignalBlock from '@/components/data-pulse/WeeklySignalBlock'
+import { getMarketSnapshot } from '@/lib/market-data'
 
 export const metadata: Metadata = {
-  title: 'Data Pulse™ — Market Intelligence Dashboard | Bourbon Pour',
-  description: 'Market intelligence indicators — in development. AI Spend Velocity, Fed Sentiment, Startup Funding Heat, and Macro Stress Score.',
+  title: 'Data Pulse™ — Live Market Intelligence | Bourbon Pour',
+  description: 'Real-time macro regime classification, stress indicators sourced from FRED & CBOE, and AI-generated weekly market signal. Editorial market intelligence.',
 }
 
-export default function DataPulsePage() {
+// Revalidate every 15 minutes
+export const revalidate = 900
+
+const REGIME_COLOR: Record<string, string> = {
+  'risk-on':   '#059669',
+  'risk-off':  '#e05252',
+  'reflation': '#c8963e',
+  'deflation': '#4a9eff',
+}
+
+const REGIME_LABEL: Record<string, string> = {
+  'risk-on':   'Risk-On',
+  'risk-off':  'Risk-Off',
+  'reflation': 'Reflation',
+  'deflation': 'Deflation',
+}
+
+export default async function DataPulsePage() {
+  const snapshot = await getMarketSnapshot()
+  const regime = snapshot.regime
+  const regimeColor = REGIME_COLOR[regime] ?? '#888'
+  const regimeLabel = REGIME_LABEL[regime] ?? regime
+
   return (
     <>
       <Nav variant="tool" backHref="/" backLabel="← Home" />
 
+      {/* Live market ticker strip */}
+      <MarketStrip initial={snapshot} />
+
       <main className="page-main">
         {/* Hero */}
-        <div style={{ background: 'var(--deep)', padding: '60px 32px 48px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--deep)', padding: '52px 32px 40px', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
-            <div className="section-eyebrow">In Development</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>
+              Live · Updated every 15 min
+            </div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 900, marginBottom: '8px' }}>
               Data Pulse™
             </h1>
             <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: '18px', color: 'var(--text-dim)', marginBottom: '0' }}>
-              Feel the market moving before it moves.
+              Institutional-grade macro intelligence — powered by FRED, CBOE, and GPT-4o.
             </p>
           </div>
         </div>
 
-        <section style={{ padding: '60px 32px' }}>
+        <section style={{ padding: '48px 32px 80px' }}>
           <div className="container">
-            <div style={{ maxWidth: '860px' }}>
+            <div style={{ maxWidth: '900px' }}>
 
-              {/* Main gauge card */}
-              <div className="dp-card" style={{ marginBottom: '32px' }}>
-                <div className="dp-header">
-                  <div className="dp-title">Data Pulse™</div>
-                  <div className="dp-time">Preview — live data coming soon</div>
+              {/* Macro Regime */}
+              <RegimeIndicator
+                regime={regime}
+                regimeLabel={regimeLabel}
+                regimeColor={regimeColor}
+              />
+
+              {/* Two-column layout: Stress Gauges + Leaderboard */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+
+                {/* Left: Stress Indicators */}
+                <div style={{ background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: '10px', padding: '28px' }}>
+                  <StressGauges data={snapshot} />
                 </div>
-                <GaugeGrid />
-                <SparklineChart />
-                <div className="dp-proof">
-                  <div className="dp-proof-label">
-                    <span>Methodology Proof Score™</span>
-                    <span>91 / 100</span>
-                  </div>
-                  <ProofBarAnimated target={91} delay={600} />
+
+                {/* Right: Proof Score Leaderboard */}
+                <div style={{ background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: '10px', padding: '28px' }}>
+                  <Suspense fallback={
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#333', padding: '20px 0' }}>
+                      Loading leaderboard…
+                    </div>
+                  }>
+                    <ProofLeaderboard />
+                  </Suspense>
                 </div>
               </div>
 
-              {/* What each gauge means */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '48px' }}>
-                {[
-                  { name: 'AI Spend Velocity', color: 'var(--green)', desc: 'Aggregated enterprise AI budget allocation signals from procurement filings, hiring data, and cloud spend patterns. A score above 75 indicates accelerating spend cycles.' },
-                  { name: 'Fed Sentiment Index', color: 'var(--amber)', desc: 'Composite of Fed communication frequency, language analysis, and bond market positioning. Neutral (50) suggests balanced risk; extremes signal policy pivots.' },
-                  { name: 'Startup Funding Heat', color: 'var(--green)', desc: 'Venture deal flow, valuation multiples, and secondary market premiums aggregated across sectors. Tracks forward-looking risk appetite in private markets.' },
-                  { name: 'Macro Stress Score', color: 'var(--red)', desc: 'Inverse stress index — lower scores indicate higher stress. Combines credit spreads, volatility surfaces, and cross-asset correlation breakdowns.' },
-                ].map(g => (
-                  <div key={g.name} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '24px' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: g.color, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{g.name}</div>
-                    <p style={{ fontSize: '13px', color: 'var(--text-dim)', lineHeight: 1.6 }}>{g.desc}</p>
-                  </div>
-                ))}
+              {/* Weekly Signal — full width */}
+              <Suspense fallback={
+                <div style={{ background: 'linear-gradient(135deg, rgba(200,150,62,0.08), rgba(200,150,62,0.02))', border: '1px solid rgba(200,150,62,0.15)', borderRadius: '10px', padding: '32px', fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#333' }}>
+                  Loading weekly signal…
+                </div>
+              }>
+                <WeeklySignalBlock />
+              </Suspense>
+
+              {/* Data sources footnote */}
+              <div style={{ marginTop: '40px', padding: '16px 20px', background: '#080808', border: '1px solid #111', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#2a2a2a', lineHeight: 1.8 }}>
+                <span style={{ color: '#333' }}>Data sources:</span> FRED (Federal Reserve Economic Data) · CBOE (VIX) · Finnhub (equity/commodity quotes) · OpenAI GPT-4o-mini (weekly signal generation)
+                &nbsp;·&nbsp; All data is for editorial and informational purposes only · Not financial advice · Not real-time for FRED series
               </div>
 
-              {/* Coming Soon */}
-              <div style={{ background: 'linear-gradient(135deg, rgba(196,122,42,0.12), rgba(196,122,42,0.04))', border: '1px solid var(--border)', borderRadius: '8px', padding: '40px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Coming Soon</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-                  Expanded Dashboard — More gauges + sector overlays
-                </h3>
-                <p style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '24px', maxWidth: '440px', margin: '0 auto 24px' }}>
-                  Energy Stress, Credit Spread Index, sector-specific heat maps, and custom alert thresholds — currently in development.
-                </p>
-              </div>
             </div>
           </div>
         </section>

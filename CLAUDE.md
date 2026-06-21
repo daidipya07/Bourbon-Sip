@@ -8,7 +8,7 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 
 **Bourbon Pour** (`bourbonpour.vercel.app`) is a personal, non-commercial finance and technology intelligence site. Built by the repo owner as a hobby project.
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Supabase (PostgreSQL) · Vercel · Mailchimp · Finnhub · OpenAI gpt-4o-mini
+**Stack:** Next.js 15 (App Router) · TypeScript · Supabase (PostgreSQL) · Vercel · Mailchimp · Finnhub · FRED API · OpenAI gpt-4o-mini
 
 **Key constraint:** Site is personal and non-commercial. No monetization, no paid tiers, no business entity. Owner is on F1 OPT — this must remain non-commercial.
 
@@ -16,12 +16,7 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 
 ## Current Site Status
 
-**SITE IS OFFLINE** — `middleware.ts` blocks all public routes and shows "This site is currently unavailable." Admin panel still works at `/admin`.
-
-To bring back online: `git revert fe886b9 && git push`
-To keep offline: leave middleware as-is.
-
-Reason for takedown: compliance review (employment policy + F1 OPT). Do not make the site public again without owner confirmation.
+**SITE IS ONLINE** — Compliance review completed. Non-commercial, editorial, F1 OPT safe. Middleware only protects `/admin` routes. Goldman OBA disclosure pending filing by owner.
 
 ---
 
@@ -34,7 +29,7 @@ Reason for takedown: compliance review (employment policy + F1 OPT). Do not make
 | `/articles` | `app/articles/page.tsx` | Lists all articles |
 | `/articles/[slug]` | `app/articles/[slug]/page.tsx` | Markdown article detail |
 | `/tipsy-reads` | `app/tipsy-reads/page.tsx` | Full Tipsy Reads page, Supabase data |
-| `/data-pulse` | `app/data-pulse/page.tsx` | Preview only — hardcoded illustrative data |
+| `/data-pulse` | `app/data-pulse/page.tsx` | Live — real FRED + Finnhub data, AI weekly signal |
 | `/disruptor-radar` | `app/disruptor-radar/page.tsx` | Static hardcoded radar entries |
 | `/proof-score` | `app/proof-score/page.tsx` | Methodology page, static |
 | `/about` | `app/about/page.tsx` | Static |
@@ -53,6 +48,11 @@ Reason for takedown: compliance review (employment policy + F1 OPT). Do not make
 | `POST /api/admin/tipsy-reads/[id]/analyze` | OpenAI analysis — requires admin cookie |
 | `POST /api/admin/run-rss-import` | Triggers RSS import — requires admin cookie |
 | `GET /api/cron/import-tipsy` | Vercel cron — requires CRON_SECRET header |
+| `GET /api/cron/weekly-signal` | Vercel cron every Friday 9 AM ET — generates draft AI signal |
+| `GET /api/data-pulse` | Returns MarketSnapshot JSON (FRED + Finnhub), 15-min cache |
+| `GET /api/admin/weekly-signals` | List all weekly signals |
+| `POST /api/admin/weekly-signals` | Trigger manual signal generation |
+| `PUT /api/admin/weekly-signals/[id]` | Update signal status (draft → published sets published_at) |
 | `POST /api/admin/fetch-og` | Fetches OG data for a URL |
 
 ### Auth
@@ -74,6 +74,10 @@ Status values: `suggested` → `published` | `discarded`
 ```sql
 UPDATE tipsy_reads SET published_at = created_at WHERE status = 'published' AND published_at IS NULL;
 ```
+
+**Table: `weekly_signals`**
+Key columns: `id, week_of (date unique), signal_text, data_snapshot (jsonb), regime, status, generated_at, published_at`
+Status values: `draft` → `published` | `discarded`. Created via SQL in `supabase-weekly-signals.sql`.
 
 **Table: `articles`** — Supabase-stored articles (editor-published via Tiptap CMS)
 
@@ -121,7 +125,12 @@ Both sources merged and deduped in `lib/articles.ts`.
 | `Footer.tsx` | Server | full / minimal variants |
 | `TipsyReads.tsx` | Client | Homepage Tipsy Reads section with category filters + og_image |
 | `TipsyCard.tsx` | Client | Card + CellarRow used on /tipsy-reads page |
-| `GaugeGrid.tsx` | Client | Data Pulse gauges — ILLUSTRATIVE ONLY, not real data |
+| `GaugeGrid.tsx` | Client | Legacy Data Pulse gauges — ILLUSTRATIVE ONLY, no longer used on /data-pulse |
+| `components/data-pulse/MarketStrip.tsx` | Client | Live ticker strip, polls /api/data-pulse every 15 min |
+| `components/data-pulse/RegimeIndicator.tsx` | Client | Current macro regime with colored dot + scale |
+| `components/data-pulse/StressGauges.tsx` | Client | 7 FRED stress indicators with low/medium/high badges |
+| `components/data-pulse/ProofLeaderboard.tsx` | Server | Tipsy Reads aggregated by publication, auto-ranking |
+| `components/data-pulse/WeeklySignalBlock.tsx` | Server | Latest published weekly signal from Supabase |
 | `EmailSignupForm.tsx` | Client | Mailchimp signup, used in 4 places |
 | `Ticker.tsx` | Client | Homepage stock ticker strip |
 | `StreakCounter.tsx` | Client | Article count — TARGET hardcoded to 5, needs dynamic fix |
@@ -146,6 +155,7 @@ MAILCHIMP_DC=
 FINNHUB_API_KEY=
 OPENAI_API_KEY=
 CRON_SECRET=
+FRED_API_KEY=        # free at fred.stlouisfed.org/docs/api/api_key.html
 ```
 
 ---
@@ -162,7 +172,6 @@ CRON_SECRET=
 - `lib/data/articles.ts` — legacy data, should be removed once markdown is sole source
 
 ### Bigger features not yet built
-- Data Pulse — currently illustrative/fake. Could use FRED API (free) + Finnhub (key exists) for real data
 - Disruptor Radar — static hardcoded, no admin UI to update signals
 - Tipsy Reads category filter on `/tipsy-reads` — URL param `?category=` not handled
 - Article read time is hardcoded "6 min" on cards

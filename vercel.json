@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/import-tipsy",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-signal",
+      "schedule": "0 13 * * 5"
     }
   ],
   "headers": [
