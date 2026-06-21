@@ -2,8 +2,6 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Ticker from '@/components/Ticker'
-import GaugeGrid from '@/components/GaugeGrid'
-import SparklineChart from '@/components/charts/SparklineChart'
 import StreakCounter from '@/components/StreakCounter'
 import TipsyReads from '@/components/TipsyReads'
 import EmailSignupForm from '@/components/EmailSignupForm'
@@ -11,7 +9,6 @@ import ProofBarAnimated from '@/components/ProofBarAnimated'
 import ToastProvider from '@/components/Toast'
 import { getRecentArticles } from '@/lib/articles'
 import { radarData } from '@/lib/data/radar'
-
 import { createClient } from '@supabase/supabase-js'
 
 async function getHomepageTipsyReads() {
@@ -29,32 +26,18 @@ async function getHomepageTipsyReads() {
 }
 
 export default async function HomePage() {
-  // Real articles from markdown files
   const recentArticles = await getRecentArticles(5)
   const tipsyItems = await getHomepageTipsyReads()
 
-  // "Latest Pours" — real articles only
-  const pours = recentArticles.slice(0, 3).map(a => ({
-    cat: a.categoryLabel,
-    proof: a.proofScore,
-    headline: a.title,
-    excerpt: a.excerpt,
-    time: a.date,
-    slug: a.slug,
-    heroImage: a.heroImage,
-  }))
+  const featured = recentArticles[0] ?? null
+  const pours = recentArticles.slice(0, 3)
 
-  // Archive list — real articles only
   const archiveItems = recentArticles.map(a => ({
     date: new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     headline: a.title,
     proof: a.proofScore,
     slug: a.slug,
   }))
-
-  const todayDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'short', day: 'numeric', year: 'numeric',
-  })
 
   return (
     <>
@@ -80,57 +63,208 @@ export default async function HomePage() {
               </p>
               <div className="fade-up" style={{ display: 'flex', gap: '16px', marginBottom: '40px', animationDelay: '.3s' }}>
                 <Link href="#sip" className="btn-primary">Subscribe Free →</Link>
-                <Link href="#radar" className="btn-ghost">See the Platform</Link>
+                <Link href="/articles" className="btn-ghost">Read Articles</Link>
               </div>
               <div className="fade-up" style={{ display: 'flex', gap: '40px', animationDelay: '.4s' }}>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>{recentArticles.length || '—'}</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Articles Live</div></div>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>4</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Proof Pillars</div></div>
-                <div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>Free</div><div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Always</div></div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>{recentArticles.length || '—'}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Articles</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>{tipsyItems.length > 0 ? tipsyItems.length + '+' : '—'}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Tipsy Reads</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 500, color: 'var(--amber-light)' }}>Free</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>Always</div>
+                </div>
               </div>
             </div>
 
-            {/* Data Pulse preview card */}
+            {/* Featured article card — replaces fake gauge */}
             <div className="hero-right fade-up" style={{ animationDelay: '.35s' }}>
-              <div className="dp-card">
-                <div className="dp-header">
-                  <Link href="/data-pulse" style={{ color: 'var(--amber)' }}>
-                    <div className="dp-title">Data Pulse™ ↗</div>
-                  </Link>
-                  <div className="dp-time" id="dpTime" />
-                </div>
-                <GaugeGrid />
-                <SparklineChart />
-                <div className="dp-proof">
-                  <div className="dp-proof-label">
-                    <span>Proof Score™</span><span>91 / 100</span>
+              {featured ? (
+                <Link href={`/articles/${featured.slug}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ background: '#111', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+                    {featured.heroImage && (
+                      <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
+                        <img src={featured.heroImage} alt={featured.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      </div>
+                    )}
+                    <div style={{ padding: '28px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', background: 'rgba(200,150,62,0.12)', padding: '3px 10px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          {featured.categoryLabel}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
+                          {new Date(featured.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 800, color: 'var(--text)', lineHeight: 1.3, marginBottom: '10px' }}>
+                        {featured.title}
+                      </h3>
+                      <p style={{ fontSize: '13px', color: 'var(--text-dim)', lineHeight: 1.6, marginBottom: '20px' }}>
+                        {featured.excerpt}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ flex: 1, marginRight: '16px' }}>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            Proof Score™
+                          </div>
+                          <ProofBarAnimated target={featured.proofScore} observeParent />
+                        </div>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--amber)' }}>
+                          {featured.proofScore}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      Read article →
+                    </div>
                   </div>
-                  <ProofBarAnimated target={91} delay={600} />
+                </Link>
+              ) : (
+                <div className="dp-card">
+                  <div className="dp-header">
+                    <div className="dp-title">Bourbon Pour™</div>
+                  </div>
+                  <div style={{ padding: '32px 0', textAlign: 'center' }}>
+                    <p style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7 }}>
+                      Evidence-scored intelligence on finance and technology.
+                    </p>
+                  </div>
                 </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ── LATEST ARTICLES ──────────────────────────────── */}
+        <section id="articles" style={{ padding: '80px 32px', background: 'var(--deep)' }}>
+          <div className="container">
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <div className="section-eyebrow">Latest Intelligence</div>
+                <div className="section-title" style={{ marginBottom: 0 }}>Recent Articles</div>
+              </div>
+              <Link href="/articles" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--amber)', textDecoration: 'none', border: '1px solid rgba(200,150,62,0.3)', padding: '8px 16px', borderRadius: '5px' }}>
+                View all articles →
+              </Link>
+            </div>
+            <div className="pours-grid">
+              {pours.length > 0 ? pours.map((p, i) => (
+                <Link key={p.slug} href={`/articles/${p.slug}`} style={{ textDecoration: 'none' }}>
+                  <div className="pour-card fade-up" style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
+                    {p.heroImage && (
+                      <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '6px 6px 0 0' }}>
+                        <img src={p.heroImage} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      </div>
+                    )}
+                    <div className="pour-card-inner">
+                      <span className="pour-cat">{p.categoryLabel}</span>
+                      <span className="pour-proof-badge">{p.proofScore}-proof</span>
+                      <h3 className="pour-headline">{p.title}</h3>
+                      <p className="pour-excerpt">{p.excerpt}</p>
+                      <div className="pour-meta">
+                        <span>{new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span>{p.readTime || '6 min'}</span>
+                      </div>
+                      <div className="pour-score-bar">
+                        <div className="pour-score-fill" style={{ width: p.proofScore + '%', background: 'linear-gradient(90deg, var(--amber), var(--amber-pale))', transition: 'width 1s ease' }} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              )) : (
+                <div style={{ gridColumn: '1/-1', padding: '60px 0', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-faint)' }}>
+                  First articles coming soon.
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ── TIPSY READS™ ─────────────────────────────────── */}
+        <section className="tipsy-section" id="tipsy">
+          <div className="container">
+            <div className="tipsy-header">
+              <div className="tipsy-header-left">
+                <div className="section-eyebrow">Tipsy Reads™</div>
+                <div className="section-title" style={{ marginBottom: '4px' }}>Quick pours. Sharp takes.</div>
+                <div className="section-sub" style={{ marginBottom: 0 }}>Bite-sized market intelligence you&apos;ll actually want to share. Updated throughout the day.</div>
+              </div>
+            </div>
+            <TipsyReads initialItems={tipsyItems} />
+            <div className="tipsy-cta">
+              <div>
+                <div className="tipsy-cta-headline">Get Tipsy Reads in your inbox. <em>Free.</em></div>
+                <div className="tipsy-cta-sub">The best bites from the week — every Friday at noon ET.</div>
+              </div>
+              <div className="tipsy-cta-form">
+                <EmailSignupForm
+                  source="tipsy-reads"
+                  placeholder="your@email.com"
+                  buttonLabel="Subscribe"
+                  inputClassName="sip-input"
+                  buttonClassName="sip-submit"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── DATA PULSE TEASER ────────────────────────────── */}
+        <section style={{ background: 'var(--deep)', padding: '80px 32px', borderTop: '1px solid var(--border)' }}>
+          <div className="container">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
+              <div>
+                <div className="section-eyebrow">Data Pulse™</div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '36px', fontWeight: 800, lineHeight: 1.2, marginBottom: '16px' }}>
+                  Feel the market moving<br /><em>before it moves.</em>
+                </h2>
+                <p style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
+                  Live macro regime classification, FRED stress indicators, and an AI-generated weekly signal — reviewed and published every Friday.
+                </p>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '32px' }}>
+                  {['VIX · Fear Index', 'Yield Curve', 'Credit Spreads', 'Macro Regime', 'Weekly Signal'].map(label => (
+                    <span key={label} style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', background: 'rgba(200,150,62,0.08)', border: '1px solid rgba(200,150,62,0.2)', padding: '4px 10px', borderRadius: '4px' }}>
+                      {label}
+                    </span>
+                  ))}
+                </div>
+                <Link href="/data-pulse" className="btn-primary">Open Data Pulse →</Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {[
+                  { label: 'Macro Regime', desc: 'Rules-based regime classification updated every 15 min' },
+                  { label: 'Stress Gauges', desc: 'VIX, credit spreads, yield curve from FRED' },
+                  { label: 'Weekly Signal', desc: 'AI-drafted, human-reviewed every Friday 9 AM ET' },
+                  { label: 'Proof Leaderboard', desc: 'Publication credibility ranked by Proof Score™' },
+                ].map(item => (
+                  <div key={item.label} style={{ background: '#111', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{item.label}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{item.desc}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* ── DISRUPTOR RADAR ──────────────────────────────── */}
-        <section className="radar-section" id="radar" style={{ background: 'var(--deep)', padding: '80px 32px' }}>
+        <section className="radar-section" id="radar" style={{ padding: '80px 32px' }}>
           <div className="container">
             <div className="section-eyebrow">Disruptor Radar™</div>
-            <div className="section-title">Who's moving before the market knows.</div>
+            <div className="section-title">Who&apos;s moving before the market knows.</div>
             <div className="section-sub">Companies we are watching closely — curated signals based on public data, filings, and hiring patterns.</div>
             <div className="radar-grid">
-              {radarData.map((c, i) => (
-                <div
-                  key={c.name}
-                  className={`radar-card ${c.cls} fade-up`}
-                  style={{ animationDelay: `${0.1 + i * 0.06}s` }}
-                >
+              {radarData.slice(0, 6).map((c, i) => (
+                <div key={c.name} className={`radar-card ${c.cls} fade-up`} style={{ animationDelay: `${0.1 + i * 0.06}s` }}>
                   <div className="radar-tag">{c.sector}</div>
                   <div className="radar-name">{c.name}</div>
                   <div className="radar-signal">{c.signal}</div>
                   <div className="radar-footer">
-                    <span className="radar-proof" style={{
-                      color: c.cls === 'hot' ? 'var(--red)' : c.cls === 'rising' ? 'var(--amber)' : 'var(--blue)'
-                    }}>
+                    <span className="radar-proof" style={{ color: c.cls === 'hot' ? 'var(--red)' : c.cls === 'rising' ? 'var(--amber)' : 'var(--blue)' }}>
                       {c.proof}
                     </span>
                     <span className={`radar-badge badge-${c.cls}`}>{c.badge}</span>
@@ -146,42 +280,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── LATEST POURS ─────────────────────────────────── */}
-        <section id="pours" style={{ padding: '80px 32px' }}>
-          <div className="container">
-            <div className="section-eyebrow">Latest Intelligence</div>
-            <div className="section-title" style={{ marginBottom: '40px' }}>Today&apos;s Pours</div>
-            <div className="pours-grid">
-              {pours.map((p, i) => (
-                <Link key={i} href={`/articles/${p.slug}`} style={{ textDecoration: 'none' }}>
-                  <div className={`pour-card fade-up`} style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
-                    {p.heroImage && (
-                      <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '6px 6px 0 0' }}>
-                        <img src={p.heroImage} alt={p.headline} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                      </div>
-                    )}
-                    <div className="pour-card-inner">
-                      <span className="pour-cat">{p.cat}</span>
-                      <span className="pour-proof-badge">{p.proof}-proof</span>
-                      <h3 className="pour-headline">{p.headline}</h3>
-                      <p className="pour-excerpt">{p.excerpt}</p>
-                      <div className="pour-meta">
-                        <span>{p.time}</span>
-                        <span>Read · 6 min</span>
-                      </div>
-                      <div className="pour-score-bar">
-                        <div className="pour-score-fill" style={{ width: p.proof + '%', background: 'linear-gradient(90deg, var(--amber), var(--amber-pale))', transition: 'width 1s ease' }} />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── THE DAILY SIP™ ───────────────────────────────── */}
-        <section className="sip-section" id="sip">
+        {/* ── THE DAILY SIP™ EMAIL SIGNUP ──────────────────── */}
+        <section className="sip-section" id="sip" style={{ background: 'var(--deep)' }}>
           <div className="container">
             <div className="sip-layout">
               <div className="sip-left">
@@ -198,7 +298,6 @@ export default async function HomePage() {
                 <p className="sip-desc fade-up" style={{ animationDelay: '.15s' }}>
                   Every weekday, The Daily Sip delivers the 3 things you need to know, the 1 thing nobody&apos;s talking about, and the data that proves it. Every issue carries a Proof Score. No fluff. No filler. Just the sharpest five-minute read in finance.
                 </p>
-
                 <div className="fade-up" style={{ animationDelay: '.2s' }}>
                   <div className="sip-form">
                     <EmailSignupForm
@@ -210,17 +309,14 @@ export default async function HomePage() {
                     />
                   </div>
                 </div>
-
                 <div className="sip-trust fade-up" style={{ animationDelay: '.25s' }}>
                   <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Growing daily</div>
                   <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Free forever</div>
                   <div className="sip-trust-item"><span className="sip-trust-icon">✦</span> Unsubscribe anytime</div>
                 </div>
-
                 <div className="fade-up" style={{ animationDelay: '.3s' }}>
                   <StreakCounter target={recentArticles.length} />
                 </div>
-
                 <div className="fade-up" style={{ animationDelay: '.35s' }}>
                   <div className="sip-archive-title">Recent Issues</div>
                   <div className="sip-archive-list">
@@ -239,17 +335,17 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Today's preview card */}
+              {/* Latest article preview card */}
               <div className="sip-right fade-up" style={{ animationDelay: '.2s' }}>
                 <div className="sip-preview">
                   <div className="sip-preview-header">
-                    <div className="sip-preview-label">Today&apos;s Sip — Preview</div>
-                    <div className="sip-preview-date">{todayDate}</div>
+                    <div className="sip-preview-label">Latest Issue</div>
+                    <div className="sip-preview-date">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</div>
                   </div>
                   <div className="sip-preview-body">
-                    <div className="sip-issue-num">Latest Issue</div>
                     {recentArticles[0] ? (
                       <>
+                        <div className="sip-issue-num">{recentArticles[0].categoryLabel}</div>
                         <h3 className="sip-issue-headline">{recentArticles[0].title}</h3>
                         <ul className="sip-issue-bullets">
                           <li>
@@ -259,12 +355,12 @@ export default async function HomePage() {
                           {recentArticles[1] && (
                             <li>
                               <span className="sip-bullet-num">02</span>
-                              <span>{recentArticles[1].excerpt}</span>
+                              <span>{recentArticles[1].title}</span>
                             </li>
                           )}
                         </ul>
                         <div className="sip-issue-proof">
-                          <div className="sip-issue-proof-label">Issue Proof Score</div>
+                          <div className="sip-issue-proof-label">Proof Score™</div>
                           <div className="sip-issue-proof-bar">
                             <ProofBarAnimated target={recentArticles[0].proofScore} observeParent />
                           </div>
@@ -282,40 +378,10 @@ export default async function HomePage() {
                       </div>
                     )}
                   </div>
-                  <Link href="#sip" className="sip-preview-cta" style={{ display: 'block', textAlign: 'center', padding: '14px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid var(--border)' }}>
-                    Read full issue — subscribe free ↗
+                  <Link href={recentArticles[0] ? `/articles/${recentArticles[0].slug}` : '#sip'} className="sip-preview-cta" style={{ display: 'block', textAlign: 'center', padding: '14px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid var(--border)' }}>
+                    {recentArticles[0] ? 'Read full article →' : 'Subscribe free ↗'}
                   </Link>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── TIPSY READS™ ─────────────────────────────────── */}
-        <section className="tipsy-section" id="tipsy">
-          <div className="container">
-            <div className="tipsy-header">
-              <div className="tipsy-header-left">
-                <div className="section-eyebrow">Tipsy Reads™</div>
-                <div className="section-title" style={{ marginBottom: '4px' }}>Quick pours. Sharp takes.</div>
-                <div className="section-sub" style={{ marginBottom: 0 }}>Bite-sized market intelligence you&apos;ll actually want to share. Updated throughout the day.</div>
-              </div>
-              {/* Filters are inside TipsyReads component */}
-            </div>
-            <TipsyReads initialItems={tipsyItems} />
-            <div className="tipsy-cta">
-              <div>
-                <div className="tipsy-cta-headline">Get Tipsy Reads in your inbox. <em>Free.</em></div>
-                <div className="tipsy-cta-sub">The best bites from the week — every Friday at noon ET.</div>
-              </div>
-              <div className="tipsy-cta-form">
-                <EmailSignupForm
-                  source="tipsy-reads"
-                  placeholder="your@email.com"
-                  buttonLabel="Subscribe"
-                  inputClassName="sip-input"
-                  buttonClassName="sip-submit"
-                />
               </div>
             </div>
           </div>
