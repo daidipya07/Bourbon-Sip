@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import AdminSidebar from '@/components/admin/AdminSidebar'
 
 export const metadata: Metadata = {
   title: 'Admin — Bourbon Pour',
@@ -12,8 +13,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       background: '#0a0a0a',
       color: '#e8dcc8',
       fontFamily: 'var(--font-body, system-ui, sans-serif)',
+      display: 'flex',
     }}>
-      {children}
+      <AdminSidebar />
+      <main style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
+        {children}
+      </main>
     </div>
   )
 }
