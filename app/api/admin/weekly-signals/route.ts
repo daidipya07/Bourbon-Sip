@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { verifyAdminToken } from '@/lib/auth'
 import { getAdminClient } from '@/lib/supabase'
+import { runWeeklySignal } from '@/lib/signal-runner'
 
 async function auth() {
   const cookieStore = await cookies()
@@ -23,14 +24,16 @@ export async function GET() {
   return NextResponse.json(data)
 }
 
-// Admin can also manually trigger signal generation
+export const maxDuration = 60
+
 export async function POST() {
   if (!await auth()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/cron/weekly-signal`, {
-    headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
-  })
-  const data = await res.json()
-  return NextResponse.json(data, { status: res.status })
+  try {
+    const result = await runWeeklySignal()
+    return NextResponse.json({ success: true, ...result })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }
