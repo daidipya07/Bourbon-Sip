@@ -58,7 +58,7 @@
 
 /* DAILY SIP */
 .sip-section { background: var(--deep); position: relative; overflow: hidden; padding: 100px 32px; }
-.sip-section::before { content: '☕'; font-size: 340px; position: absolute; top: -50px; right: -50px; opacity: 0.02; pointer-events: none; line-height: 1; }
+.sip-section::before { content: '🥃'; font-size: 340px; position: absolute; top: -50px; right: -50px; opacity: 0.02; pointer-events: none; line-height: 1; }
 .sip-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: start; }
 .sip-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(196,122,42,0.1); border: 1px solid var(--border); border-radius: 20px; padding: 6px 16px; margin-bottom: 20px; }
 .sip-badge-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; animation: pulse-dot 2s infinite; }
@@ -158,22 +158,6 @@
 .manifesto h2 { font-family: var(--font-display); font-size: 42px; font-weight: 700; line-height: 1.15; margin-bottom: 24px; }
 .manifesto h2 em { color: var(--amber); font-style: italic; }
 .manifesto p { color: var(--text-dim); font-size: 16px; line-height: 1.8; margin-bottom: 28px; max-width: 620px; }
-
-/* PRICING */
-.pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.price-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px 24px; display: flex; flex-direction: column; transition: all .25s; position: relative; }
-.price-card.popular { border-color: var(--amber); }
-.price-popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; background: var(--amber); color: var(--bg); padding: 4px 14px; border-radius: 20px; font-weight: 500; }
-.price-tier { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-.price-name { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 16px; }
-.price-amount { font-family: var(--font-display); font-size: 44px; font-weight: 900; color: var(--amber-light); margin-bottom: 4px; }
-.price-amount span { font-size: 16px; color: var(--text-faint); font-weight: 400; }
-.price-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.5; }
-.price-divider { height: 1px; background: var(--border); margin-bottom: 20px; }
-.price-features { list-style: none; flex: 1; margin-bottom: 24px; }
-.price-features li { font-size: 13px; color: var(--text-dim); padding: 6px 0; display: flex; align-items: flex-start; gap: 10px; }
-.price-features li::before { content: '—'; color: var(--amber); font-weight: 700; flex-shrink: 0; }
-.price-card .btn-primary, .price-card .btn-ghost { width: 100%; text-align: center; display: block; }
 
 /* ARTICLE PAGE */
 .art-header { margin-top: calc(var(--nav-h) + 2px); padding: 60px 28px 40px; max-width: 780px; margin-left: auto; margin-right: auto; }
