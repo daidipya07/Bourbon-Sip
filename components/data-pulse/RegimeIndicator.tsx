@@ -20,8 +20,11 @@ export default function RegimeIndicator({
     <div style={{ background: '#0f0f0f', border: `1px solid ${regimeColor}33`, borderRadius: '10px', padding: '24px 28px', marginBottom: '28px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>
             Current Macro Regime
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', marginBottom: '8px' }}>
+            Editorial classification · Not investment advice
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: regimeColor, boxShadow: `0 0 8px ${regimeColor}` }} />

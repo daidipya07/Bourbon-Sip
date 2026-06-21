@@ -49,7 +49,7 @@ export default function MarketStrip({ initial }: { initial: MarketSnapshot | nul
         <div style={{ padding: '0 16px 0 20px', borderRight: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669', animation: 'pulse 2s infinite' }} />
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: '#444', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-            Live · {lastRefresh || '—'}
+            Prices · {lastRefresh || '—'}
           </span>
         </div>
         <Tick label="S&P 500"  price={data.spy?.price}  pct={data.spy?.pctChange} />

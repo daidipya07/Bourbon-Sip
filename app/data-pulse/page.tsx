@@ -10,8 +10,8 @@ import WeeklySignalBlock from '@/components/data-pulse/WeeklySignalBlock'
 import { getMarketSnapshot } from '@/lib/market-data'
 
 export const metadata: Metadata = {
-  title: 'Data Pulse™ — Live Market Intelligence | Bourbon Pour',
-  description: 'Real-time macro regime classification, stress indicators sourced from FRED & CBOE, and AI-generated weekly market signal. Editorial market intelligence.',
+  title: 'Data Pulse™ — Editorial Market Overview | Bourbon Pour',
+  description: 'Editorial macro overview sourced from public FRED and Finnhub data. Not financial advice. Regime classifications and weekly commentary are editorial opinions only.',
 }
 
 // Revalidate every 15 minutes
@@ -41,7 +41,7 @@ export default async function DataPulsePage() {
     <>
       <Nav variant="tool" backHref="/" backLabel="← Home" />
 
-      {/* Live market ticker strip */}
+      {/* Market ticker strip — equity/commodity prices from Finnhub, refresh every 15 min */}
       <MarketStrip initial={snapshot} />
 
       <main className="page-main">
@@ -49,13 +49,26 @@ export default async function DataPulsePage() {
         <div style={{ background: 'var(--deep)', padding: '52px 32px 40px', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>
-              Live · Updated every 15 min
+              Editorial · Prices refresh every 15 min · Macro data via FRED
             </div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 900, marginBottom: '8px' }}>
               Data Pulse™
             </h1>
             <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: '18px', color: 'var(--text-dim)', marginBottom: '0' }}>
-              Institutional-grade macro intelligence — powered by FRED, CBOE, and GPT-4o.
+              A personal editorial view of publicly available macro data.
+            </p>
+          </div>
+        </div>
+
+        {/* Compliance disclaimer — prominent and readable */}
+        <div style={{ background: '#0d0d0d', borderBottom: '1px solid #161616', padding: '14px 32px' }}>
+          <div className="container">
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#555', margin: 0, lineHeight: 1.7 }}>
+              <span style={{ color: '#c8963e', fontWeight: 700 }}>Editorial use only.</span>{' '}
+              All content on this page is personal commentary on publicly available data — not financial advice, not investment recommendations, and not a solicitation to buy or sell any security.
+              Macro regime classifications are editorial opinions, not professional analysis. Equity prices are sourced from Finnhub and may be delayed.
+              FRED series (yields, spreads, VIX) are updated daily by the Federal Reserve and reflect the most recently published value, not real-time quotes.
+              Weekly signals are AI-generated drafts reviewed and published by the site author. Past signals do not predict future outcomes.
             </p>
           </div>
         </div>
@@ -100,10 +113,23 @@ export default async function DataPulsePage() {
                 <WeeklySignalBlock />
               </Suspense>
 
-              {/* Data sources footnote */}
-              <div style={{ marginTop: '40px', padding: '16px 20px', background: '#080808', border: '1px solid #111', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#2a2a2a', lineHeight: 1.8 }}>
-                <span style={{ color: '#333' }}>Data sources:</span> FRED (Federal Reserve Economic Data) · CBOE (VIX) · Finnhub (equity/commodity quotes) · OpenAI GPT-4o-mini (weekly signal generation)
-                &nbsp;·&nbsp; All data is for editorial and informational purposes only · Not financial advice · Not real-time for FRED series
+              {/* Data sources footnote — readable */}
+              <div style={{ marginTop: '40px', padding: '16px 20px', background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444', lineHeight: 2 }}>
+                <div style={{ marginBottom: '6px' }}>
+                  <span style={{ color: '#666' }}>Data sources</span>
+                  {' · '}FRED (Federal Reserve Economic Data, public)
+                  {' · '}CBOE Volatility Index via FRED
+                  {' · '}Finnhub (equity &amp; commodity quotes, may be delayed)
+                  {' · '}OpenAI GPT-4o-mini (weekly signal drafts, human-reviewed before publishing)
+                </div>
+                <div>
+                  <span style={{ color: '#666' }}>Disclaimers</span>
+                  {' · '}Not financial advice
+                  {' · '}Not investment recommendations
+                  {' · '}Editorial opinions only
+                  {' · '}No guarantee of accuracy or timeliness
+                  {' · '}See <a href="/terms" style={{ color: '#555', textDecoration: 'underline' }}>Terms of Use</a> and <a href="/about" style={{ color: '#555', textDecoration: 'underline' }}>About</a>
+                </div>
               </div>
 
             </div>
