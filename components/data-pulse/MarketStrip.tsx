@@ -48,7 +48,7 @@ export default function MarketStrip({ initial }: { initial: MarketSnapshot | nul
       <div style={{ display: 'flex', alignItems: 'center', minWidth: 'max-content', height: '40px' }}>
         <div style={{ padding: '0 16px 0 20px', borderRight: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669', animation: 'pulse 2s infinite' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: '#444', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: '#666', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
             Prices · {lastRefresh || '—'}
           </span>
         </div>

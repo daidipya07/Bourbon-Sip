@@ -46,7 +46,7 @@ export default async function WeeklySignalBlock() {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#c8963e', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>
             Bourbon Pour Weekly Signal
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666' }}>
             AI-analyzed · Reviewed & published by Bourbon Pour
           </div>
         </div>
@@ -55,7 +55,7 @@ export default async function WeeklySignalBlock() {
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: regimeColor[signal.regime] ?? '#888', background: `${regimeColor[signal.regime] ?? '#888'}15`, padding: '3px 8px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {signal.regime}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666' }}>
               Week of {weekLabel}
             </span>
           </div>
@@ -71,16 +71,16 @@ export default async function WeeklySignalBlock() {
               </p>
             ))}
           </div>
-          <div style={{ marginTop: '16px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333' }}>
+          <div style={{ marginTop: '16px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555' }}>
             Editorial commentary on publicly available market data · Not financial advice · Sources: FRED, CBOE, Finnhub
           </div>
         </>
       ) : (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#444', marginBottom: '8px' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#666', marginBottom: '8px' }}>
             First signal drops this Friday at 9 AM ET.
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#333' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#555' }}>
             Weekly macro analysis — published every Friday morning.
           </div>
         </div>

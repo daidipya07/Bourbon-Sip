@@ -23,7 +23,7 @@ export default function RegimeIndicator({
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>
             Current Macro Regime
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', marginBottom: '8px' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', marginBottom: '8px' }}>
             Editorial classification · Not investment advice
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

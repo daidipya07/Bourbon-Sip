@@ -71,7 +71,7 @@ export default async function ProofLeaderboard() {
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>
         Proof Score™ Leaderboard
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', marginBottom: '16px' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666', marginBottom: '16px' }}>
         Publication credibility ranked by editorial scoring across {leaderboard.reduce((s, r) => s + r.article_count, 0)} articles
       </div>
 
@@ -88,7 +88,7 @@ export default async function ProofLeaderboard() {
               <ScoreBar score={row.avg_score} />
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666' }}>
                 {row.article_count} article{row.article_count !== 1 ? 's' : ''}
               </div>
             </div>
@@ -96,7 +96,7 @@ export default async function ProofLeaderboard() {
         ))}
       </div>
 
-      <div style={{ marginTop: '16px', padding: '10px 12px', background: '#0a0a0a', borderRadius: '5px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', lineHeight: 1.6 }}>
+      <div style={{ marginTop: '16px', padding: '10px 12px', background: '#0a0a0a', borderRadius: '5px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', lineHeight: 1.6 }}>
         Rankings update automatically as new Tipsy Reads are published · Proof Score is an editorial credibility metric, not a financial rating
       </div>
     </div>

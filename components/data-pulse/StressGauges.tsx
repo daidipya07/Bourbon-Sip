@@ -23,7 +23,7 @@ function DataRow({
       <div style={{ display: 'flex', flex: 1 }}>
         <div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#e8dcc8', fontWeight: 600 }}>{label}</div>
-          {hint && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444', marginTop: '2px' }}>{hint}</div>}
+          {hint && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666', marginTop: '2px' }}>{hint}</div>}
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
@@ -62,7 +62,7 @@ export default function StressGauges({ data }: { data: MarketSnapshot }) {
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>
         Stress Indicators
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', marginBottom: '16px' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666', marginBottom: '16px' }}>
         Institutional-grade risk gauges — sourced from FRED &amp; CBOE
       </div>
 
@@ -106,7 +106,7 @@ export default function StressGauges({ data }: { data: MarketSnapshot }) {
         value={fred.dxy} change={fred.dxyChange}
       />
 
-      <div style={{ marginTop: '16px', padding: '10px 12px', background: '#0a0a0a', borderRadius: '5px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#333', lineHeight: 1.6 }}>
+      <div style={{ marginTop: '16px', padding: '10px 12px', background: '#0a0a0a', borderRadius: '5px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555', lineHeight: 1.6 }}>
         Data sourced from FRED (Federal Reserve Economic Data) · Updated daily · Not real-time · Editorial use only
       </div>
     </div>

@@ -63,7 +63,7 @@ export default async function DataPulsePage() {
         {/* Compliance disclaimer — prominent and readable */}
         <div style={{ background: '#0d0d0d', borderBottom: '1px solid #161616', padding: '14px 32px' }}>
           <div className="container">
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#555', margin: 0, lineHeight: 1.7 }}>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#777', margin: 0, lineHeight: 1.7 }}>
               <span style={{ color: '#c8963e', fontWeight: 700 }}>Editorial use only.</span>{' '}
               All content on this page is personal commentary on publicly available data — not financial advice, not investment recommendations, and not a solicitation to buy or sell any security.
               Macro regime classifications are editorial opinions, not professional analysis. Equity prices are sourced from Finnhub and may be delayed.
@@ -114,16 +114,16 @@ export default async function DataPulsePage() {
               </Suspense>
 
               {/* Data sources footnote — readable */}
-              <div style={{ marginTop: '40px', padding: '16px 20px', background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#444', lineHeight: 2 }}>
+              <div style={{ marginTop: '40px', padding: '16px 20px', background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#666', lineHeight: 2 }}>
                 <div style={{ marginBottom: '6px' }}>
-                  <span style={{ color: '#666' }}>Data sources</span>
+                  <span style={{ color: '#888' }}>Data sources</span>
                   {' · '}FRED (Federal Reserve Economic Data, public)
                   {' · '}CBOE Volatility Index via FRED
                   {' · '}Finnhub (equity &amp; commodity quotes, may be delayed)
                   {' · '}OpenAI GPT-4o-mini (weekly signal drafts, human-reviewed before publishing)
                 </div>
                 <div>
-                  <span style={{ color: '#666' }}>Disclaimers</span>
+                  <span style={{ color: '#888' }}>Disclaimers</span>
                   {' · '}Not financial advice
                   {' · '}Not investment recommendations
                   {' · '}Editorial opinions only
