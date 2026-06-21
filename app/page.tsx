@@ -21,16 +21,13 @@ async function getHomepageTipsyReads() {
     .select('id, url, title, publication, category, bourbon_take, proof_score, bourbon_strength, market_impact, geo_impact, tech_disruption, regulatory_weight, og_image, published_at, created_at')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
-    .limit(6)
+    .limit(9)
   return data || []
 }
 
 export default async function HomePage() {
   const recentArticles = await getRecentArticles(5)
   const tipsyItems = await getHomepageTipsyReads()
-
-  const featured = recentArticles[0] ?? null
-  const moreArticles = recentArticles.slice(1, 4) // skip featured, show next 3
 
   return (
     <>
@@ -40,160 +37,156 @@ export default async function HomePage() {
 
       <main className="home-main">
 
-        {/* ── HERO — FEATURED ARTICLE ──────────────────────── */}
-        <section className="hero" id="pulse" style={{ padding: '100px 32px 60px' }}>
-          <div className="container">
-            {featured ? (
-              <>
-                {/* Eyebrow */}
-                <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', background: 'rgba(196,122,42,0.12)', padding: '4px 12px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                    Featured
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                    {featured.categoryLabel}
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
-                    {new Date(featured.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </span>
+        {/* ── HERO — COMPACT BRAND STATEMENT ────────────────── */}
+        <section className="hero" id="pulse" style={{ padding: '100px 32px 48px' }}>
+          <div className="container" style={{ maxWidth: '900px', textAlign: 'center' }}>
+            <div className="hero-eyebrow fade-up">Finance &amp; Technology Intelligence</div>
+            <h1 className="fade-up" style={{ fontFamily: 'var(--font-display)', fontSize: '60px', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-1.5px', marginBottom: '20px', animationDelay: '.1s' }}>
+              Data Is The <em style={{ fontStyle: 'italic', color: 'var(--amber)' }}>New Currency.</em>
+            </h1>
+            <p className="fade-up" style={{ color: 'var(--text-dim)', fontSize: '17px', lineHeight: 1.7, marginBottom: '32px', maxWidth: '560px', margin: '0 auto 32px', animationDelay: '.2s' }}>
+              Evidence-scored analysis, curated reads, and macro intelligence — clearly sourced, proof-rated, and free.
+            </p>
+            <div className="fade-up" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '48px', animationDelay: '.3s' }}>
+              <Link href="#tipsy" className="btn-primary">Today&apos;s Reads ↓</Link>
+              <Link href="/data-pulse" className="btn-ghost">Data Pulse →</Link>
+              <Link href="/articles" className="btn-ghost">Articles →</Link>
+            </div>
+
+            {/* Mini stats strip */}
+            <div className="fade-up" style={{ display: 'flex', gap: '32px', justifyContent: 'center', animationDelay: '.4s' }}>
+              {[
+                { n: tipsyItems.length > 0 ? `${tipsyItems.length}+` : '—', label: 'Curated Reads' },
+                { n: recentArticles.length > 0 ? String(recentArticles.length) : '—', label: 'Original Articles' },
+                { n: 'Free', label: 'Always' },
+              ].map(s => (
+                <div key={s.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 500, color: 'var(--amber-light)' }}>{s.n}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>{s.label}</div>
                 </div>
-
-                {/* Two-column: title + article card */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '60px', alignItems: 'start' }}>
-                  {/* Left: headline + excerpt */}
-                  <div>
-                    <Link href={`/articles/${featured.slug}`} style={{ textDecoration: 'none' }}>
-                      <h1 className="fade-up" style={{ fontFamily: 'var(--font-display)', fontSize: '52px', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-1px', marginBottom: '20px', animationDelay: '.1s', color: 'var(--text)' }}>
-                        {featured.title}
-                      </h1>
-                    </Link>
-                    {featured.subtitle && (
-                      <p className="fade-up" style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: '20px', color: 'var(--text-dim)', marginBottom: '20px', animationDelay: '.15s', lineHeight: 1.5 }}>
-                        {featured.subtitle}
-                      </p>
-                    )}
-                    <p className="fade-up" style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px', maxWidth: '540px', animationDelay: '.2s' }}>
-                      {featured.excerpt}
-                    </p>
-
-                    {/* Proof Score inline */}
-                    <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px', animationDelay: '.25s' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px' }}>Proof Score™</span>
-                      <div style={{ flex: 1, maxWidth: '200px' }}>
-                        <ProofBarAnimated target={featured.proofScore} delay={400} />
-                      </div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 700, color: 'var(--amber)' }}>{featured.proofScore}</span>
-                    </div>
-
-                    <div className="fade-up" style={{ display: 'flex', gap: '12px', animationDelay: '.3s' }}>
-                      <Link href={`/articles/${featured.slug}`} className="btn-primary">Read Article →</Link>
-                      <Link href="/articles" className="btn-ghost">All Articles</Link>
-                    </div>
-                  </div>
-
-                  {/* Right: article hero image */}
-                  <div className="fade-up" style={{ animationDelay: '.2s' }}>
-                    {featured.heroImage ? (
-                      <Link href={`/articles/${featured.slug}`} style={{ textDecoration: 'none' }}>
-                        <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border)', transition: 'border-color 0.2s' }}>
-                          <img src={featured.heroImage} alt={featured.title} style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }} />
-                          <div style={{ padding: '16px 20px', background: 'var(--card)', borderTop: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>{featured.readTime || '6 min read'}</span>
-                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)' }}>Read →</span>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px', padding: '48px 28px', textAlign: 'center' }}>
-                        <div style={{ fontFamily: 'var(--font-display)', fontSize: '64px', opacity: 0.15, marginBottom: '16px' }}>✦</div>
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Original Research</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            ) : (
-              /* No articles yet — tagline hero */
-              <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
-                <div className="hero-eyebrow fade-up">Finance &amp; Technology Intelligence</div>
-                <h1 className="fade-up" style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-1px', marginBottom: '20px', animationDelay: '.1s' }}>
-                  Data Is The <em style={{ fontStyle: 'italic', color: 'var(--amber)' }}>New Currency.</em>
-                </h1>
-                <p className="fade-up" style={{ color: 'var(--text-dim)', fontSize: '15px', lineHeight: 1.7, marginBottom: '32px', animationDelay: '.2s' }}>
-                  Evidence-scored finance and technology analysis — clearly sourced, proof-rated, and free.
-                </p>
-                <Link href="#sip" className="btn-primary fade-up" style={{ animationDelay: '.3s' }}>Subscribe Free →</Link>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ── MORE ORIGINAL ARTICLES ───────────────────────── */}
-        {moreArticles.length > 0 && (
-          <section id="articles" style={{ padding: '60px 32px 80px', background: 'var(--deep)', borderTop: '1px solid var(--border)' }}>
-            <div className="container">
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '36px', flexWrap: 'wrap', gap: '12px' }}>
-                <div>
-                  <div className="section-eyebrow">Original Intelligence</div>
-                  <div className="section-title" style={{ marginBottom: 0, fontSize: '28px' }}>More from the Editor</div>
-                </div>
-                <Link href="/articles" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--amber)', textDecoration: 'none', border: '1px solid rgba(196,122,42,0.3)', padding: '8px 16px', borderRadius: '5px' }}>
-                  View all →
-                </Link>
-              </div>
-              <div className="pours-grid" style={{ gridTemplateColumns: `repeat(${Math.min(moreArticles.length, 3)}, 1fr)` }}>
-                {moreArticles.map((a, i) => (
-                  <Link key={a.slug} href={`/articles/${a.slug}`} style={{ textDecoration: 'none' }}>
-                    <div className="pour-card fade-up" style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
-                      {a.heroImage && (
-                        <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '6px 6px 0 0' }}>
-                          <img src={a.heroImage} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                        </div>
-                      )}
-                      <div className="pour-card-inner">
-                        <span className="pour-cat">{a.categoryLabel}</span>
-                        <span className="pour-proof-badge">{a.proofScore}-proof</span>
-                        <h3 className="pour-headline" style={{ fontSize: '18px' }}>{a.title}</h3>
-                        <p className="pour-excerpt">{a.excerpt}</p>
-                        <div className="pour-meta">
-                          <span>{new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                          <span>{a.readTime || '6 min'}</span>
-                        </div>
-                        <div className="pour-score-bar">
-                          <div className="pour-score-fill" style={{ width: a.proofScore + '%', background: 'linear-gradient(90deg, var(--amber), var(--amber-pale))', transition: 'width 1s ease' }} />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ── TIPSY READS™ ─────────────────────────────────── */}
-        <section className="tipsy-section" id="tipsy">
+        {/* ── TIPSY READS™ — FRONT AND CENTER ─────────────── */}
+        <section className="tipsy-section" id="tipsy" style={{ paddingTop: '60px', borderTop: '1px solid var(--border)' }}>
           <div className="container">
             <div className="tipsy-header">
               <div className="tipsy-header-left">
-                <div className="section-eyebrow">Tipsy Reads™</div>
+                <div className="section-eyebrow">Tipsy Reads™ — Today&apos;s Feed</div>
                 <div className="section-title" style={{ marginBottom: '4px' }}>Quick pours. Sharp takes.</div>
-                <div className="section-sub" style={{ marginBottom: 0 }}>Curated market intelligence from across the web — scored and served with a bourbon take.</div>
+                <div className="section-sub" style={{ marginBottom: 0 }}>Curated market intelligence from across the web — scored, served with a bourbon take, and updated daily.</div>
               </div>
             </div>
             <TipsyReads initialItems={tipsyItems} />
             <div style={{ textAlign: 'center', marginTop: '32px' }}>
-              <Link href="/tipsy-reads" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--amber)', textDecoration: 'none', border: '1px solid rgba(196,122,42,0.3)', padding: '10px 24px', borderRadius: '5px' }}>
+              <Link href="/tipsy-reads" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--amber)', textDecoration: 'none', border: '1px solid rgba(196,122,42,0.3)', padding: '10px 24px', borderRadius: '5px', transition: 'all 0.2s' }}>
                 View all Tipsy Reads →
               </Link>
             </div>
           </div>
         </section>
 
+        {/* ── ORIGINAL ARTICLES ────────────────────────────── */}
+        {recentArticles.length > 0 && (
+          <section id="articles" style={{ padding: '80px 32px', background: 'var(--deep)', borderTop: '1px solid var(--border)' }}>
+            <div className="container">
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <div className="section-eyebrow">Original Intelligence</div>
+                  <div className="section-title" style={{ marginBottom: '4px' }}>From the Editor</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-faint)' }}>
+                    In-depth, evidence-scored research and analysis
+                  </div>
+                </div>
+                <Link href="/articles" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--amber)', textDecoration: 'none', border: '1px solid rgba(196,122,42,0.3)', padding: '8px 16px', borderRadius: '5px' }}>
+                  View all →
+                </Link>
+              </div>
+
+              {/* Featured article — large card */}
+              <div style={{ marginBottom: '24px' }}>
+                <Link href={`/articles/${recentArticles[0].slug}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: recentArticles[0].heroImage ? '1fr 1fr' : '1fr', gap: '0', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+                    {recentArticles[0].heroImage && (
+                      <div style={{ overflow: 'hidden' }}>
+                        <img src={recentArticles[0].heroImage} alt={recentArticles[0].title} style={{ width: '100%', height: '100%', minHeight: '280px', objectFit: 'cover', display: 'block' }} />
+                      </div>
+                    )}
+                    <div style={{ padding: '36px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', background: 'rgba(196,122,42,0.12)', padding: '3px 10px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          Featured
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          {recentArticles[0].categoryLabel}
+                        </span>
+                      </div>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 800, lineHeight: 1.2, color: 'var(--text)', marginBottom: '12px' }}>
+                        {recentArticles[0].title}
+                      </h3>
+                      <p style={{ fontSize: '14px', color: 'var(--text-dim)', lineHeight: 1.7, marginBottom: '20px' }}>
+                        {recentArticles[0].excerpt}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '1px' }}>Proof Score™</span>
+                        <div style={{ flex: 1, maxWidth: '160px' }}>
+                          <ProofBarAnimated target={recentArticles[0].proofScore} delay={400} />
+                        </div>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 700, color: 'var(--amber)' }}>{recentArticles[0].proofScore}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
+                          {new Date(recentArticles[0].date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-faint)' }}>
+                          {recentArticles[0].readTime || '6 min'}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--amber)' }}>
+                          Read →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+
+              {/* More article cards */}
+              {recentArticles.length > 1 && (
+                <div className="pours-grid" style={{ gridTemplateColumns: `repeat(${Math.min(recentArticles.length - 1, 3)}, 1fr)` }}>
+                  {recentArticles.slice(1, 4).map((a, i) => (
+                    <Link key={a.slug} href={`/articles/${a.slug}`} style={{ textDecoration: 'none' }}>
+                      <div className="pour-card fade-up" style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
+                        {a.heroImage && (
+                          <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '6px 6px 0 0' }}>
+                            <img src={a.heroImage} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                          </div>
+                        )}
+                        <div className="pour-card-inner">
+                          <span className="pour-cat">{a.categoryLabel}</span>
+                          <span className="pour-proof-badge">{a.proofScore}-proof</span>
+                          <h3 className="pour-headline" style={{ fontSize: '18px' }}>{a.title}</h3>
+                          <p className="pour-excerpt">{a.excerpt}</p>
+                          <div className="pour-meta">
+                            <span>{new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            <span>{a.readTime || '6 min'}</span>
+                          </div>
+                          <div className="pour-score-bar">
+                            <div className="pour-score-fill" style={{ width: a.proofScore + '%', background: 'linear-gradient(90deg, var(--amber), var(--amber-pale))', transition: 'width 1s ease' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* ── DATA PULSE TEASER ────────────────────────────── */}
-        <section style={{ background: 'var(--deep)', padding: '80px 32px', borderTop: '1px solid var(--border)' }}>
+        <section style={{ padding: '80px 32px', borderTop: '1px solid var(--border)' }}>
           <div className="container">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
               <div>
@@ -231,7 +224,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── DISRUPTOR RADAR ──────────────────────────────── */}
-        <section className="radar-section" id="radar" style={{ padding: '80px 32px' }}>
+        <section className="radar-section" id="radar" style={{ background: 'var(--deep)', padding: '80px 32px' }}>
           <div className="container">
             <div className="section-eyebrow">Disruptor Radar™</div>
             <div className="section-title">Who&apos;s moving before the market knows.</div>
@@ -260,7 +253,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── SUBSCRIBE — THE DAILY SIP™ ───────────────────── */}
-        <section className="sip-section" id="sip" style={{ background: 'var(--deep)' }}>
+        <section className="sip-section" id="sip">
           <div className="container" style={{ maxWidth: '700px', textAlign: 'center' }}>
             <div className="sip-badge fade-up" style={{ justifyContent: 'center' }}>
               <div className="sip-badge-dot" />
