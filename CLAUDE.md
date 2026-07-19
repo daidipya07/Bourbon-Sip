@@ -34,6 +34,7 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `/proof-score` | `app/proof-score/page.tsx` | Methodology page, static |
 | `/about` | `app/about/page.tsx` | Static |
 | `/manifesto` | `app/manifesto/page.tsx` | Static |
+| `/terminal` | `app/terminal/page.tsx` | Bloomberg-style terminal — client component, own CSS (`terminal.css`), 6 views (Chart/Markets/Heatmap/Macro/News/Earnings) |
 | `/privacy` | `app/privacy/page.tsx` | Privacy Policy |
 | `/terms` | `app/terms/page.tsx` | Terms of Use |
 | `/admin` | `app/admin/` | Protected by JWT middleware |
@@ -50,6 +51,12 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `GET /api/cron/import-tipsy` | Vercel cron — requires CRON_SECRET header |
 | `GET /api/cron/weekly-signal` | Vercel cron every Friday 9 AM ET — generates draft AI signal |
 | `GET /api/data-pulse` | Returns MarketSnapshot JSON (FRED + Finnhub), 15-min cache |
+| `GET /api/terminal/quotes?symbols=` | Batch quotes — Yahoo spark (20 syms/request) + Finnhub fallback, 60s cache |
+| `GET /api/terminal/quote?symbol=` | Single quote + profile + key stats — Finnhub for equities, Yahoo for indices/FX/crypto |
+| `GET /api/terminal/candles?symbol=&range=` | OHLCV — Yahoo chart API (Finnhub candles are paid-only), 5-min cache |
+| `GET /api/terminal/news` | Finnhub company/market news |
+| `GET /api/terminal/search?q=` | Finnhub symbol search |
+| `GET /api/terminal/earnings` | Finnhub earnings calendar, next 7 days, 1h cache |
 | `GET /api/admin/weekly-signals` | List all weekly signals |
 | `POST /api/admin/weekly-signals` | Trigger manual signal generation |
 | `PUT /api/admin/weekly-signals/[id]` | Update signal status (draft → published sets published_at) |
@@ -114,6 +121,8 @@ Both sources merged and deduped in `lib/articles.ts`.
 | `lib/data/radar.ts` | Hardcoded Disruptor Radar entries — needs admin UI eventually |
 | `lib/data/articles.ts` | Legacy hardcoded articles — still used as fallback, should be removed |
 | `lib/data/tickers.ts` | Ticker symbols for the homepage ticker strip |
+| `lib/terminal/yahoo.ts` | Yahoo Finance proxy helpers — symbol mapping, spark batch quotes, chart fetch. Keyless. Yahoo 429s request bursts, so spark batches 20 symbols/request and all fetches ride Next.js fetch cache |
+| `lib/terminal/symbols.ts` | Terminal symbol universes (strip, markets grid, sector heatmap, default watchlist) — Yahoo-native symbols |
 
 ---
 

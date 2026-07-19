@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { toFinnhubSymbol } from '@/lib/terminal/yahoo'
 
 interface NewsItem {
   id: number
@@ -12,6 +13,8 @@ interface NewsItem {
   related: string
 }
 
+type Mode = 'symbol' | 'market'
+
 function timeAgo(ts: number): string {
   const diff = Math.floor(Date.now() / 1000) - ts
   if (diff < 60) return 'just now'
@@ -20,14 +23,27 @@ function timeAgo(ts: number): string {
   return `${Math.floor(diff / 86400)}d ago`
 }
 
-export default function NewsPanel({ symbol }: { symbol: string | null }) {
+// Company news only exists for plain equities, not indices/FX/crypto symbols
+function canHaveCompanyNews(symbol: string | null): symbol is string {
+  return !!symbol && !/[\^=:]/.test(symbol) && !symbol.endsWith('-USD')
+}
+
+export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: string | null; defaultMode?: Mode }) {
+  const symbolOk = canHaveCompanyNews(symbol)
+  const [mode, setMode] = useState<Mode>(symbolOk ? defaultMode : 'market')
   const [news, setNews] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setMode(canHaveCompanyNews(symbol) ? defaultMode : 'market')
+  }, [symbol, defaultMode])
+
+  const activeSymbol = mode === 'symbol' && symbolOk ? symbol : null
+
+  useEffect(() => {
     setLoading(true)
-    const url = symbol
-      ? `/api/terminal/news?symbol=${encodeURIComponent(symbol)}`
+    const url = activeSymbol
+      ? `/api/terminal/news?symbol=${encodeURIComponent(toFinnhubSymbol(activeSymbol))}`
       : '/api/terminal/news?category=general'
 
     fetch(url)
@@ -35,25 +51,35 @@ export default function NewsPanel({ symbol }: { symbol: string | null }) {
       .then(d => setNews(d.news || []))
       .catch(() => setNews([]))
       .finally(() => setLoading(false))
-  }, [symbol])
-
-  if (loading) return (
-    <div className="terminal-panel">
-      <div className="terminal-panel-header">
-        <span className="terminal-panel-title">News {symbol ? `· ${symbol}` : ''}</span>
-      </div>
-      <div className="terminal-loading">Loading news</div>
-    </div>
-  )
+  }, [activeSymbol])
 
   return (
     <div className="terminal-panel">
       <div className="terminal-panel-header">
-        <span className="terminal-panel-title">News {symbol ? `· ${symbol}` : '· Market'}</span>
-        <span style={{ fontSize: '9px', color: '#444' }}>{news.length} items</span>
+        <span className="terminal-panel-title">News</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {symbolOk && (
+            <div className="terminal-news-tabs">
+              <button
+                className={`terminal-news-tab ${mode === 'symbol' ? 'active' : ''}`}
+                onClick={() => setMode('symbol')}
+              >
+                {symbol}
+              </button>
+              <button
+                className={`terminal-news-tab ${mode === 'market' ? 'active' : ''}`}
+                onClick={() => setMode('market')}
+              >
+                Market
+              </button>
+            </div>
+          )}
+          {!loading && <span style={{ fontSize: '9px', color: '#444' }}>{news.length} items</span>}
+        </div>
       </div>
       <div className="terminal-panel-body">
-        {news.map(item => (
+        {loading && <div className="terminal-loading">Loading news</div>}
+        {!loading && news.map(item => (
           <a
             key={item.id}
             href={item.url}
@@ -70,7 +96,7 @@ export default function NewsPanel({ symbol }: { symbol: string | null }) {
             </div>
           </a>
         ))}
-        {news.length === 0 && (
+        {!loading && news.length === 0 && (
           <div style={{ padding: '20px', textAlign: 'center', color: '#444', fontSize: '11px' }}>
             No recent news
           </div>

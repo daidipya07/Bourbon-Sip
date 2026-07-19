@@ -217,15 +217,34 @@
 .terminal-grid {
   display: grid;
   grid-template-columns: 1fr 320px;
-  grid-template-rows: auto 1fr;
-  height: calc(100vh - 65px);
+  grid-template-rows: minmax(0, 45%) minmax(0, 1fr);
+  height: calc(100vh - 86px); /* topbar 36 + strip 28 + statusbar 22 */
   gap: 1px;
   background: #111;
+}
+
+.terminal-grid > div {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal-grid > div > .terminal-panel,
+.terminal-grid > .terminal-panel {
+  height: 100%;
+  min-height: 0;
 }
 
 .terminal-grid-full {
   grid-template-columns: 1fr;
 }
+
+/* Panel placement */
+.tg-main       { grid-column: 1; grid-row: 1 / 3; }
+.tg-side-top   { grid-column: 2; grid-row: 1; }
+.tg-side-bottom{ grid-column: 2; grid-row: 2; }
+.tg-side-full  { grid-column: 2; grid-row: 1 / 3; }
+.tg-full       { grid-column: 1 / -1; grid-row: 1 / 3; }
 
 /* ── Panel ─────────────────────────────────────────────── */
 .terminal-panel {
@@ -696,8 +715,24 @@
 
 /* ── Responsive ────────────────────────────────────────── */
 @media (max-width: 900px) {
+  .terminal-root {
+    overflow: auto;
+  }
   .terminal-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 22px; /* clear fixed status bar */
+  }
+  .tg-main {
+    min-height: 75vh;
+  }
+  .tg-side-top,
+  .tg-side-bottom,
+  .tg-side-full,
+  .tg-full {
+    min-height: 40vh;
+    max-height: 70vh;
   }
   .terminal-quote-stats {
     grid-template-columns: repeat(2, 1fr);
@@ -705,6 +740,154 @@
   .terminal-heatmap {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
+  .terminal-cmd {
+    max-width: none;
+  }
+  .terminal-topbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 6px 12px;
+  }
+}
+
+/* ── Chart Legend ──────────────────────────────────────── */
+.terminal-chart-legend {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  z-index: 10;
+  font-size: 10px;
+  color: #777;
+  pointer-events: none;
+  background: rgba(10, 10, 10, 0.75);
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.terminal-chart-legend span {
+  color: #ccc;
+}
+
+.terminal-chart-divider {
+  width: 1px;
+  height: 14px;
+  background: #222;
+  margin: 0 6px;
+}
+
+/* ── Section / Sector Labels ───────────────────────────── */
+.terminal-sector-label {
+  padding: 10px 12px 4px;
+  font-size: 9px;
+  color: #c8963e;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+/* ── Movers ────────────────────────────────────────────── */
+.terminal-movers-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 62px 56px;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-bottom: 1px solid #111;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.terminal-movers-row:hover {
+  background: #111;
+}
+
+.terminal-movers-name {
+  font-size: 9px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Earnings ──────────────────────────────────────────── */
+.terminal-earnings-head,
+.terminal-earnings-row {
+  display: grid;
+  grid-template-columns: 80px 50px 60px 1fr 1fr 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  font-size: 11px;
+}
+
+.terminal-earnings-head {
+  font-size: 9px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.terminal-earnings-row {
+  border-bottom: 1px solid #111;
+  cursor: pointer;
+  color: #ccc;
+  transition: background 0.1s;
+}
+
+.terminal-earnings-row:hover {
+  background: #111;
+}
+
+/* ── News Tabs ─────────────────────────────────────────── */
+.terminal-news-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.terminal-news-tab {
+  padding: 2px 8px;
+  font-size: 9px;
+  color: #666;
+  background: none;
+  border: 1px solid #222;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.1s;
+}
+
+.terminal-news-tab:hover {
+  color: #aaa;
+}
+
+.terminal-news-tab.active {
+  color: #c8963e;
+  border-color: #c8963e55;
+  background: #c8963e11;
+}
+
+/* ── Command Help ──────────────────────────────────────── */
+.terminal-cmd-help {
+  padding: 8px 12px;
+  font-size: 10px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.terminal-cmd-help-row b {
+  color: #c8963e;
+  font-weight: 600;
+}
+
+/* ── Status Bar Clock ──────────────────────────────────── */
+.terminal-statusbar-clock {
+  color: #888;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Disclaimer ────────────────────────────────────────── */

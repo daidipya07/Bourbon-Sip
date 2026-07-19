@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { MARKET_SYMBOLS } from '@/lib/terminal/symbols'
 
 interface MarketItem {
   symbol: string
@@ -10,54 +11,21 @@ interface MarketItem {
   pctChange: number | null
 }
 
-const MARKET_SYMBOLS: Array<{ symbol: string; name: string; group: string }> = [
-  // Indices
-  { symbol: 'SPY',  name: 'S&P 500',    group: 'Indices' },
-  { symbol: 'QQQ',  name: 'Nasdaq 100',  group: 'Indices' },
-  { symbol: 'IWM',  name: 'Russell 2000', group: 'Indices' },
-  { symbol: 'DIA',  name: 'Dow Jones',   group: 'Indices' },
-  { symbol: 'EFA',  name: 'Intl Dev',    group: 'Indices' },
-  { symbol: 'EEM',  name: 'Emerging Mkts', group: 'Indices' },
-  // Sectors
-  { symbol: 'XLK',  name: 'Tech',        group: 'Sectors' },
-  { symbol: 'XLF',  name: 'Financials',  group: 'Sectors' },
-  { symbol: 'XLE',  name: 'Energy',      group: 'Sectors' },
-  { symbol: 'XLV',  name: 'Healthcare',  group: 'Sectors' },
-  { symbol: 'XLI',  name: 'Industrials', group: 'Sectors' },
-  { symbol: 'XLP',  name: 'Staples',     group: 'Sectors' },
-  // Commodities
-  { symbol: 'GLD',  name: 'Gold',        group: 'Commodities' },
-  { symbol: 'SLV',  name: 'Silver',      group: 'Commodities' },
-  { symbol: 'USO',  name: 'Crude Oil',   group: 'Commodities' },
-  { symbol: 'UNG',  name: 'Nat Gas',     group: 'Commodities' },
-  // Bonds
-  { symbol: 'TLT',  name: '20Y+ Treasury', group: 'Bonds' },
-  { symbol: 'IEF',  name: '7-10Y Treasury', group: 'Bonds' },
-  { symbol: 'HYG',  name: 'High Yield',  group: 'Bonds' },
-  { symbol: 'LQD',  name: 'IG Corporate', group: 'Bonds' },
-  // Crypto
-  { symbol: 'BINANCE:BTCUSDT', name: 'Bitcoin',  group: 'Crypto' },
-  { symbol: 'BINANCE:ETHUSDT', name: 'Ethereum',  group: 'Crypto' },
-]
-
 export default function MarketOverview({ onSelect }: { onSelect: (symbol: string) => void }) {
   const [items, setItems] = useState<MarketItem[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchAll = useCallback(async () => {
-    setLoading(true)
-    const results: MarketItem[] = await Promise.all(
-      MARKET_SYMBOLS.map(async s => {
-        try {
-          const res = await fetch(`/api/terminal/quote?symbol=${encodeURIComponent(s.symbol)}`)
-          const d = await res.json()
-          return { ...s, price: d.price ?? null, pctChange: d.pctChange ?? null }
-        } catch {
-          return { ...s, price: null, pctChange: null }
-        }
-      })
-    )
-    setItems(results)
+    try {
+      const symbols = MARKET_SYMBOLS.map(s => s.symbol).join(',')
+      const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(symbols)}`)
+      const data = await res.json()
+      const bySymbol = new Map((data.quotes || []).map((q: { symbol: string; price: number | null; pctChange: number | null }) => [q.symbol, q]))
+      setItems(MARKET_SYMBOLS.map(s => {
+        const q = bySymbol.get(s.symbol) as { price: number | null; pctChange: number | null } | undefined
+        return { ...s, price: q?.price ?? null, pctChange: q?.pctChange ?? null }
+      }))
+    } catch {}
     setLoading(false)
   }, [])
 
@@ -75,9 +43,7 @@ export default function MarketOverview({ onSelect }: { onSelect: (symbol: string
     <div style={{ overflow: 'auto', height: '100%' }}>
       {groups.map(group => (
         <div key={group}>
-          <div style={{ padding: '8px 12px 4px', fontSize: '9px', color: '#c8963e', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600 }}>
-            {group}
-          </div>
+          <div className="terminal-sector-label">{group}</div>
           <div className="terminal-market-grid">
             {items.filter(i => i.group === group).map(item => {
               const up = (item.pctChange ?? 0) >= 0
@@ -85,12 +51,16 @@ export default function MarketOverview({ onSelect }: { onSelect: (symbol: string
                 <div
                   key={item.symbol}
                   className="terminal-market-card"
-                  onClick={() => onSelect(item.symbol.includes(':') ? item.symbol : item.symbol)}
+                  onClick={() => onSelect(item.symbol)}
                 >
-                  <div className="terminal-market-card-sym">{item.symbol.includes(':') ? item.name : item.symbol}</div>
+                  <div className="terminal-market-card-sym">{item.symbol}</div>
                   <div className="terminal-market-card-name">{item.name}</div>
                   <div className="terminal-market-card-price">
-                    {item.price ? (item.price >= 1000 ? item.price.toLocaleString('en-US', { maximumFractionDigits: 0 }) : item.price.toFixed(2)) : '—'}
+                    {item.price != null
+                      ? item.price >= 1000
+                        ? item.price.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                        : item.price >= 10 ? item.price.toFixed(2) : item.price.toFixed(4)
+                      : '—'}
                   </div>
                   <div className={`terminal-market-card-chg ${up ? 't-green' : 't-red'}`}>
                     {item.pctChange != null ? `${up ? '+' : ''}${item.pctChange.toFixed(2)}%` : '—'}

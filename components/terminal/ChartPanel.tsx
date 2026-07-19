@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { createChart, type IChartApi, type ISeriesApi, ColorType, type CandlestickData, type LineData, type HistogramData, type Time } from 'lightweight-charts'
+import { createChart, type IChartApi, ColorType, type CandlestickData, type LineData, type HistogramData, type Time } from 'lightweight-charts'
 
 interface Candle {
   time: number
@@ -12,38 +12,59 @@ interface Candle {
   volume: number
 }
 
-const RANGES = ['1D', '5D', '1M', '3M', '6M', '1Y', '5Y'] as const
+const RANGES = ['1D', '5D', '1M', '3M', '6M', 'YTD', '1Y', '5Y', 'MAX'] as const
+const INTRADAY_RANGES = ['1D', '5D', '1M']
 type ChartType = 'candle' | 'line'
+
+function sma(candles: Candle[], period: number): LineData[] {
+  const out: LineData[] = []
+  let sum = 0
+  for (let i = 0; i < candles.length; i++) {
+    sum += candles[i].close
+    if (i >= period) sum -= candles[i - period].close
+    if (i >= period - 1) out.push({ time: candles[i].time as Time, value: sum / period })
+  }
+  return out
+}
+
+function fmtVol(v: number): string {
+  if (v >= 1e9) return `${(v / 1e9).toFixed(2)}B`
+  if (v >= 1e6) return `${(v / 1e6).toFixed(2)}M`
+  if (v >= 1e3) return `${(v / 1e3).toFixed(1)}K`
+  return String(Math.round(v))
+}
 
 export default function ChartPanel({ symbol }: { symbol: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const legendRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
-  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
-  const lineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null)
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
 
   const [range, setRange] = useState<typeof RANGES[number]>('6M')
   const [chartType, setChartType] = useState<ChartType>('candle')
+  const [showSma20, setShowSma20] = useState(false)
+  const [showSma50, setShowSma50] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [empty, setEmpty] = useState(false)
 
-  const fetchAndRender = useCallback(async (sym: string, rng: string, type: ChartType) => {
+  const fetchAndRender = useCallback(async (sym: string, rng: string, type: ChartType, sma20: boolean, sma50: boolean) => {
     if (!containerRef.current) return
     setLoading(true)
+    setEmpty(false)
 
     try {
-      const res = await fetch(`/api/terminal/candles?symbol=${encodeURIComponent(sym)}&range=${rng}&resolution=auto`)
+      const res = await fetch(`/api/terminal/candles?symbol=${encodeURIComponent(sym)}&range=${rng}`)
       const data = await res.json()
       const candles: Candle[] = data.candles || []
 
-      if (candles.length === 0) {
-        setLoading(false)
-        return
-      }
-
-      // Destroy old chart
       if (chartRef.current) {
         chartRef.current.remove()
         chartRef.current = null
+      }
+
+      if (candles.length === 0) {
+        setEmpty(true)
+        setLoading(false)
+        return
       }
 
       const chart = createChart(containerRef.current, {
@@ -67,13 +88,12 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
         },
         timeScale: {
           borderColor: '#1a1a1a',
-          timeVisible: ['1D', '5D'].includes(rng),
+          timeVisible: INTRADAY_RANGES.includes(rng),
           secondsVisible: false,
         },
         width: containerRef.current.clientWidth,
         height: containerRef.current.clientHeight,
       })
-
       chartRef.current = chart
 
       if (type === 'candle') {
@@ -86,29 +106,27 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
           wickDownColor: '#ff174488',
         })
         series.setData(candles.map(c => ({
-          time: c.time as Time,
-          open: c.open,
-          high: c.high,
-          low: c.low,
-          close: c.close,
+          time: c.time as Time, open: c.open, high: c.high, low: c.low, close: c.close,
         })) as CandlestickData[])
-        candleSeriesRef.current = series
       } else {
-        const lastClose = candles[candles.length - 1]?.close ?? 0
-        const firstClose = candles[0]?.close ?? 0
-        const isUp = lastClose >= firstClose
-
+        const isUp = (candles[candles.length - 1]?.close ?? 0) >= (candles[0]?.close ?? 0)
         const series = chart.addLineSeries({
           color: isUp ? '#00c853' : '#ff1744',
           lineWidth: 2,
           crosshairMarkerRadius: 4,
           crosshairMarkerBackgroundColor: isUp ? '#00c853' : '#ff1744',
         })
-        series.setData(candles.map(c => ({
-          time: c.time as Time,
-          value: c.close,
-        })) as LineData[])
-        lineSeriesRef.current = series
+        series.setData(candles.map(c => ({ time: c.time as Time, value: c.close })) as LineData[])
+      }
+
+      // Moving average overlays
+      if (sma20 && candles.length >= 20) {
+        const s = chart.addLineSeries({ color: '#e0b64f', lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false })
+        s.setData(sma(candles, 20))
+      }
+      if (sma50 && candles.length >= 50) {
+        const s = chart.addLineSeries({ color: '#4f8fe0', lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false })
+        s.setData(sma(candles, 50))
       }
 
       // Volume histogram
@@ -116,29 +134,50 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
         priceFormat: { type: 'volume' },
         priceScaleId: 'volume',
       })
-      chart.priceScale('volume').applyOptions({
-        scaleMargins: { top: 0.85, bottom: 0 },
-      })
+      chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } })
       volSeries.setData(candles.map(c => ({
         time: c.time as Time,
         value: c.volume,
         color: c.close >= c.open ? '#00c85322' : '#ff174422',
       })) as HistogramData[])
-      volumeSeriesRef.current = volSeries
+
+      // Crosshair OHLC legend
+      const byTime = new Map(candles.map(c => [c.time, c]))
+      const renderLegend = (c: Candle | undefined) => {
+        if (!legendRef.current) return
+        if (!c) { legendRef.current.textContent = '' ; return }
+        const chg = c.close - c.open
+        const pct = c.open ? (chg / c.open) * 100 : 0
+        const cls = chg >= 0 ? 't-green' : 't-red'
+        const p = (n: number) => n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 2 }) : n.toFixed(2)
+        legendRef.current.innerHTML =
+          `<span class="t-amber">${sym}</span> ` +
+          `O <span>${p(c.open)}</span> H <span>${p(c.high)}</span> ` +
+          `L <span>${p(c.low)}</span> C <span class="${cls}">${p(c.close)}</span> ` +
+          `<span class="${cls}">${chg >= 0 ? '+' : ''}${pct.toFixed(2)}%</span>` +
+          (c.volume ? ` · VOL <span>${fmtVol(c.volume)}</span>` : '')
+      }
+      renderLegend(candles[candles.length - 1])
+
+      chart.subscribeCrosshairMove(param => {
+        if (!param.time) {
+          renderLegend(candles[candles.length - 1])
+          return
+        }
+        renderLegend(byTime.get(param.time as number))
+      })
 
       chart.timeScale().fitContent()
-
     } catch {
-      // Chart load failed
+      setEmpty(true)
     }
     setLoading(false)
   }, [])
 
   useEffect(() => {
-    if (symbol) fetchAndRender(symbol, range, chartType)
-  }, [symbol, range, chartType, fetchAndRender])
+    if (symbol) fetchAndRender(symbol, range, chartType, showSma20, showSma50)
+  }, [symbol, range, chartType, showSma20, showSma50, fetchAndRender])
 
-  // Resize handler
   useEffect(() => {
     function handleResize() {
       if (chartRef.current && containerRef.current) {
@@ -152,9 +191,8 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Cleanup
   useEffect(() => {
-    return () => { chartRef.current?.remove() }
+    return () => { chartRef.current?.remove(); chartRef.current = null }
   }, [])
 
   return (
@@ -169,6 +207,21 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
             {r}
           </button>
         ))}
+        <span className="terminal-chart-divider" />
+        <button
+          className={`terminal-chart-range-btn ${showSma20 ? 'active' : ''}`}
+          onClick={() => setShowSma20(v => !v)}
+          title="20-period simple moving average"
+        >
+          MA20
+        </button>
+        <button
+          className={`terminal-chart-range-btn ${showSma50 ? 'active' : ''}`}
+          onClick={() => setShowSma50(v => !v)}
+          title="50-period simple moving average"
+        >
+          MA50
+        </button>
         <button
           className={`terminal-chart-type-btn ${chartType === 'candle' ? 'active' : ''}`}
           onClick={() => setChartType('candle')}
@@ -184,12 +237,12 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
           ╱
         </button>
       </div>
-      <div
-        ref={containerRef}
-        className="terminal-chart-container"
-        style={{ position: 'relative' }}
-      >
+      <div ref={containerRef} className="terminal-chart-container" style={{ position: 'relative' }}>
+        <div ref={legendRef} className="terminal-chart-legend" />
         {loading && <div className="terminal-loading">Loading chart</div>}
+        {!loading && empty && (
+          <div className="terminal-loading" style={{ color: '#555' }}>No chart data for {symbol}</div>
+        )}
       </div>
     </>
   )

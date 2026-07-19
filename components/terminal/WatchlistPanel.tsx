@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { DEFAULT_WATCHLIST } from '@/lib/terminal/symbols'
 
 interface WatchItem {
   symbol: string
@@ -8,7 +9,6 @@ interface WatchItem {
   pctChange: number | null
 }
 
-const DEFAULT_WATCHLIST = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'TSLA', 'BRK.B', 'GLD', 'TLT']
 const STORAGE_KEY = 'bourbon-terminal-watchlist'
 
 function loadWatchlist(): string[] {
@@ -30,29 +30,26 @@ export default function WatchlistPanel({ onSelect }: { onSelect: (symbol: string
   const [addMode, setAddMode] = useState(false)
   const [addInput, setAddInput] = useState('')
 
-  // Load watchlist on mount
   useEffect(() => {
     setSymbols(loadWatchlist())
   }, [])
 
   const fetchQuotes = useCallback(async (syms: string[]) => {
-    const results: WatchItem[] = await Promise.all(
-      syms.map(async sym => {
-        try {
-          const res = await fetch(`/api/terminal/quote?symbol=${encodeURIComponent(sym)}`)
-          const d = await res.json()
-          return { symbol: sym, price: d.price ?? null, pctChange: d.pctChange ?? null }
-        } catch {
-          return { symbol: sym, price: null, pctChange: null }
-        }
-      })
-    )
-    setItems(results)
+    try {
+      const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(syms.join(','))}`)
+      const data = await res.json()
+      const bySymbol = new Map((data.quotes || []).map((q: { symbol: string; price: number | null; pctChange: number | null }) => [q.symbol, q]))
+      setItems(syms.map(sym => {
+        const q = bySymbol.get(sym) as { price: number | null; pctChange: number | null } | undefined
+        return { symbol: sym, price: q?.price ?? null, pctChange: q?.pctChange ?? null }
+      }))
+    } catch {
+      setItems(syms.map(sym => ({ symbol: sym, price: null, pctChange: null })))
+    }
   }, [])
 
   useEffect(() => {
     if (symbols.length > 0) fetchQuotes(symbols)
-    // Refresh every 60s
     const id = setInterval(() => { if (symbols.length > 0) fetchQuotes(symbols) }, 60000)
     return () => clearInterval(id)
   }, [symbols, fetchQuotes])
@@ -120,7 +117,7 @@ export default function WatchlistPanel({ onSelect }: { onSelect: (symbol: string
             >
               <span className="terminal-watchlist-sym">{item.symbol}</span>
               <span className="terminal-watchlist-price">
-                {item.price ? item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+                {item.price != null ? item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
               </span>
               <span className={`terminal-watchlist-chg ${up ? 't-green' : 't-red'}`}>
                 {item.pctChange != null ? `${up ? '+' : ''}${item.pctChange.toFixed(2)}%` : '—'}
