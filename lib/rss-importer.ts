@@ -12,7 +12,24 @@ const KEYWORDS = [
   'bank', 'investment', 'fund', 'capital', 'tech', 'openai', 'google',
   'microsoft', 'apple', 'nvidia', 'regulation', 'policy', 'trade', 'tariff',
   'geopolitics', 'china', 'semiconductor', 'energy', 'oil', 'data',
+  'economy', 'economic', 'treasury', 'dollar', 'currency', 'forex',
+  'commodity', 'gold', 'sanctions', 'debt', 'deficit', 'fiscal',
+  'monetary', 'central bank', 'imf', 'world bank', 'climate', 'carbon',
+  'supply chain', 'blockchain', 'defi', 'stablecoin', 'etf', 'hedge fund',
+  'private equity', 'venture capital', 'valuation', 'earnings', 'revenue',
+  'profit', 'loss', 'layoff', 'hiring', 'jobs', 'unemployment',
+  'nato', 'eu', 'brics', 'opec', 'g7', 'g20', 'diplomacy', 'conflict',
+  'security', 'defense', 'nuclear', 'taiwan', 'russia', 'ukraine', 'india',
+  'japan', 'korea', 'middle east', 'africa', 'latin america',
+  'antitrust', 'privacy', 'legislation', 'congress', 'sec', 'cftc',
+  'payments', 'lending', 'insurance', 'banking', 'neobank', 'embedded finance',
 ]
+
+// Categories that bypass keyword filtering — every article from these feeds
+// is topically relevant by definition (e.g., IMF Blog, NBER, Federal Reserve)
+const BYPASS_KEYWORD_CATEGORIES = new Set([
+  'macro', 'geopolitics', 'policy', 'energy', 'crypto', 'fintech',
+])
 
 const JUNK_TITLES = [
   'just a moment', 'access denied', 'subscribe to read', 'sign in',
@@ -21,7 +38,8 @@ const JUNK_TITLES = [
   'verify you are human', 'loading...', 'redirecting',
 ]
 
-function isRelevant(title: string, description: string): boolean {
+function isRelevant(title: string, description: string, category: string): boolean {
+  if (BYPASS_KEYWORD_CATEGORIES.has(category)) return true
   const text = `${title} ${description}`.toLowerCase()
   return KEYWORDS.some(kw => text.includes(kw))
 }
@@ -31,7 +49,7 @@ function isJunkTitle(title: string): boolean {
   return !t || JUNK_TITLES.some(j => t.includes(j)) || t.length < 10
 }
 
-export async function runRssImport(): Promise<{ saved: number; skipped: number; total_feeds: number }> {
+export async function runRssImport(): Promise<{ saved: number; skipped: number; total_feeds: number; feed_errors: number }> {
   const supabase = getAdminClient()
   const imported: string[] = []
   const skipped: string[] = []
@@ -53,6 +71,8 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
   const feedBatches: typeof RSS_FEEDS[] = []
   for (let i = 0; i < RSS_FEEDS.length; i += 5) feedBatches.push(RSS_FEEDS.slice(i, i + 5))
 
+  const feedErrors: Array<{ feed: string; error: string }> = []
+
   for (const batch of feedBatches) {
     await Promise.all(batch.map(async feed => {
       try {
@@ -62,7 +82,7 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
           if (!url || existingUrls.has(url)) continue
           const title = item.title || ''
           const description = item.contentSnippet || item.summary || item.content || ''
-          if (!isRelevant(title, description)) continue
+          if (!isRelevant(title, description, feed.category)) continue
           allItems.push({
             url, title,
             description: description.slice(0, 500),
@@ -72,10 +92,14 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
             articleDate: item.isoDate || item.pubDate || new Date().toISOString(),
           })
         }
-      } catch {
-        // Feed failed silently
+      } catch (err) {
+        feedErrors.push({ feed: feed.name, error: err instanceof Error ? err.message : String(err) })
       }
     }))
+  }
+
+  if (feedErrors.length > 0) {
+    console.warn(`[RSS Import] ${feedErrors.length} feed(s) failed:`, feedErrors.map(e => `${e.feed}: ${e.error}`).join('; '))
   }
 
   // Deduplicate
@@ -102,7 +126,7 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
       const { error } = await supabase.from('tipsy_reads').insert({
         url:              item.url,
         title:            finalTitle,
-        publication:      og.siteName || item.publication,
+        publication:      item.publication,
         description:      og.description || item.description,
         og_image:         og.image,
         category:         item.category,
@@ -123,5 +147,5 @@ export async function runRssImport(): Promise<{ saved: number; skipped: number; 
     .eq('status', 'suggested')
     .lt('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
 
-  return { saved: imported.length, skipped: skipped.length, total_feeds: RSS_FEEDS.length }
+  return { saved: imported.length, skipped: skipped.length, total_feeds: RSS_FEEDS.length, feed_errors: feedErrors.length }
 }

@@ -86,8 +86,8 @@ export default function Nav({
         <Link href="/tipsy-reads">Tipsy Reads</Link>
         <Link href="/articles">Intelligence Desk</Link>
         <Link href="/data-pulse">Data Pulse</Link>
+        <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
         <Link href="/#radar">Disruptor Radar</Link>
-        <Link href="/proof-score">Proof Score</Link>
       </div>
       <div className="nav-right">
         <div className="nav-live">
