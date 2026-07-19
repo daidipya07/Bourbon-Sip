@@ -1,5 +1,8 @@
-// Shared symbol universes for the terminal. Yahoo-native symbols —
-// the batch quotes and candles routes proxy Yahoo's chart API.
+// Terminal symbol universes. Every symbol here is quotable on Finnhub's free
+// tier from Vercel: US equities, ETFs, and Binance crypto pairs. Indices, FX,
+// and global markets use liquid ETF proxies (SPY≈S&P 500, UUP≈US Dollar,
+// EWJ≈Japan) because Finnhub free can't quote raw indices/FX and Yahoo blocks
+// datacenter IPs. Charts (Twelve Data) can chart any of these directly.
 
 export interface StripSymbol {
   symbol: string
@@ -7,18 +10,17 @@ export interface StripSymbol {
 }
 
 export const STRIP_SYMBOLS: StripSymbol[] = [
-  { symbol: '^GSPC', label: 'S&P 500' },
-  { symbol: '^IXIC', label: 'NASDAQ' },
-  { symbol: '^DJI', label: 'DOW' },
-  { symbol: '^RUT', label: 'RUS 2K' },
-  { symbol: '^VIX', label: 'VIX' },
-  { symbol: '^TNX', label: 'US 10Y' },
+  { symbol: 'SPY', label: 'S&P 500' },
+  { symbol: 'QQQ', label: 'NASDAQ' },
+  { symbol: 'DIA', label: 'DOW' },
+  { symbol: 'IWM', label: 'RUSSELL' },
+  { symbol: 'VIXY', label: 'VIX' },
+  { symbol: 'TLT', label: 'US 20Y' },
   { symbol: 'GLD', label: 'GOLD' },
   { symbol: 'USO', label: 'OIL' },
-  { symbol: 'BTC-USD', label: 'BTC' },
-  { symbol: 'ETH-USD', label: 'ETH' },
-  { symbol: 'EURUSD=X', label: 'EUR/USD' },
-  { symbol: 'JPY=X', label: 'USD/JPY' },
+  { symbol: 'UUP', label: 'USD' },
+  { symbol: 'BINANCE:BTCUSDT', label: 'BTC' },
+  { symbol: 'BINANCE:ETHUSDT', label: 'ETH' },
 ]
 
 export interface MarketSymbol {
@@ -28,22 +30,21 @@ export interface MarketSymbol {
 }
 
 export const MARKET_SYMBOLS: MarketSymbol[] = [
-  // US Indices
-  { symbol: '^GSPC', name: 'S&P 500', group: 'US Indices' },
-  { symbol: '^IXIC', name: 'Nasdaq Comp', group: 'US Indices' },
-  { symbol: '^DJI', name: 'Dow Jones', group: 'US Indices' },
-  { symbol: '^RUT', name: 'Russell 2000', group: 'US Indices' },
-  { symbol: '^VIX', name: 'VIX', group: 'US Indices' },
-  { symbol: '^TNX', name: 'US 10Y Yield', group: 'US Indices' },
-  // Global Indices
-  { symbol: '^FTSE', name: 'FTSE 100', group: 'Global Indices' },
-  { symbol: '^GDAXI', name: 'DAX', group: 'Global Indices' },
-  { symbol: '^N225', name: 'Nikkei 225', group: 'Global Indices' },
-  { symbol: '^HSI', name: 'Hang Seng', group: 'Global Indices' },
-  { symbol: '^FCHI', name: 'CAC 40', group: 'Global Indices' },
-  { symbol: '^BSESN', name: 'Sensex', group: 'Global Indices' },
+  // US Indices (ETF proxies)
+  { symbol: 'SPY', name: 'S&P 500', group: 'US Indices' },
+  { symbol: 'QQQ', name: 'Nasdaq 100', group: 'US Indices' },
+  { symbol: 'DIA', name: 'Dow Jones', group: 'US Indices' },
+  { symbol: 'IWM', name: 'Russell 2000', group: 'US Indices' },
+  { symbol: 'VIXY', name: 'VIX Futures', group: 'US Indices' },
+  // Global (country ETF proxies)
+  { symbol: 'EWU', name: 'United Kingdom', group: 'Global' },
+  { symbol: 'EWG', name: 'Germany', group: 'Global' },
+  { symbol: 'EWJ', name: 'Japan', group: 'Global' },
+  { symbol: 'MCHI', name: 'China', group: 'Global' },
+  { symbol: 'INDA', name: 'India', group: 'Global' },
+  { symbol: 'EWY', name: 'South Korea', group: 'Global' },
   // Sectors
-  { symbol: 'XLK', name: 'Tech', group: 'US Sectors' },
+  { symbol: 'XLK', name: 'Technology', group: 'US Sectors' },
   { symbol: 'XLF', name: 'Financials', group: 'US Sectors' },
   { symbol: 'XLE', name: 'Energy', group: 'US Sectors' },
   { symbol: 'XLV', name: 'Healthcare', group: 'US Sectors' },
@@ -51,25 +52,25 @@ export const MARKET_SYMBOLS: MarketSymbol[] = [
   { symbol: 'XLP', name: 'Staples', group: 'US Sectors' },
   { symbol: 'XLY', name: 'Discretionary', group: 'US Sectors' },
   { symbol: 'XLU', name: 'Utilities', group: 'US Sectors' },
-  // FX
-  { symbol: 'EURUSD=X', name: 'EUR/USD', group: 'FX' },
-  { symbol: 'GBPUSD=X', name: 'GBP/USD', group: 'FX' },
-  { symbol: 'JPY=X', name: 'USD/JPY', group: 'FX' },
-  { symbol: 'DX-Y.NYB', name: 'Dollar Index', group: 'FX' },
-  // Commodities
-  { symbol: 'GC=F', name: 'Gold', group: 'Commodities' },
-  { symbol: 'SI=F', name: 'Silver', group: 'Commodities' },
-  { symbol: 'CL=F', name: 'WTI Crude', group: 'Commodities' },
-  { symbol: 'NG=F', name: 'Nat Gas', group: 'Commodities' },
-  // Bonds
+  // FX (ETF proxies)
+  { symbol: 'UUP', name: 'US Dollar', group: 'FX' },
+  { symbol: 'FXE', name: 'Euro', group: 'FX' },
+  { symbol: 'FXY', name: 'Japanese Yen', group: 'FX' },
+  { symbol: 'FXB', name: 'British Pound', group: 'FX' },
+  // Commodities (ETFs)
+  { symbol: 'GLD', name: 'Gold', group: 'Commodities' },
+  { symbol: 'SLV', name: 'Silver', group: 'Commodities' },
+  { symbol: 'USO', name: 'WTI Crude', group: 'Commodities' },
+  { symbol: 'UNG', name: 'Nat Gas', group: 'Commodities' },
+  // Bonds (ETFs)
   { symbol: 'TLT', name: '20Y+ Treasury', group: 'Bonds' },
   { symbol: 'IEF', name: '7-10Y Treasury', group: 'Bonds' },
   { symbol: 'HYG', name: 'High Yield', group: 'Bonds' },
   { symbol: 'LQD', name: 'IG Corporate', group: 'Bonds' },
   // Crypto
-  { symbol: 'BTC-USD', name: 'Bitcoin', group: 'Crypto' },
-  { symbol: 'ETH-USD', name: 'Ethereum', group: 'Crypto' },
-  { symbol: 'SOL-USD', name: 'Solana', group: 'Crypto' },
+  { symbol: 'BINANCE:BTCUSDT', name: 'Bitcoin', group: 'Crypto' },
+  { symbol: 'BINANCE:ETHUSDT', name: 'Ethereum', group: 'Crypto' },
+  { symbol: 'BINANCE:SOLUSDT', name: 'Solana', group: 'Crypto' },
 ]
 
 export interface HeatmapSymbol {
@@ -105,7 +106,7 @@ export const HEATMAP_SYMBOLS: HeatmapSymbol[] = [
   { symbol: 'PG', name: 'P&G', sector: 'Consumer' },
   { symbol: 'KO', name: 'Coca-Cola', sector: 'Consumer' },
   { symbol: 'PEP', name: 'PepsiCo', sector: 'Consumer' },
-  { symbol: 'BRK-B', name: 'Berkshire', sector: 'Financials' },
+  { symbol: 'BRK.B', name: 'Berkshire', sector: 'Financials' },
   { symbol: 'JPM', name: 'JPMorgan', sector: 'Financials' },
   { symbol: 'V', name: 'Visa', sector: 'Financials' },
   { symbol: 'MA', name: 'Mastercard', sector: 'Financials' },
@@ -132,5 +133,5 @@ export const HEATMAP_SYMBOLS: HeatmapSymbol[] = [
 export const MOVERS_UNIVERSE = HEATMAP_SYMBOLS
 
 export const DEFAULT_WATCHLIST = [
-  'SPY', 'QQQ', 'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'TSLA', 'BRK-B', 'GLD', 'TLT',
+  'SPY', 'QQQ', 'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'TSLA', 'BRK.B', 'GLD', 'TLT',
 ]

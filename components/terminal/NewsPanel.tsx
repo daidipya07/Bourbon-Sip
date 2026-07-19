@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { toFinnhubSymbol } from '@/lib/terminal/yahoo'
 
 interface NewsItem {
   id: number
@@ -23,9 +22,9 @@ function timeAgo(ts: number): string {
   return `${Math.floor(diff / 86400)}d ago`
 }
 
-// Company news only exists for plain equities, not indices/FX/crypto symbols
+// Company news exists for equities/ETFs, not crypto pairs (BINANCE:…)
 function canHaveCompanyNews(symbol: string | null): symbol is string {
-  return !!symbol && !/[\^=:]/.test(symbol) && !symbol.endsWith('-USD')
+  return !!symbol && !symbol.includes(':')
 }
 
 export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: string | null; defaultMode?: Mode }) {
@@ -43,7 +42,7 @@ export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: 
   useEffect(() => {
     setLoading(true)
     const url = activeSymbol
-      ? `/api/terminal/news?symbol=${encodeURIComponent(toFinnhubSymbol(activeSymbol))}`
+      ? `/api/terminal/news?symbol=${encodeURIComponent(activeSymbol)}`
       : '/api/terminal/news?category=general'
 
     fetch(url)

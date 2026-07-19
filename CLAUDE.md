@@ -51,9 +51,9 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `GET /api/cron/import-tipsy` | Vercel cron — requires CRON_SECRET header |
 | `GET /api/cron/weekly-signal` | Vercel cron every Friday 9 AM ET — generates draft AI signal |
 | `GET /api/data-pulse` | Returns MarketSnapshot JSON (FRED + Finnhub), 15-min cache |
-| `GET /api/terminal/quotes?symbols=` | Batch quotes — Yahoo spark (20 syms/request) + Finnhub fallback, 60s cache |
-| `GET /api/terminal/quote?symbol=` | Single quote + profile + key stats — Finnhub for equities, Yahoo for indices/FX/crypto |
-| `GET /api/terminal/candles?symbol=&range=` | OHLCV — Yahoo chart API (Finnhub candles are paid-only), 5-min cache |
+| `GET /api/terminal/quotes?symbols=` | Batch quotes — Finnhub (60/min, works from Vercel), 60s cache |
+| `GET /api/terminal/quote?symbol=` | Single quote + profile + key stats — Finnhub, Twelve Data fallback |
+| `GET /api/terminal/candles?symbol=&range=` | OHLCV — Twelve Data time_series (Finnhub candles paid-only, Yahoo blocks Vercel IPs), 5-min cache |
 | `GET /api/terminal/news` | Finnhub company/market news |
 | `GET /api/terminal/search?q=` | Finnhub symbol search |
 | `GET /api/terminal/earnings` | Finnhub earnings calendar, next 7 days, 1h cache |
@@ -121,8 +121,9 @@ Both sources merged and deduped in `lib/articles.ts`.
 | `lib/data/radar.ts` | Hardcoded Disruptor Radar entries — needs admin UI eventually |
 | `lib/data/articles.ts` | Legacy hardcoded articles — still used as fallback, should be removed |
 | `lib/data/tickers.ts` | Ticker symbols for the homepage ticker strip |
-| `lib/terminal/yahoo.ts` | Yahoo Finance proxy helpers — symbol mapping, spark batch quotes, chart fetch. Keyless. Yahoo 429s request bursts, so spark batches 20 symbols/request and all fetches ride Next.js fetch cache |
-| `lib/terminal/symbols.ts` | Terminal symbol universes (strip, markets grid, sector heatmap, default watchlist) — Yahoo-native symbols |
+| `lib/terminal/finnhub.ts` | Finnhub quote helpers — single + batch (bounded concurrency). Workhorse for live quotes: 60/min, no daily cap, works from Vercel IPs (Yahoo does NOT — it rate-limits datacenter IPs) |
+| `lib/terminal/twelvedata.ts` | Twelve Data helpers — candles/time_series for charts ONLY (free tier 800 req/day, so never used for polling). Symbol mapping to TD format |
+| `lib/terminal/symbols.ts` | Terminal symbol universes. All Finnhub-quotable: US equities, ETFs (SPY≈S&P 500, UUP≈USD, EWJ≈Japan used as index/FX/global proxies), Binance crypto pairs |
 
 ---
 
@@ -165,6 +166,7 @@ FINNHUB_API_KEY=
 OPENAI_API_KEY=
 CRON_SECRET=
 FRED_API_KEY=        # free at fred.stlouisfed.org/docs/api/api_key.html
+TWELVE_DATA_API_KEY= # free at twelvedata.com — Terminal charts/candles only (800 req/day)
 ```
 
 ---

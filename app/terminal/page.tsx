@@ -183,7 +183,7 @@ export default function TerminalPage() {
         <span className="terminal-statusbar-clock">{clock.time}</span>
         <span className="t-amber">{symbol}</span>
         <span style={{ marginLeft: 'auto' }}>
-          Data: Yahoo Finance + Finnhub + FRED · Delayed · Not investment advice
+          Data: Finnhub + Twelve Data + FRED · Delayed · Not investment advice
         </span>
       </div>
     </div>
