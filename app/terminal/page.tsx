@@ -13,6 +13,7 @@ import MoversPanel from '@/components/terminal/MoversPanel'
 import EarningsPanel from '@/components/terminal/EarningsPanel'
 import CompanyPanel from '@/components/terminal/CompanyPanel'
 import TipsyTakePanel from '@/components/terminal/TipsyTakePanel'
+import RegimePill from '@/components/terminal/RegimePill'
 import TerminalStrip from '@/components/terminal/TerminalStrip'
 import './terminal.css'
 
@@ -192,6 +193,7 @@ export default function TerminalPage() {
         </div>
         <span className="terminal-statusbar-clock">{clock.time}</span>
         <span className="t-amber">{symbol}</span>
+        <RegimePill onClick={() => setView('macro')} />
         <span style={{ marginLeft: 'auto' }}>
           Data: Finnhub + Twelve Data + FRED · Delayed · Not investment advice
         </span>

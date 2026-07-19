@@ -41,9 +41,12 @@ function MacroCard({ label, value, unit, change, changeUnit }: {
   )
 }
 
+interface WeeklySignal { week_of: string; regime: string | null; signal_text: string | null }
+
 export default function MacroPanel() {
   const [data, setData] = useState<MacroData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [signal, setSignal] = useState<WeeklySignal | null>(null)
 
   useEffect(() => {
     fetch('/api/data-pulse')
@@ -51,6 +54,10 @@ export default function MacroPanel() {
       .then(d => setData(d))
       .catch(() => {})
       .finally(() => setLoading(false))
+    fetch('/api/terminal/signal')
+      .then(r => r.json())
+      .then(d => setSignal(d.signal || null))
+      .catch(() => {})
   }, [])
 
   if (loading) return <div className="terminal-loading">Loading macro data</div>
@@ -74,6 +81,16 @@ export default function MacroPanel() {
           {data.regimeLabel}
         </span>
       </div>
+
+      {signal?.signal_text && (
+        <div className="terminal-signal-block">
+          <div className="terminal-signal-head">
+            <span>This Week&apos;s Signal</span>
+            {signal.week_of && <span className="t-muted">Week of {signal.week_of}</span>}
+          </div>
+          <p className="terminal-signal-text">{signal.signal_text}</p>
+        </div>
+      )}
 
       <div style={{ padding: '12px 12px 4px', fontSize: '9px', color: '#c8963e', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600 }}>
         Rates & Yield Curve
