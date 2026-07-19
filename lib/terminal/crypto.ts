@@ -47,6 +47,7 @@ export async function fetchCryptoQuotes(symbols: string[]): Promise<FinnhubQuote
         prevClose: prev,
         change: parseFloat((price - prev).toFixed(4)),
         pctChange: parseFloat(pct.toFixed(2)),
+        changeBasis: '24h' as const,
       }
     })
   } catch {

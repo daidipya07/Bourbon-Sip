@@ -36,7 +36,7 @@ export default function HeatmapPanel({ onSelect }: { onSelect: (symbol: string) 
   return (
     <div className="terminal-panel">
       <div className="terminal-panel-header">
-        <span className="terminal-panel-title">US Large Caps — Heatmap by Sector</span>
+        <span className="terminal-panel-title">Heatmap — {HEATMAP_SYMBOLS.length} Tracked US Large Caps</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '9px', color: '#444' }}>% change · click to chart</span>
           <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />

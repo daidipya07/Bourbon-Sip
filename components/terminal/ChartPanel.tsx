@@ -6,7 +6,7 @@ import {
   type CandlestickData, type LineData, type HistogramData, type Time,
 } from 'lightweight-charts'
 import {
-  ema, bollinger, rsi, macd, perfStats, type Candle, type LinePoint,
+  ema, bollinger, rsi, macd, perfStats, type Candle, type LinePoint, type BarInterval,
 } from '@/lib/terminal/indicators'
 
 const RANGES = ['1D', '5D', '1M', '3M', '6M', 'YTD', '1Y', '5Y', 'MAX'] as const
@@ -44,10 +44,10 @@ function computeMargins(panes: { id: string; weight: number }[]): Record<string,
 
 function toTime(p: LinePoint): LineData { return { time: p.time as Time, value: p.value } }
 
-async function fetchCandles(symbol: string, range: string): Promise<Candle[]> {
+async function fetchCandles(symbol: string, range: string): Promise<{ candles: Candle[]; interval: BarInterval }> {
   const res = await fetch(`/api/terminal/candles?symbol=${encodeURIComponent(symbol)}&range=${range}`)
   const data = await res.json()
-  return data.candles || []
+  return { candles: data.candles || [], interval: (data.interval as BarInterval) || '1d' }
 }
 
 export default function ChartPanel({ symbol }: { symbol: string }) {
@@ -74,7 +74,7 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
     setEmpty(false)
 
     try {
-      const candles = await fetchCandles(sym, rng)
+      const { candles, interval } = await fetchCandles(sym, rng)
 
       if (chartRef.current) { chartRef.current.remove(); chartRef.current = null }
       if (candles.length === 0) { setEmpty(true); setLoading(false); setStats(null); return }
@@ -102,10 +102,10 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
 
         const compareData = await Promise.all(compares.map(s => fetchCandles(s, rng)))
         compareData.forEach((cd, i) => {
-          if (cd.length === 0) return
-          const start = cd[0].close || 1
+          if (cd.candles.length === 0) return
+          const start = cd.candles[0].close || 1
           const line = chart.addLineSeries({ color: COMPARE_COLORS[i % COMPARE_COLORS.length], lineWidth: 2, priceFormat: { type: 'percent' } })
-          line.setData(cd.map(c => ({ time: c.time as Time, value: ((c.close - start) / start) * 100 })) as LineData[])
+          line.setData(cd.candles.map(c => ({ time: c.time as Time, value: ((c.close - start) / start) * 100 })) as LineData[])
         })
 
         if (legendRef.current) {
@@ -207,7 +207,7 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
       chart.timeScale().fitContent()
 
       // ── Perf stats ──
-      setStats(perfStats(candles))
+      setStats(perfStats(candles, interval))
       const first = candles[0]?.close
       const lastC = candles[candles.length - 1]?.close
       setRangeReturn(first && lastC ? ((lastC - first) / first) * 100 : null)
@@ -298,10 +298,11 @@ export default function ChartPanel({ symbol }: { symbol: string }) {
       {stats && !inCompare && (
         <div className="terminal-perf-strip">
           <PerfStat label={`${range} Return`} value={rangeReturn} suffix="%" signed />
+          {stats.ret1M != null && !['1M', '3M'].includes(range) && <PerfStat label="1M" value={stats.ret1M} suffix="%" signed />}
           {stats.retYTD != null && <PerfStat label="YTD" value={stats.retYTD} suffix="%" signed />}
           {stats.ret1Y != null && <PerfStat label="1Y" value={stats.ret1Y} suffix="%" signed />}
-          <PerfStat label="Ann Vol" value={stats.annVol} suffix="%" />
-          <PerfStat label="Max DD" value={stats.maxDrawdown} suffix="%" signed />
+          {stats.annVol != null && <PerfStat label="Ann Vol" value={stats.annVol} suffix="%" />}
+          <PerfStat label={INTRADAY_RANGES.includes(range) ? 'Window DD' : 'Max DD'} value={stats.maxDrawdown} suffix="%" signed />
         </div>
       )}
     </>

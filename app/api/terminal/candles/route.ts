@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchTwelveDataCandles } from '@/lib/terminal/twelvedata'
+import { fetchTwelveDataCandles, TD_RANGE_MAP } from '@/lib/terminal/twelvedata'
+
+// Twelve Data interval → normalized bar interval used by client-side stats.
+const INTERVAL_MAP: Record<string, string> = {
+  '5min': '5m', '15min': '15m', '30min': '30m', '1h': '60m',
+  '1day': '1d', '1week': '1wk', '1month': '1mo',
+}
 
 // OHLCV history via Twelve Data (Finnhub candles are paid-only, Yahoo blocks
 // Vercel IPs). Charts are user-triggered, so this stays within Twelve Data's
@@ -19,7 +25,8 @@ export async function GET(req: NextRequest) {
     if (candles.length === 0) {
       return NextResponse.json({ symbol, range, candles: [], error: error || 'No candle data' }, { status: 200 })
     }
-    return NextResponse.json({ symbol, range, candles, meta }, {
+    const tdInterval = (TD_RANGE_MAP[range] || TD_RANGE_MAP['6M']).interval
+    return NextResponse.json({ symbol, range, interval: INTERVAL_MAP[tdInterval] || '1d', candles, meta }, {
       headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
     })
   } catch {

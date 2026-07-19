@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
         marketCap: null,
         logo: null,
         stats: null,
+        changeBasis: '24h',
       }, { headers: CACHE_HEADERS })
     }
     return NextResponse.json({ error: 'No data for symbol' }, { status: 404 })

@@ -195,6 +195,15 @@
   background: #111;
 }
 
+/* Real FRED macro values (not proxies) get an amber accent */
+.terminal-strip-macro {
+  border-right: 1px solid #1a1408;
+  background: #0d0a04;
+}
+.terminal-strip-macro .terminal-strip-sym {
+  color: #c8963e;
+}
+
 .terminal-strip-sym {
   color: #888;
   font-size: 9px;

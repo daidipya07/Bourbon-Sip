@@ -26,6 +26,7 @@ interface QuoteData {
   industry: string
   marketCap: number | null
   stats: QuoteStats | null
+  changeBasis?: '24h'
 }
 
 function fmt(v: number | null | undefined): string {
@@ -78,6 +79,7 @@ export default function QuotePanel({ symbol }: { symbol: string }) {
         </span>
         <span className={`terminal-quote-change ${up ? 't-green' : 't-red'}`}>
           {up ? '+' : ''}{change.toFixed(2)} ({up ? '+' : ''}{pctChange.toFixed(2)}%)
+          {data.changeBasis === '24h' && <span style={{ fontSize: '10px', color: '#666', marginLeft: '6px' }}>24h</span>}
         </span>
       </div>
 

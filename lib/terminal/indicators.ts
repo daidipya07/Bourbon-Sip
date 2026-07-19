@@ -139,16 +139,29 @@ export interface PerfStats {
   ret6M: number | null
   retYTD: number | null
   ret1Y: number | null
-  annVol: number | null      // annualized volatility, %
-  maxDrawdown: number | null // most negative peak-to-trough, %
+  annVol: number | null      // annualized volatility, % (null on intraday bars)
+  maxDrawdown: number | null // most negative peak-to-trough within the window, %
+}
+
+export type BarInterval = '5m' | '15m' | '60m' | '1d' | '1wk' | '1mo'
+
+// Bars per year for annualizing volatility — only meaningful for daily+ bars.
+// Annualizing intraday bars with √252 wildly overstates vol, so intraday → null.
+const ANNUALIZATION: Partial<Record<BarInterval, number>> = {
+  '1d': 252,
+  '1wk': 52,
+  '1mo': 12,
 }
 
 // Return between the last close and the close ~n calendar days ago.
+// Returns null when the loaded window doesn't actually span the period —
+// otherwise a 1-day window would report its 1-day move labeled as "1M".
 function returnOverDays(candles: Candle[], days: number): number | null {
   if (candles.length < 2) return null
   const last = candles[candles.length - 1]
   const cutoff = last.time - days * 86400
-  // First candle at/after the cutoff.
+  // Window must start at/before the cutoff (10% tolerance for holidays/weekends).
+  if (candles[0].time > last.time - days * 86400 * 0.9) return null
   let ref: Candle | null = null
   for (let i = 0; i < candles.length; i++) {
     if (candles[i].time >= cutoff) { ref = candles[i]; break }
@@ -157,32 +170,38 @@ function returnOverDays(candles: Candle[], days: number): number | null {
   return ((last.close - ref.close) / ref.close) * 100
 }
 
-// Perf stats from (ideally daily) candles. On intraday ranges these are noisy but
-// still directionally valid; callers pass a daily-range candle set when possible.
-export function perfStats(candles: Candle[]): PerfStats {
+// Perf stats from candle history. `barInterval` (as reported by the candles API)
+// controls volatility annualization and guards period returns.
+export function perfStats(candles: Candle[], barInterval: BarInterval = '1d'): PerfStats {
   if (candles.length < 2) {
     return { ret1M: null, ret6M: null, retYTD: null, ret1Y: null, annVol: null, maxDrawdown: null }
   }
   const last = candles[candles.length - 1]
 
-  // YTD: first candle of the current calendar year.
+  // YTD: first candle of the current calendar year — only if the window
+  // actually reaches back to (roughly) the start of the year.
   const year = new Date(last.time * 1000).getUTCFullYear()
   const jan1 = Date.UTC(year, 0, 1) / 1000
-  let ytdRef: Candle | null = null
-  for (const c of candles) { if (c.time >= jan1) { ytdRef = c; break } }
-  const retYTD = ytdRef && ytdRef.close !== 0 && ytdRef !== last
-    ? ((last.close - ytdRef.close) / ytdRef.close) * 100 : null
+  let retYTD: number | null = null
+  if (candles[0].time <= jan1 + 7 * 86400) {
+    let ytdRef: Candle | null = null
+    for (const c of candles) { if (c.time >= jan1) { ytdRef = c; break } }
+    if (ytdRef && ytdRef.close !== 0 && ytdRef !== last) {
+      retYTD = ((last.close - ytdRef.close) / ytdRef.close) * 100
+    }
+  }
 
-  // Annualized volatility from daily log returns.
+  // Annualized volatility from per-bar log returns — daily+ bars only.
+  const barsPerYear = ANNUALIZATION[barInterval]
   let annVol: number | null = null
-  if (candles.length >= 10) {
+  if (barsPerYear && candles.length >= 10) {
     const rets: number[] = []
     for (let i = 1; i < candles.length; i++) {
       if (candles[i - 1].close > 0) rets.push(Math.log(candles[i].close / candles[i - 1].close))
     }
     const mean = rets.reduce((a, b) => a + b, 0) / rets.length
     const varc = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length
-    annVol = Math.sqrt(varc) * Math.sqrt(252) * 100
+    annVol = Math.sqrt(varc) * Math.sqrt(barsPerYear) * 100
   }
 
   // Max drawdown over the window.

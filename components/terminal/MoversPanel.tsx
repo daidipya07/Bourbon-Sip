@@ -45,7 +45,7 @@ export default function MoversPanel({ onSelect }: { onSelect: (symbol: string) =
   return (
     <div className="terminal-panel">
       <div className="terminal-panel-header">
-        <span className="terminal-panel-title">Movers — Large Caps</span>
+        <span className="terminal-panel-title">Movers — {MOVERS_UNIVERSE.length} Tracked Large Caps</span>
         <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />
       </div>
       <div className="terminal-panel-body">

@@ -122,7 +122,7 @@ export default function TerminalPage() {
       </div>
 
       {/* ── Ticker Strip ────────────────────────────────── */}
-      <TerminalStrip onSelect={handleSelect} />
+      <TerminalStrip onSelect={handleSelect} onMacro={() => setView('macro')} />
 
       {/* ── Main Content ────────────────────────────────── */}
       {view === 'chart' && (

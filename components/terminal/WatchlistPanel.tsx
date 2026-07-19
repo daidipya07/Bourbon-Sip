@@ -6,7 +6,7 @@ import { usePolling } from './usePolling'
 import { useStreamedPrice, useFlash } from './StreamProvider'
 import PanelStatus from './PanelStatus'
 
-interface Quote { symbol: string; price: number | null; pctChange: number | null; prevClose?: number }
+interface Quote { symbol: string; price: number | null; pctChange: number | null; prevClose?: number; changeBasis?: string }
 
 function WatchRow({ symbol, quote, onSelect, onRemove }: {
   symbol: string; quote?: Quote; onSelect: (s: string) => void; onRemove: (s: string) => void
@@ -32,7 +32,7 @@ function WatchRow({ symbol, quote, onSelect, onRemove }: {
         {price != null ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
       </span>
       <span className={`terminal-watchlist-chg ${up ? 't-green' : 't-red'}`}>
-        {pct != null ? `${up ? '+' : ''}${pct.toFixed(2)}%` : '—'}
+        {pct != null ? `${up ? '+' : ''}${pct.toFixed(2)}%${quote?.changeBasis === '24h' ? ' 24h' : ''}` : '—'}
       </span>
     </div>
   )

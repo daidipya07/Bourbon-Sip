@@ -12,6 +12,8 @@ export interface FinnhubQuote {
   change: number | null
   pctChange: number | null
   prevClose?: number
+  // '24h' for CoinGecko crypto (rolling 24h change); absent = vs prev close
+  changeBasis?: '24h'
 }
 
 // Company-news / profile endpoints want the raw ticker; crypto has neither.

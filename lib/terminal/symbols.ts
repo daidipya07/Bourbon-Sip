@@ -9,16 +9,16 @@ export interface StripSymbol {
   label: string
 }
 
+// Ticker-first labels: these are ETF proxies, not index levels — say so.
+// Real VIX / 10Y / DXY come from FRED via /api/data-pulse (see TerminalStrip).
 export const STRIP_SYMBOLS: StripSymbol[] = [
-  { symbol: 'SPY', label: 'S&P 500' },
-  { symbol: 'QQQ', label: 'NASDAQ' },
-  { symbol: 'DIA', label: 'DOW' },
-  { symbol: 'IWM', label: 'RUSSELL' },
-  { symbol: 'VIXY', label: 'VIX' },
-  { symbol: 'TLT', label: 'US 20Y' },
-  { symbol: 'GLD', label: 'GOLD' },
-  { symbol: 'USO', label: 'OIL' },
-  { symbol: 'UUP', label: 'USD' },
+  { symbol: 'SPY', label: 'SPY · S&P500' },
+  { symbol: 'QQQ', label: 'QQQ · NASDAQ' },
+  { symbol: 'DIA', label: 'DIA · DOW' },
+  { symbol: 'IWM', label: 'IWM · RUS2K' },
+  { symbol: 'TLT', label: 'TLT · 20Y' },
+  { symbol: 'GLD', label: 'GLD · GOLD' },
+  { symbol: 'USO', label: 'USO · OIL' },
   { symbol: 'BINANCE:BTCUSDT', label: 'BTC' },
   { symbol: 'BINANCE:ETHUSDT', label: 'ETH' },
 ]
@@ -31,18 +31,18 @@ export interface MarketSymbol {
 
 export const MARKET_SYMBOLS: MarketSymbol[] = [
   // US Indices (ETF proxies)
-  { symbol: 'SPY', name: 'S&P 500', group: 'US Indices' },
-  { symbol: 'QQQ', name: 'Nasdaq 100', group: 'US Indices' },
-  { symbol: 'DIA', name: 'Dow Jones', group: 'US Indices' },
-  { symbol: 'IWM', name: 'Russell 2000', group: 'US Indices' },
-  { symbol: 'VIXY', name: 'VIX Futures', group: 'US Indices' },
+  { symbol: 'SPY', name: 'S&P 500', group: 'US Indices · ETF proxies' },
+  { symbol: 'QQQ', name: 'Nasdaq 100', group: 'US Indices · ETF proxies' },
+  { symbol: 'DIA', name: 'Dow Jones', group: 'US Indices · ETF proxies' },
+  { symbol: 'IWM', name: 'Russell 2000', group: 'US Indices · ETF proxies' },
+  { symbol: 'VIXY', name: 'VIX Futures ETF (decays)', group: 'US Indices · ETF proxies' },
   // Global (country ETF proxies)
-  { symbol: 'EWU', name: 'United Kingdom', group: 'Global' },
-  { symbol: 'EWG', name: 'Germany', group: 'Global' },
-  { symbol: 'EWJ', name: 'Japan', group: 'Global' },
-  { symbol: 'MCHI', name: 'China', group: 'Global' },
-  { symbol: 'INDA', name: 'India', group: 'Global' },
-  { symbol: 'EWY', name: 'South Korea', group: 'Global' },
+  { symbol: 'EWU', name: 'United Kingdom', group: 'Global · country ETFs' },
+  { symbol: 'EWG', name: 'Germany', group: 'Global · country ETFs' },
+  { symbol: 'EWJ', name: 'Japan', group: 'Global · country ETFs' },
+  { symbol: 'MCHI', name: 'China', group: 'Global · country ETFs' },
+  { symbol: 'INDA', name: 'India', group: 'Global · country ETFs' },
+  { symbol: 'EWY', name: 'South Korea', group: 'Global · country ETFs' },
   // Sectors
   { symbol: 'XLK', name: 'Technology', group: 'US Sectors' },
   { symbol: 'XLF', name: 'Financials', group: 'US Sectors' },
@@ -53,10 +53,10 @@ export const MARKET_SYMBOLS: MarketSymbol[] = [
   { symbol: 'XLY', name: 'Discretionary', group: 'US Sectors' },
   { symbol: 'XLU', name: 'Utilities', group: 'US Sectors' },
   // FX (ETF proxies)
-  { symbol: 'UUP', name: 'US Dollar', group: 'FX' },
-  { symbol: 'FXE', name: 'Euro', group: 'FX' },
-  { symbol: 'FXY', name: 'Japanese Yen', group: 'FX' },
-  { symbol: 'FXB', name: 'British Pound', group: 'FX' },
+  { symbol: 'UUP', name: 'US Dollar', group: 'FX · currency ETFs' },
+  { symbol: 'FXE', name: 'Euro', group: 'FX · currency ETFs' },
+  { symbol: 'FXY', name: 'Japanese Yen', group: 'FX · currency ETFs' },
+  { symbol: 'FXB', name: 'British Pound', group: 'FX · currency ETFs' },
   // Commodities (ETFs)
   { symbol: 'GLD', name: 'Gold', group: 'Commodities' },
   { symbol: 'SLV', name: 'Silver', group: 'Commodities' },
