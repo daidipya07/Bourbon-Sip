@@ -777,6 +777,94 @@
   margin: 0 6px;
 }
 
+.terminal-chart-range-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Compare Bar ───────────────────────────────────────── */
+.terminal-compare-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: #0a0a0a;
+  border-bottom: 1px solid #1a1a1a;
+  flex-wrap: wrap;
+}
+
+.terminal-compare-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #ccc;
+  padding: 2px 6px;
+  border: 1px solid #333;
+  border-left-width: 3px;
+  border-radius: 2px;
+  background: #111;
+}
+
+.terminal-compare-chip button {
+  background: none;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+}
+
+.terminal-compare-chip button:hover { color: #ff5a6e; }
+
+.terminal-compare-input {
+  background: #111;
+  border: 1px solid #222;
+  color: #e8e8e8;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  outline: none;
+  width: 90px;
+}
+
+/* ── Perf Stats Strip ──────────────────────────────────── */
+.terminal-perf-strip {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: #1a1a1a;
+  border-top: 1px solid #1a1a1a;
+}
+
+.terminal-perf-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 10px;
+  background: #0a0a0a;
+  min-width: 0;
+}
+
+.terminal-perf-label {
+  font-size: 8px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.terminal-perf-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Section / Sector Labels ───────────────────────────── */
 .terminal-sector-label {
   padding: 10px 12px 4px;
