@@ -163,6 +163,7 @@ MAILCHIMP_API_KEY=
 MAILCHIMP_LIST_ID=
 MAILCHIMP_DC=
 FINNHUB_API_KEY=
+NEXT_PUBLIC_FINNHUB_KEY=  # same value as FINNHUB_API_KEY — browser WS for Terminal live quotes
 OPENAI_API_KEY=
 CRON_SECRET=
 FRED_API_KEY=        # free at fred.stlouisfed.org/docs/api/api_key.html

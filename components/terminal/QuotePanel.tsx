@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { usePolling } from './usePolling'
+import { useStreamedPrice, useFlash } from './StreamProvider'
 
 interface QuoteStats {
   high52: number | null
@@ -47,6 +48,8 @@ export default function QuotePanel({ symbol }: { symbol: string }) {
   }, [symbol])
 
   const { data, loading, refetch } = usePolling(fetcher, { intervalMs: 60_000, enabled: !!symbol })
+  const streamed = useStreamedPrice(symbol)
+  const flash = useFlash(streamed)
 
   // Refetch immediately when the symbol changes.
   useEffect(() => { if (symbol) refetch() }, [symbol, refetch])
@@ -54,8 +57,12 @@ export default function QuotePanel({ symbol }: { symbol: string }) {
   if (loading && !data) return <div className="terminal-loading">Loading</div>
   if (!data) return <div className="terminal-loading" style={{ color: '#555' }}>No data for {symbol}</div>
 
-  const up = data.change >= 0
   const s = data.stats
+  // Live price from the stream overrides the REST snapshot; recompute change/%.
+  const price = streamed ?? data.price
+  const change = streamed != null && data.prevClose ? streamed - data.prevClose : data.change
+  const pctChange = streamed != null && data.prevClose ? ((streamed - data.prevClose) / data.prevClose) * 100 : data.pctChange
+  const up = change >= 0
 
   return (
     <div className="terminal-quote-header">
@@ -66,11 +73,11 @@ export default function QuotePanel({ symbol }: { symbol: string }) {
       </div>
 
       <div className="terminal-quote-price-row">
-        <span className="terminal-quote-price">
-          {data.price >= 1 ? data.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : data.price.toFixed(4)}
+        <span className={`terminal-quote-price ${flash}`}>
+          {price >= 1 ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : price.toFixed(4)}
         </span>
         <span className={`terminal-quote-change ${up ? 't-green' : 't-red'}`}>
-          {up ? '+' : ''}{data.change.toFixed(2)} ({up ? '+' : ''}{data.pctChange.toFixed(2)}%)
+          {up ? '+' : ''}{change.toFixed(2)} ({up ? '+' : ''}{pctChange.toFixed(2)}%)
         </span>
       </div>
 

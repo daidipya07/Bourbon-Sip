@@ -3,9 +3,40 @@
 import { useCallback, useEffect, useState } from 'react'
 import { DEFAULT_WATCHLIST } from '@/lib/terminal/symbols'
 import { usePolling } from './usePolling'
+import { useStreamedPrice, useFlash } from './StreamProvider'
 import PanelStatus from './PanelStatus'
 
-interface Quote { symbol: string; price: number | null; pctChange: number | null }
+interface Quote { symbol: string; price: number | null; pctChange: number | null; prevClose?: number }
+
+function WatchRow({ symbol, quote, onSelect, onRemove }: {
+  symbol: string; quote?: Quote; onSelect: (s: string) => void; onRemove: (s: string) => void
+}) {
+  const streamed = useStreamedPrice(symbol)
+  const flash = useFlash(streamed)
+
+  const price = streamed ?? quote?.price ?? null
+  const pct = streamed != null && quote?.prevClose
+    ? ((streamed - quote.prevClose) / quote.prevClose) * 100
+    : quote?.pctChange ?? null
+  const up = (pct ?? 0) >= 0
+
+  return (
+    <div
+      className="terminal-watchlist-row"
+      onClick={() => onSelect(symbol)}
+      onContextMenu={e => { e.preventDefault(); onRemove(symbol) }}
+      title="Click to view · Right-click to remove"
+    >
+      <span className="terminal-watchlist-sym">{symbol}</span>
+      <span className={`terminal-watchlist-price ${flash}`}>
+        {price != null ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+      </span>
+      <span className={`terminal-watchlist-chg ${up ? 't-green' : 't-red'}`}>
+        {pct != null ? `${up ? '+' : ''}${pct.toFixed(2)}%` : '—'}
+      </span>
+    </div>
+  )
+}
 
 const STORAGE_KEY = 'bourbon-terminal-watchlist'
 
@@ -98,29 +129,9 @@ export default function WatchlistPanel({ onSelect }: { onSelect: (symbol: string
             </button>
           </div>
         )}
-        {symbols.map(sym => {
-          const q = bySymbol?.get(sym)
-          const price = q?.price ?? null
-          const pct = q?.pctChange ?? null
-          const up = (pct ?? 0) >= 0
-          return (
-            <div
-              key={sym}
-              className="terminal-watchlist-row"
-              onClick={() => onSelect(sym)}
-              onContextMenu={e => { e.preventDefault(); removeSymbol(sym) }}
-              title="Click to view · Right-click to remove"
-            >
-              <span className="terminal-watchlist-sym">{sym}</span>
-              <span className="terminal-watchlist-price">
-                {price != null ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
-              </span>
-              <span className={`terminal-watchlist-chg ${up ? 't-green' : 't-red'}`}>
-                {pct != null ? `${up ? '+' : ''}${pct.toFixed(2)}%` : '—'}
-              </span>
-            </div>
-          )
-        })}
+        {symbols.map(sym => (
+          <WatchRow key={sym} symbol={sym} quote={bySymbol?.get(sym)} onSelect={onSelect} onRemove={removeSymbol} />
+        ))}
         {loading && symbols.length > 0 && !bySymbol && (
           <div className="terminal-loading">Loading watchlist</div>
         )}

@@ -14,6 +14,7 @@ import EarningsPanel from '@/components/terminal/EarningsPanel'
 import CompanyPanel from '@/components/terminal/CompanyPanel'
 import TipsyTakePanel from '@/components/terminal/TipsyTakePanel'
 import RegimePill from '@/components/terminal/RegimePill'
+import { StreamProvider } from '@/components/terminal/StreamProvider'
 import TerminalStrip from '@/components/terminal/TerminalStrip'
 import './terminal.css'
 
@@ -95,6 +96,7 @@ export default function TerminalPage() {
   }, [])
 
   return (
+    <StreamProvider>
     <div className="terminal-root">
       {/* ── Top Bar ─────────────────────────────────────── */}
       <div className="terminal-topbar">
@@ -199,5 +201,6 @@ export default function TerminalPage() {
         </span>
       </div>
     </div>
+    </StreamProvider>
   )
 }

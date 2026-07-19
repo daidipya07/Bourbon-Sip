@@ -697,6 +697,18 @@
   gap: 4px;
 }
 
+/* ── Live tick flash ───────────────────────────────────── */
+@keyframes flash-up-kf {
+  0% { background: rgba(0, 200, 83, 0.35); color: #00e676; }
+  100% { background: transparent; }
+}
+@keyframes flash-down-kf {
+  0% { background: rgba(255, 23, 68, 0.35); color: #ff5a6e; }
+  100% { background: transparent; }
+}
+.flash-up { animation: flash-up-kf 0.5s ease-out; border-radius: 2px; }
+.flash-down { animation: flash-down-kf 0.5s ease-out; border-radius: 2px; }
+
 /* ── Colors ────────────────────────────────────────────── */
 .t-green { color: #00c853; }
 .t-red   { color: #ff1744; }
