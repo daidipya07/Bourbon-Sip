@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { isCrypto } from '@/lib/terminal/finnhub'
+import { fetchCryptoQuotes } from '@/lib/terminal/crypto'
 import { fetchTwelveDataQuote } from '@/lib/terminal/twelvedata'
 
 const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' }
@@ -21,6 +22,30 @@ export async function GET(req: NextRequest) {
   const key = process.env.FINNHUB_API_KEY
   const tdKey = process.env.TWELVE_DATA_API_KEY
 
+  // Crypto → CoinGecko (Finnhub free has no crypto spot quotes)
+  if (isCrypto(symbol)) {
+    const [cq] = await fetchCryptoQuotes([symbol])
+    if (cq && cq.price != null) {
+      return NextResponse.json({
+        symbol,
+        price: cq.price,
+        change: cq.change,
+        pctChange: cq.pctChange,
+        prevClose: cq.prevClose ?? null,
+        open: null,
+        high: null,
+        low: null,
+        name: symbol.split(':')[1]?.replace('USDT', '/USD') || symbol,
+        exchange: 'CRYPTO',
+        industry: '',
+        marketCap: null,
+        logo: null,
+        stats: null,
+      }, { headers: CACHE_HEADERS })
+    }
+    return NextResponse.json({ error: 'No data for symbol' }, { status: 404 })
+  }
+
   if (!key) {
     if (tdKey) {
       const q = await fetchTwelveDataQuote(symbol, tdKey)
@@ -29,20 +54,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
   }
 
-  const crypto = isCrypto(symbol)
-
   try {
-    const requests: Promise<Response>[] = [
+    const [quoteRes, profileRes, metricRes] = await Promise.all([
       fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${key}`, { next: { revalidate: 60 } }),
-    ]
-    if (!crypto) {
-      requests.push(
-        fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(symbol)}&token=${key}`, { next: { revalidate: 3600 } }),
-        fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${encodeURIComponent(symbol)}&metric=all&token=${key}`, { next: { revalidate: 3600 } }),
-      )
-    }
-
-    const [quoteRes, profileRes, metricRes] = await Promise.all(requests)
+      fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(symbol)}&token=${key}`, { next: { revalidate: 3600 } }),
+      fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${encodeURIComponent(symbol)}&metric=all&token=${key}`, { next: { revalidate: 3600 } }),
+    ])
     const q = quoteRes.ok ? await quoteRes.json() : {}
 
     if (!q.c || q.c === 0) {
@@ -54,8 +71,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'No data for symbol' }, { status: 404 })
     }
 
-    const profile = profileRes && profileRes.ok ? await profileRes.json() : {}
-    const metricData = metricRes && metricRes.ok ? await metricRes.json() : {}
+    const profile = profileRes.ok ? await profileRes.json() : {}
+    const metricData = metricRes.ok ? await metricRes.json() : {}
     const m = metricData.metric || {}
 
     const stats: QuoteStats = {
