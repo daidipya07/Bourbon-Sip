@@ -14,6 +14,7 @@ export interface Command {
   symbol?: string
   view?: TerminalView
   newsFocus?: 'symbol' | 'market'
+  scrollTo?: 'research'
 }
 
 // Bloomberg-style function codes: `AAPL GP` charts Apple, `AAPL N` opens its news
@@ -86,7 +87,12 @@ export default function CommandBar({ onCommand }: { onCommand: (cmd: Command) =>
 
     if (tokens.length >= 2 && SYMBOL_FUNCTIONS[tokens[1]]) {
       const view = SYMBOL_FUNCTIONS[tokens[1]]
-      fire({ symbol: tokens[0], view, newsFocus: view === 'news' ? 'symbol' : undefined })
+      fire({
+        symbol: tokens[0],
+        view,
+        newsFocus: view === 'news' ? 'symbol' : undefined,
+        scrollTo: tokens[1] === 'DES' ? 'research' : undefined,
+      })
       return
     }
     if (tokens.length === 1 && BARE_FUNCTIONS[tokens[0]]) {

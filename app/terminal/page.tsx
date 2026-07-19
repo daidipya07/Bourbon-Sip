@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CommandBar, { type Command, type TerminalView } from '@/components/terminal/CommandBar'
 import ChartPanel from '@/components/terminal/ChartPanel'
 import QuotePanel from '@/components/terminal/QuotePanel'
@@ -11,6 +11,8 @@ import HeatmapPanel from '@/components/terminal/HeatmapPanel'
 import MacroPanel from '@/components/terminal/MacroPanel'
 import MoversPanel from '@/components/terminal/MoversPanel'
 import EarningsPanel from '@/components/terminal/EarningsPanel'
+import CompanyPanel from '@/components/terminal/CompanyPanel'
+import TipsyTakePanel from '@/components/terminal/TipsyTakePanel'
 import TerminalStrip from '@/components/terminal/TerminalStrip'
 import './terminal.css'
 
@@ -58,6 +60,8 @@ export default function TerminalPage() {
   const [view, setView] = useState<TerminalView>('chart')
   const [newsFocus, setNewsFocus] = useState<'symbol' | 'market'>('market')
   const clock = useNyClock()
+  const sideStackRef = useRef<HTMLDivElement>(null)
+  const researchRef = useRef<HTMLDivElement>(null)
 
   function handleSelect(sym: string) {
     setSymbol(sym)
@@ -68,6 +72,10 @@ export default function TerminalPage() {
     if (cmd.symbol) setSymbol(cmd.symbol)
     if (cmd.view) setView(cmd.view)
     if (cmd.newsFocus) setNewsFocus(cmd.newsFocus)
+    if (cmd.scrollTo === 'research') {
+      // Wait for the chart view + research panel to mount, then scroll to it.
+      setTimeout(() => researchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120)
+    }
   }
 
   // Number keys 1-6 switch panels when not typing
@@ -120,11 +128,13 @@ export default function TerminalPage() {
             <QuotePanel symbol={symbol} />
             <ChartPanel symbol={symbol} />
           </div>
-          <div className="tg-side-top">
+          <div className="tg-side-stack" ref={sideStackRef}>
             <WatchlistPanel onSelect={handleSelect} />
-          </div>
-          <div className="tg-side-bottom">
             <NewsPanel symbol={symbol} defaultMode="symbol" />
+            <div ref={researchRef}>
+              <CompanyPanel symbol={symbol} onSelect={handleSelect} />
+              <TipsyTakePanel symbol={symbol} />
+            </div>
           </div>
         </div>
       )}
