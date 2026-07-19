@@ -16,6 +16,7 @@ import TipsyTakePanel from '@/components/terminal/TipsyTakePanel'
 import RegimePill from '@/components/terminal/RegimePill'
 import { StreamProvider } from '@/components/terminal/StreamProvider'
 import TerminalStrip from '@/components/terminal/TerminalStrip'
+import ToolsPanel, { type ToolId } from '@/components/terminal/tools/ToolsPanel'
 import './terminal.css'
 
 const TABS: Array<[TerminalView, string]> = [
@@ -25,6 +26,7 @@ const TABS: Array<[TerminalView, string]> = [
   ['macro', 'Macro'],
   ['news', 'News'],
   ['earnings', 'Earnings'],
+  ['tools', 'Tools'],
 ]
 
 function useNyClock() {
@@ -61,6 +63,7 @@ export default function TerminalPage() {
   const [symbol, setSymbol] = useState('AAPL')
   const [view, setView] = useState<TerminalView>('chart')
   const [newsFocus, setNewsFocus] = useState<'symbol' | 'market'>('market')
+  const [activeTool, setActiveTool] = useState<ToolId>('portfolio')
   const clock = useNyClock()
   const sideStackRef = useRef<HTMLDivElement>(null)
   const researchRef = useRef<HTMLDivElement>(null)
@@ -73,6 +76,7 @@ export default function TerminalPage() {
   function handleCommand(cmd: Command) {
     if (cmd.symbol) setSymbol(cmd.symbol)
     if (cmd.view) setView(cmd.view)
+    if (cmd.tool) setActiveTool(cmd.tool)
     if (cmd.newsFocus) setNewsFocus(cmd.newsFocus)
     if (cmd.scrollTo === 'research') {
       // Wait for the chart view + research panel to mount, then scroll to it.
@@ -80,7 +84,7 @@ export default function TerminalPage() {
     }
   }
 
-  // Number keys 1-6 switch panels when not typing
+  // Number keys 1-7 switch panels when not typing
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement
@@ -181,6 +185,14 @@ export default function TerminalPage() {
         <div className="terminal-grid">
           <div className="tg-full">
             <EarningsPanel onSelect={handleSelect} />
+          </div>
+        </div>
+      )}
+
+      {view === 'tools' && (
+        <div className="terminal-grid">
+          <div className="tg-full">
+            <ToolsPanel active={activeTool} onSelectTool={setActiveTool} symbol={symbol} onSelectSymbol={handleSelect} />
           </div>
         </div>
       )}

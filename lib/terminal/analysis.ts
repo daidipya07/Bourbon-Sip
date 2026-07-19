@@ -27,12 +27,12 @@ export function dailyReturns(candles: Candle[]): DatedValue[] {
 export function alignByTime(seriesList: DatedValue[][]): number[][] {
   if (seriesList.length === 0) return []
   const maps = seriesList.map(s => new Map(s.map(p => [dayKey(p.time), p.value])))
-  let common: Set<number> | null = null
-  for (const m of maps) {
-    const keys = new Set(m.keys())
-    common = common === null ? keys : new Set([...common].filter(k => keys.has(k)))
+  let common: number[] = [...maps[0].keys()]
+  for (let i = 1; i < maps.length; i++) {
+    const m = maps[i]
+    common = common.filter(k => m.has(k))
   }
-  const days = [...(common ?? [])].sort((a, b) => a - b)
+  const days = common.sort((a, b) => a - b)
   return maps.map(m => days.map(d => m.get(d) as number))
 }
 

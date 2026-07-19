@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 
-export type TerminalView = 'chart' | 'markets' | 'heatmap' | 'macro' | 'news' | 'earnings'
+export type TerminalView = 'chart' | 'markets' | 'heatmap' | 'macro' | 'news' | 'earnings' | 'tools'
+export type ToolId = 'portfolio' | 'backtest' | 'risk' | 'correlation'
 
 interface SearchResult {
   symbol: string
@@ -13,6 +14,7 @@ interface SearchResult {
 export interface Command {
   symbol?: string
   view?: TerminalView
+  tool?: ToolId
   newsFocus?: 'symbol' | 'market'
   scrollTo?: 'research'
 }
@@ -28,6 +30,15 @@ const BARE_FUNCTIONS: Record<string, TerminalView> = {
   ECO: 'macro', MACRO: 'macro',
   N: 'news', NEWS: 'news', TOP: 'news',
   ERN: 'earnings', EARN: 'earnings',
+  TOOLS: 'tools',
+}
+
+// Bare codes that open a specific analysis tool
+const TOOL_FUNCTIONS: Record<string, ToolId> = {
+  PORT: 'portfolio', PORTFOLIO: 'portfolio',
+  DCA: 'backtest', BT: 'backtest', BACKTEST: 'backtest',
+  RISK: 'risk', SIZE: 'risk',
+  CORR: 'correlation', COR: 'correlation',
 }
 
 export default function CommandBar({ onCommand }: { onCommand: (cmd: Command) => void }) {
@@ -95,6 +106,10 @@ export default function CommandBar({ onCommand }: { onCommand: (cmd: Command) =>
       })
       return
     }
+    if (tokens.length === 1 && TOOL_FUNCTIONS[tokens[0]]) {
+      fire({ view: 'tools', tool: TOOL_FUNCTIONS[tokens[0]] })
+      return
+    }
     if (tokens.length === 1 && BARE_FUNCTIONS[tokens[0]]) {
       fire({ view: BARE_FUNCTIONS[tokens[0]], newsFocus: 'market' })
       return
@@ -155,9 +170,10 @@ export default function CommandBar({ onCommand }: { onCommand: (cmd: Command) =>
           ))}
           {showHelp && (
             <div className="terminal-cmd-help">
-              <div className="terminal-cmd-help-row"><b>AAPL</b> load chart · <b>AAPL GP</b> chart · <b>AAPL DES</b> overview · <b>AAPL N</b> company news</div>
+              <div className="terminal-cmd-help-row"><b>AAPL</b> load chart · <b>AAPL GP</b> chart · <b>AAPL DES</b> research · <b>AAPL N</b> company news</div>
               <div className="terminal-cmd-help-row"><b>MKT</b> markets · <b>HM</b> heatmap · <b>ECO</b> macro · <b>N</b> top news · <b>ERN</b> earnings</div>
-              <div className="terminal-cmd-help-row">Keys <b>1–6</b> switch panels · <b>/</b> focus command line</div>
+              <div className="terminal-cmd-help-row"><b>PORT</b> portfolio · <b>DCA</b> backtester · <b>RISK</b> position size · <b>CORR</b> correlations</div>
+              <div className="terminal-cmd-help-row">Keys <b>1–7</b> switch panels · <b>/</b> focus command line</div>
             </div>
           )}
         </div>
