@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ToolDisclaimer } from './ToolsPanel'
+import ToolHelp from './ToolHelp'
 
 // Position sizing from account risk: pure client-side, instant recompute.
 export default function RiskTool() {
@@ -74,6 +75,11 @@ export default function RiskTool() {
               <Result label="Reward : Risk" value={`${rr.toFixed(2)} : 1`} cls={rr >= 2 ? 't-green' : rr < 1 ? 't-red' : undefined} />
             )}
           </div>
+          {risk > 3 && (
+            <div className="terminal-tool-warn">
+              Risking {risk}% per trade is aggressive — most position-sizing frameworks cap risk at 1–2% of the account so that a losing streak is survivable (ten straight 2% losses ≈ −18%; ten 10% losses ≈ −65%).
+            </div>
+          )}
           {pctOfAccount! > 100 && (
             <div className="terminal-tool-warn">
               Position exceeds account size — this would require margin/leverage.
@@ -90,6 +96,31 @@ export default function RiskTool() {
           Enter account size, risk %, entry and stop — results update instantly.
         </div>
       )}
+
+      <ToolHelp
+        howTo={[
+          'Enter your account size and the % of it you are willing to lose if this one trade fails (1–2% is the common professional cap).',
+          'Enter your planned entry price and stop-loss price. Entry above stop = long; entry below stop = short.',
+          'Optionally add a target price to see the reward:risk ratio. The tool tells you how many shares keep your loss at the chosen limit.',
+        ]}
+        meaning={[
+          ['Dollar Risk', 'The most you lose if the stop is hit at its price: account × risk %.'],
+          ['Risk / Share', 'Distance between entry and stop — the loss per share if stopped out.'],
+          ['Shares to Trade', 'Dollar risk ÷ risk per share, rounded down. The core output: this size makes any stopped-out trade cost the same fraction of your account.'],
+          ['% of Account', 'How much of your capital the position ties up. Over 100% means leverage.'],
+          ['Reward : Risk', 'Distance to target ÷ distance to stop. At 2:1 you can be wrong more often than right and still break even — below 1:1 the math is against you.'],
+        ]}
+        methodology={[
+          'shares = floor((account × risk%) ÷ |entry − stop|). Direction is inferred from entry vs stop.',
+          'Reward:risk = |target − entry| ÷ |entry − stop|, using your prices exactly as entered.',
+          'Everything is computed locally in your browser — no data leaves the page.',
+        ]}
+        caveats={[
+          'A stop-loss order does not guarantee the stop price — gaps and fast markets can fill worse (gap risk), so real losses can exceed the calculated dollar risk.',
+          'No commissions, borrowing costs (shorts), or taxes are included.',
+          'Position sizing controls loss per trade; it says nothing about whether the trade idea itself is good.',
+        ]}
+      />
 
       <ToolDisclaimer />
     </div>

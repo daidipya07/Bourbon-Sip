@@ -59,14 +59,18 @@ export interface TDCandleResult {
 export async function fetchTwelveDataCandles(
   symbol: string,
   range: string,
-  apiKey: string
+  apiKey: string,
+  // 'splits' (default) = split-adjusted price history.
+  // 'all' = splits + dividends backed out — closes become a total-return series
+  // (verified on free tier: MO 1Y-ago close 57.98 → 54.35 under adjust=all).
+  adjust: 'splits' | 'all' = 'splits'
 ): Promise<TDCandleResult> {
   const { interval, outputsize } = TD_RANGE_MAP[range] || TD_RANGE_MAP['6M']
   const tdSymbol = toTwelveDataSymbol(symbol)
 
   const url =
     `${TD_BASE}/time_series?symbol=${encodeURIComponent(tdSymbol)}` +
-    `&interval=${interval}&outputsize=${outputsize}&order=ASC&apikey=${apiKey}`
+    `&interval=${interval}&outputsize=${outputsize}&order=ASC&adjust=${adjust}&apikey=${apiKey}`
 
   const res = await fetch(url, { next: { revalidate: 300 } })
   if (!res.ok) return { candles: [], meta: null, error: `Twelve Data ${res.status}` }

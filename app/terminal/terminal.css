@@ -1520,6 +1520,117 @@
   letter-spacing: 0.3px;
 }
 
+/* Tool help / education block */
+.terminal-tool-help {
+  margin: 14px 16px 0;
+}
+
+.terminal-tool-help-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid #222;
+  border-radius: 2px;
+  color: #999;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+
+.terminal-tool-help-toggle:hover {
+  color: #c8963e;
+  border-color: #c8963e44;
+}
+
+.terminal-tool-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #c8963e88;
+  color: #c8963e;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.terminal-tool-help-body {
+  margin-top: 8px;
+  padding: 4px 14px 12px;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #aaa;
+}
+
+.terminal-tool-help-body ol,
+.terminal-tool-help-body ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.terminal-tool-help-body li { margin: 3px 0; }
+
+.terminal-tool-help-caveats li { color: #9a8a6a; }
+
+.terminal-tool-help-def {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid #141414;
+}
+
+.terminal-tool-help-def dt {
+  color: #c8963e;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.terminal-tool-help-def dd {
+  margin: 0;
+  color: #999;
+}
+
+/* Benchmark comparison row */
+.terminal-tool-benchrow {
+  margin: 0 16px 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #aaa;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-left: 3px solid #888;
+  border-radius: 2px;
+  line-height: 1.5;
+}
+
+.terminal-tool-benchrow b { color: #ccc; }
+
+/* CSV export button */
+.terminal-tool-csv {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #222;
+  border-radius: 2px;
+  color: #888;
+  font-family: inherit;
+  font-size: 9px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.terminal-tool-csv:hover {
+  color: #c8963e;
+  border-color: #c8963e44;
+}
+
 /* Correlation matrix */
 .terminal-corr-wrap {
   margin: 4px 16px;

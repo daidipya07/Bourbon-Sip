@@ -13,6 +13,8 @@ const INTERVAL_MAP: Record<string, string> = {
 export async function GET(req: NextRequest) {
   const symbol = req.nextUrl.searchParams.get('symbol')?.toUpperCase()
   const range = req.nextUrl.searchParams.get('range') || '6M'
+  // adjust=all → dividend-adjusted (total-return) closes; default split-adjusted
+  const adjust = req.nextUrl.searchParams.get('adjust') === 'all' ? 'all' : 'splits'
   if (!symbol) return NextResponse.json({ error: 'symbol required' }, { status: 400 })
 
   const key = process.env.TWELVE_DATA_API_KEY
@@ -21,7 +23,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { candles, meta, error } = await fetchTwelveDataCandles(symbol, range, key)
+    const { candles, meta, error } = await fetchTwelveDataCandles(symbol, range, key, adjust)
     if (candles.length === 0) {
       return NextResponse.json({ symbol, range, candles: [], error: error || 'No candle data' }, { status: 200 })
     }

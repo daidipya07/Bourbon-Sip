@@ -7,6 +7,7 @@ import type { Candle } from '@/lib/terminal/indicators'
 import { usePolling } from '../usePolling'
 import PanelStatus from '../PanelStatus'
 import { ToolDisclaimer } from './ToolsPanel'
+import ToolHelp from './ToolHelp'
 
 interface Holding { symbol: string; shares: number; costBasis?: number }
 interface Quote { symbol: string; price: number | null; pctChange: number | null; prevClose?: number }
@@ -280,7 +281,7 @@ export default function PortfolioTool({ onSelectSymbol }: { onSelectSymbol: (s: 
                   {risk.avgCorrelation != null && <SummaryStat label="Avg Pair Corr" value={risk.avgCorrelation.toFixed(2)} />}
                 </div>
                 <div className="terminal-tool-ranlabel">
-                  {risk.days} trading days · current weights · {risk.computedFor}
+                  {risk.days} trading days · assumes today&apos;s weights held constant over the past year · {risk.computedFor}
                   <button style={{ background: 'none', border: 'none', color: '#c8963e', cursor: 'pointer', fontFamily: 'inherit', fontSize: '9px', marginLeft: '8px' }} onClick={computeRisk} disabled={riskRunning}>
                     recompute
                   </button>
@@ -290,6 +291,34 @@ export default function PortfolioTool({ onSelectSymbol }: { onSelectSymbol: (s: 
           </div>
         </>
       )}
+
+      <ToolHelp
+        howTo={[
+          'Add each position: ticker, share count, and (optionally) your average cost per share. Holdings save to your browser only — nothing is uploaded.',
+          'The live table updates automatically: value, day P&L and weight per position. Click a ticker to open its chart.',
+          'Press "Compute Risk" to fetch a year of price history and measure how your portfolio as a whole has behaved.',
+        ]}
+        meaning={[
+          ['Day P&L', 'Today\'s move per position: (price − previous close) × shares.'],
+          ['Unrealized', 'Gain vs your cost basis, for positions where you entered one.'],
+          ['Weight', 'Position value as a share of the total — concentration at a glance.'],
+          ['Portfolio Beta', 'Sensitivity to the S&P 500. 1.0 = moves with the market; 1.3 = moves ~30% harder both ways; 0.5 = half the market\'s swings.'],
+          ['Ann Volatility', 'Annualized standard deviation of daily returns — a typical year\'s "wobble". The S&P 500 usually runs ~12–20%.'],
+          ['Max Drawdown', 'The worst peak-to-trough fall of the blended portfolio during the past year — the pain you would actually have felt.'],
+          ['Avg Pair Corr', 'Average correlation between your holdings. Near 1 means they all move together — diversification in name only.'],
+        ]}
+        methodology={[
+          'Risk metrics use 1 year of daily closes per holding (Twelve Data), day-aligned, blended with your CURRENT dollar weights held constant (daily-rebalanced) — a standard snapshot approximation, not your actual trade history.',
+          'Beta is an OLS regression of the blended daily returns against SPY over the same dates; vol is annualized with √252.',
+          'Sector mix uses our 48-large-cap sector map; anything outside it shows as "Other".',
+        ]}
+        caveats={[
+          'This is NOT your historical performance — it answers "how would today\'s mix have behaved", ignoring when you actually bought.',
+          'Price returns only (dividends excluded) — vol/beta are barely affected, but long-run return comparisons would be.',
+          'Crypto trades weekends; only days overlapping the stock market are used, which slightly understates crypto risk.',
+          'One year of daily data is a small sample — treat the numbers as estimates with real uncertainty, not precise measurements.',
+        ]}
+      />
 
       <ToolDisclaimer />
     </div>

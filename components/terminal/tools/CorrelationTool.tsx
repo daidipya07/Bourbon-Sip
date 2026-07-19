@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { dailyReturns, alignByTime, pearson } from '@/lib/terminal/analysis'
 import type { Candle } from '@/lib/terminal/indicators'
 import { ToolDisclaimer } from './ToolsPanel'
+import ToolHelp from './ToolHelp'
 
 const MAX_SYMBOLS = 6
+type CorrPeriod = '1Y' | '3Y' | '5Y'
+const PERIOD_RANGE: Record<CorrPeriod, string> = { '1Y': '1Y', '3Y': '5Y', '5Y': '5Y' }
 
 // Diverging color: -1 cool blue → 0 neutral → +1 hot red.
 function corrColor(r: number): string {
@@ -23,10 +26,12 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
     : ['SPY', defaultSymbol, 'GLD']
   const [symbols, setSymbols] = useState<string[]>(initial)
   const [input, setInput] = useState('')
+  const [period, setPeriod] = useState<CorrPeriod>('1Y')
   const [running, setRunning] = useState(false)
   const [error, setError] = useState('')
   const [matrix, setMatrix] = useState<Array<Array<number | null>> | null>(null)
   const [ranSymbols, setRanSymbols] = useState<string[]>([])
+  const [ranPeriod, setRanPeriod] = useState<CorrPeriod>('1Y')
   const [days, setDays] = useState(0)
 
   function addSymbol() {
@@ -41,9 +46,14 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
     setError('')
     try {
       const all = await Promise.all(symbols.map(async s => {
-        const res = await fetch(`/api/terminal/candles?symbol=${encodeURIComponent(s)}&range=1Y`)
+        const res = await fetch(`/api/terminal/candles?symbol=${encodeURIComponent(s)}&range=${PERIOD_RANGE[period]}`)
         const d = await res.json()
-        return { symbol: s, candles: (d.candles || []) as Candle[] }
+        let candles = (d.candles || []) as Candle[]
+        if (period === '3Y' && candles.length > 0) {
+          const cutoff = candles[candles.length - 1].time - 3 * 365.25 * 86400
+          candles = candles.filter(c => c.time >= cutoff)
+        }
+        return { symbol: s, candles }
       }))
       const missing = all.filter(a => a.candles.length < 30).map(a => a.symbol)
       if (missing.length > 0) throw new Error(`No usable history for: ${missing.join(', ')}`)
@@ -57,6 +67,7 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
       )
       setMatrix(m)
       setRanSymbols([...symbols])
+      setRanPeriod(period)
       setDays(n)
     } catch (err) {
       setMatrix(null)
@@ -65,13 +76,24 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
     setRunning(false)
   }
 
+  const retFreq = (p: CorrPeriod) => (p === '1Y' ? 'daily' : 'weekly')
+
   return (
     <div className="terminal-tool">
       <div className="terminal-tool-header">
-        <span className="terminal-panel-title">Correlation Matrix — 1Y Daily Returns</span>
+        <span className="terminal-panel-title">Correlation Matrix</span>
+        <span style={{ fontSize: '9px', color: '#444' }}>Pearson r of {retFreq(period)} returns</span>
       </div>
 
       <div className="terminal-tool-form">
+        <label className="terminal-tool-field">
+          <span>Period</span>
+          <div className="terminal-tool-seg">
+            {(['1Y', '3Y', '5Y'] as CorrPeriod[]).map(p => (
+              <button key={p} className={period === p ? 'active' : ''} onClick={() => setPeriod(p)}>{p}</button>
+            ))}
+          </div>
+        </label>
         <div className="terminal-tool-field" style={{ gridColumn: '1 / -1' }}>
           <span>Symbols (2–{MAX_SYMBOLS})</span>
           <div className="terminal-compare-bar" style={{ border: 'none', padding: 0, background: 'none' }}>
@@ -101,7 +123,9 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
 
       {matrix && (
         <>
-          <div className="terminal-tool-ranlabel">{days} overlapping trading days</div>
+          <div className="terminal-tool-ranlabel">
+            {ranPeriod} · {retFreq(ranPeriod)} returns · {days} overlapping {ranPeriod === '1Y' ? 'trading days' : 'weeks'}
+          </div>
           <div className="terminal-corr-wrap">
             <table className="terminal-corr-table">
               <thead>
@@ -137,9 +161,33 @@ export default function CorrelationTool({ defaultSymbol }: { defaultSymbol: stri
 
       {!matrix && !error && (
         <div className="terminal-tool-empty">
-          Add tickers and Run — correlations are computed from a year of aligned daily returns.
+          Add tickers and Run — correlations are computed from aligned return history.
         </div>
       )}
+
+      <ToolHelp
+        howTo={[
+          'Add 2–6 tickers you hold or are considering holding together (stocks, ETFs, crypto).',
+          'Pick a period (1Y uses daily returns; 3Y/5Y use weekly) and press Run.',
+          'Look at the off-diagonal cells: lots of deep red means your "diversified" portfolio is really one bet.',
+        ]}
+        meaning={[
+          ['+1.00', 'The two assets moved in lockstep — owning both adds no diversification.'],
+          ['0.00', 'No linear relationship — their moves were independent over this window.'],
+          ['−1.00', 'They moved opposite each other — the strongest diversifier (rare in practice).'],
+          ['Rules of thumb', '|r| under 0.3 = weak relationship · 0.3–0.7 = moderate · above 0.7 = strong. Most US large-cap stocks sit at 0.4–0.8 with each other.'],
+        ]}
+        methodology={[
+          'For each symbol we take closing prices (Twelve Data), compute period-over-period % returns, intersect all series on their common dates, and compute the Pearson correlation of each pair on that identical date set.',
+          'Assets that trade on different calendars (e.g. crypto trades weekends, stocks don\'t) are compared only on their overlapping days.',
+          'The diagonal is 1.00 by definition.',
+        ]}
+        caveats={[
+          'Correlation is a snapshot of one window and it drifts over time — check more than one period before drawing conclusions.',
+          'Correlations tend to spike toward +1 in market crashes, exactly when you want diversification most. A calm-market matrix understates crisis behavior.',
+          'Pearson r measures linear co-movement only, and correlation is not causation.',
+        ]}
+      />
 
       <ToolDisclaimer />
     </div>
