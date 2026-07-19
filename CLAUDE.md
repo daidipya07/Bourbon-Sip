@@ -34,7 +34,7 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `/proof-score` | `app/proof-score/page.tsx` | Methodology page, static |
 | `/about` | `app/about/page.tsx` | Static |
 | `/manifesto` | `app/manifesto/page.tsx` | Static |
-| `/terminal` | `app/terminal/page.tsx` | Bloomberg-style terminal — client component, own CSS (`terminal.css`), 6 views (Chart/Markets/Heatmap/Macro/News/Earnings) |
+| `/terminal` | `app/terminal/page.tsx` | Bloomberg-style terminal — client component, own CSS (`terminal.css`), 7 views (Chart/Markets/Heatmap/Macro/News/Earnings/Tools). Command codes: `AAPL GP/DES/N`, `MKT HM ECO ERN TOOLS PORT DCA RISK CORR`, keys 1–7 |
 | `/privacy` | `app/privacy/page.tsx` | Privacy Policy |
 | `/terms` | `app/terms/page.tsx` | Terms of Use |
 | `/admin` | `app/admin/` | Protected by JWT middleware |
@@ -123,7 +123,9 @@ Both sources merged and deduped in `lib/articles.ts`.
 | `lib/data/tickers.ts` | Ticker symbols for the homepage ticker strip |
 | `lib/terminal/finnhub.ts` | Finnhub quote helpers — single + batch (bounded concurrency). Workhorse for live quotes: 60/min, no daily cap, works from Vercel IPs (Yahoo does NOT — it rate-limits datacenter IPs) |
 | `lib/terminal/twelvedata.ts` | Twelve Data helpers — candles/time_series for charts ONLY (free tier 800 req/day, so never used for polling). Symbol mapping to TD format |
-| `lib/terminal/symbols.ts` | Terminal symbol universes. All Finnhub-quotable: US equities, ETFs (SPY≈S&P 500, UUP≈USD, EWJ≈Japan used as index/FX/global proxies), Binance crypto pairs |
+| `lib/terminal/symbols.ts` | Terminal symbol universes. All Finnhub-quotable: US equities, ETFs (ticker-first labels — they're proxies, not index levels), Binance crypto pairs. Strip's real VIX/10Y/DXY come from FRED via /api/data-pulse, NOT proxies |
+| `lib/terminal/indicators.ts` | Client-side chart math: SMA/EMA/Bollinger/RSI/MACD + perfStats(candles, barInterval). Period returns null unless window spans them; vol annualized per bar interval, null on intraday |
+| `lib/terminal/analysis.ts` | Pure math for Tools tab: daily returns, day-aligned intersection, Pearson corr, OLS beta, blended portfolio returns, DCA/lump-sum backtests, bisection XIRR. Validated against identities (corr/beta self=1, XIRR 10% exact) |
 
 ---
 
