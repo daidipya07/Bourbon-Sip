@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import { usePolling } from './usePolling'
+import PanelStatus from './PanelStatus'
 
 interface Earning {
   date: string
@@ -33,18 +35,17 @@ function fmtDate(d: string): string {
 }
 
 export default function EarningsPanel({ onSelect }: { onSelect: (symbol: string) => void }) {
-  const [earnings, setEarnings] = useState<Earning[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/terminal/earnings')
-      .then(r => r.json())
-      .then(d => setEarnings(d.earnings || []))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+  const fetcher = useCallback(async (): Promise<Earning[]> => {
+    const res = await fetch('/api/terminal/earnings')
+    if (!res.ok) throw new Error('earnings')
+    const d = await res.json()
+    return d.earnings || []
   }, [])
 
-  if (loading) return <div className="terminal-loading">Loading earnings calendar</div>
+  const { data, loading, error, lastUpdated, stale, refetch } = usePolling(fetcher, { intervalMs: 30 * 60_000 })
+  const earnings = data ?? []
+
+  if (loading && !data) return <div className="terminal-loading">Loading earnings calendar</div>
 
   const dates = Array.from(new Set(earnings.map(e => e.date)))
 
@@ -52,7 +53,10 @@ export default function EarningsPanel({ onSelect }: { onSelect: (symbol: string)
     <div className="terminal-panel">
       <div className="terminal-panel-header">
         <span className="terminal-panel-title">Earnings Calendar — Next 7 Days</span>
-        <span style={{ fontSize: '9px', color: '#444' }}>{earnings.length} reports · click symbol to chart</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '9px', color: '#444' }}>{earnings.length} reports · click symbol to chart</span>
+          <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />
+        </div>
       </div>
       <div className="terminal-panel-body">
         {earnings.length === 0 && (

@@ -1,47 +1,30 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { MOVERS_UNIVERSE } from '@/lib/terminal/symbols'
+import { usePolling } from './usePolling'
+import PanelStatus from './PanelStatus'
 
-interface Mover {
-  symbol: string
-  name: string
-  price: number | null
-  pctChange: number
-}
+interface Quote { symbol: string; price: number | null; pctChange: number | null }
+interface Mover { symbol: string; name: string; price: number | null; pctChange: number }
 
 export default function MoversPanel({ onSelect }: { onSelect: (symbol: string) => void }) {
-  const [movers, setMovers] = useState<Mover[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchAll = useCallback(async () => {
-    try {
-      const symbols = MOVERS_UNIVERSE.map(s => s.symbol).join(',')
-      const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(symbols)}`)
-      const data = await res.json()
-      const names = new Map(MOVERS_UNIVERSE.map(s => [s.symbol, s.name]))
-      const valid = ((data.quotes || []) as Array<{ symbol: string; price: number | null; pctChange: number | null }>)
-        .filter(q => q.pctChange != null)
-        .map(q => ({
-          symbol: q.symbol,
-          name: names.get(q.symbol) || q.symbol,
-          price: q.price,
-          pctChange: q.pctChange as number,
-        }))
-        .sort((a, b) => b.pctChange - a.pctChange)
-      setMovers(valid)
-    } catch {}
-    setLoading(false)
+  const fetcher = useCallback(async () => {
+    const symbols = MOVERS_UNIVERSE.map(s => s.symbol).join(',')
+    const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(symbols)}`)
+    if (!res.ok) throw new Error('movers')
+    const data = await res.json()
+    const names = new Map(MOVERS_UNIVERSE.map(s => [s.symbol, s.name]))
+    return ((data.quotes || []) as Quote[])
+      .filter(q => q.pctChange != null)
+      .map(q => ({ symbol: q.symbol, name: names.get(q.symbol) || q.symbol, price: q.price, pctChange: q.pctChange as number }))
+      .sort((a, b) => b.pctChange - a.pctChange)
   }, [])
 
-  useEffect(() => {
-    fetchAll()
-    const id = setInterval(fetchAll, 5 * 60 * 1000)
-    return () => clearInterval(id)
-  }, [fetchAll])
+  const { data: movers, loading, error, lastUpdated, stale, refetch } = usePolling<Mover[]>(fetcher, { intervalMs: 5 * 60_000 })
 
-  const gainers = movers.slice(0, 8)
-  const losers = movers.slice(-8).reverse()
+  const gainers = movers ? movers.slice(0, 8) : []
+  const losers = movers ? movers.slice(-8).reverse() : []
 
   function renderRow(item: Mover) {
     const up = item.pctChange >= 0
@@ -63,10 +46,11 @@ export default function MoversPanel({ onSelect }: { onSelect: (symbol: string) =
     <div className="terminal-panel">
       <div className="terminal-panel-header">
         <span className="terminal-panel-title">Movers — Large Caps</span>
+        <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />
       </div>
       <div className="terminal-panel-body">
-        {loading && movers.length === 0 && <div className="terminal-loading">Loading movers</div>}
-        {movers.length > 0 && (
+        {loading && !movers && <div className="terminal-loading">Loading movers</div>}
+        {movers && movers.length > 0 && (
           <>
             <div className="terminal-sector-label" style={{ color: '#00c853' }}>Top Gainers</div>
             {gainers.map(renderRow)}

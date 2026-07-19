@@ -1,69 +1,55 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { MARKET_SYMBOLS } from '@/lib/terminal/symbols'
+import { usePolling } from './usePolling'
+import PanelStatus from './PanelStatus'
 
-interface MarketItem {
-  symbol: string
-  name: string
-  group: string
-  price: number | null
-  pctChange: number | null
-}
+interface Quote { symbol: string; price: number | null; pctChange: number | null }
 
 export default function MarketOverview({ onSelect }: { onSelect: (symbol: string) => void }) {
-  const [items, setItems] = useState<MarketItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchAll = useCallback(async () => {
-    try {
-      const symbols = MARKET_SYMBOLS.map(s => s.symbol).join(',')
-      const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(symbols)}`)
-      const data = await res.json()
-      const bySymbol = new Map((data.quotes || []).map((q: { symbol: string; price: number | null; pctChange: number | null }) => [q.symbol, q]))
-      setItems(MARKET_SYMBOLS.map(s => {
-        const q = bySymbol.get(s.symbol) as { price: number | null; pctChange: number | null } | undefined
-        return { ...s, price: q?.price ?? null, pctChange: q?.pctChange ?? null }
-      }))
-    } catch {}
-    setLoading(false)
+  const fetcher = useCallback(async () => {
+    const symbols = MARKET_SYMBOLS.map(s => s.symbol).join(',')
+    const res = await fetch(`/api/terminal/quotes?symbols=${encodeURIComponent(symbols)}`)
+    if (!res.ok) throw new Error('markets')
+    const data = await res.json()
+    return new Map<string, Quote>((data.quotes || []).map((q: Quote) => [q.symbol, q]))
   }, [])
 
-  useEffect(() => {
-    fetchAll()
-    const id = setInterval(fetchAll, 5 * 60 * 1000)
-    return () => clearInterval(id)
-  }, [fetchAll])
+  const { data: bySymbol, loading, error, lastUpdated, stale, refetch } = usePolling(fetcher, { intervalMs: 5 * 60_000 })
 
-  if (loading && items.length === 0) return <div className="terminal-loading">Loading markets</div>
+  if (loading && !bySymbol) return <div className="terminal-loading">Loading markets</div>
 
   const groups = Array.from(new Set(MARKET_SYMBOLS.map(s => s.group)))
 
   return (
     <div style={{ overflow: 'auto', height: '100%' }}>
+      <div className="terminal-panel-header" style={{ position: 'sticky', top: 0, zIndex: 2 }}>
+        <span className="terminal-panel-title">Global Markets</span>
+        <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />
+      </div>
       {groups.map(group => (
         <div key={group}>
           <div className="terminal-sector-label">{group}</div>
           <div className="terminal-market-grid">
-            {items.filter(i => i.group === group).map(item => {
-              const up = (item.pctChange ?? 0) >= 0
+            {MARKET_SYMBOLS.filter(i => i.group === group).map(item => {
+              const q = bySymbol?.get(item.symbol)
+              const price = q?.price ?? null
+              const pct = q?.pctChange ?? null
+              const up = (pct ?? 0) >= 0
               return (
-                <div
-                  key={item.symbol}
-                  className="terminal-market-card"
-                  onClick={() => onSelect(item.symbol)}
-                >
+                <div key={item.symbol} className="terminal-market-card" onClick={() => onSelect(item.symbol)}>
                   <div className="terminal-market-card-sym">{item.symbol}</div>
                   <div className="terminal-market-card-name">{item.name}</div>
                   <div className="terminal-market-card-price">
-                    {item.price != null
-                      ? item.price >= 1000
-                        ? item.price.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                        : item.price >= 10 ? item.price.toFixed(2) : item.price.toFixed(4)
+                    {price != null
+                      ? price >= 1000
+                        ? price.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                        : price >= 10 ? price.toFixed(2) : price.toFixed(4)
                       : '—'}
                   </div>
                   <div className={`terminal-market-card-chg ${up ? 't-green' : 't-red'}`}>
-                    {item.pctChange != null ? `${up ? '+' : ''}${item.pctChange.toFixed(2)}%` : '—'}
+                    {pct != null ? `${up ? '+' : ''}${pct.toFixed(2)}%` : '—'}
                   </div>
                 </div>
               )

@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
+import { usePolling } from './usePolling'
 
 interface QuoteStats {
   high52: number | null
@@ -38,20 +39,19 @@ function formatMarketCap(m: number): string {
 }
 
 export default function QuotePanel({ symbol }: { symbol: string }) {
-  const [data, setData] = useState<QuoteData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!symbol) return
-    setLoading(true)
-    fetch(`/api/terminal/quote?symbol=${encodeURIComponent(symbol)}`)
-      .then(r => r.json())
-      .then(d => setData(d.price != null ? d : null))
-      .catch(() => setData(null))
-      .finally(() => setLoading(false))
+  const fetcher = useCallback(async (): Promise<QuoteData | null> => {
+    const res = await fetch(`/api/terminal/quote?symbol=${encodeURIComponent(symbol)}`)
+    if (!res.ok) return null
+    const d = await res.json()
+    return d.price != null ? d : null
   }, [symbol])
 
-  if (loading) return <div className="terminal-loading">Loading</div>
+  const { data, loading, refetch } = usePolling(fetcher, { intervalMs: 60_000, enabled: !!symbol })
+
+  // Refetch immediately when the symbol changes.
+  useEffect(() => { if (symbol) refetch() }, [symbol, refetch])
+
+  if (loading && !data) return <div className="terminal-loading">Loading</div>
   if (!data) return <div className="terminal-loading" style={{ color: '#555' }}>No data for {symbol}</div>
 
   const up = data.change >= 0

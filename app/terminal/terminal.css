@@ -890,6 +890,45 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Panel Freshness Status ────────────────────────────── */
+.terminal-panel-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: #4a7a5a;
+  letter-spacing: 0.5px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.terminal-panel-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #059669;
+}
+
+.terminal-panel-status.stale {
+  color: #8a7a3a;
+}
+
+.terminal-panel-status.stale .terminal-panel-status-dot {
+  background: #c8963e;
+}
+
+.terminal-panel-status.err {
+  color: #ff5a6e;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.terminal-panel-status.err:hover {
+  color: #ff8a98;
+}
+
 /* ── Disclaimer ────────────────────────────────────────── */
 .terminal-disclaimer {
   padding: 8px 12px;

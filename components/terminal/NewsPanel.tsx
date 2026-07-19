@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { usePolling } from './usePolling'
+import PanelStatus from './PanelStatus'
 
 interface NewsItem {
   id: number
@@ -30,8 +32,6 @@ function canHaveCompanyNews(symbol: string | null): symbol is string {
 export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: string | null; defaultMode?: Mode }) {
   const symbolOk = canHaveCompanyNews(symbol)
   const [mode, setMode] = useState<Mode>(symbolOk ? defaultMode : 'market')
-  const [news, setNews] = useState<NewsItem[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setMode(canHaveCompanyNews(symbol) ? defaultMode : 'market')
@@ -39,18 +39,19 @@ export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: 
 
   const activeSymbol = mode === 'symbol' && symbolOk ? symbol : null
 
-  useEffect(() => {
-    setLoading(true)
+  const fetcher = useCallback(async (): Promise<NewsItem[]> => {
     const url = activeSymbol
       ? `/api/terminal/news?symbol=${encodeURIComponent(activeSymbol)}`
       : '/api/terminal/news?category=general'
-
-    fetch(url)
-      .then(r => r.json())
-      .then(d => setNews(d.news || []))
-      .catch(() => setNews([]))
-      .finally(() => setLoading(false))
+    const res = await fetch(url)
+    if (!res.ok) throw new Error('news')
+    const d = await res.json()
+    return d.news || []
   }, [activeSymbol])
+
+  const { data: news, loading, error, lastUpdated, stale, refetch } = usePolling(fetcher, { intervalMs: 5 * 60_000 })
+
+  useEffect(() => { refetch() }, [activeSymbol, refetch])
 
   return (
     <div className="terminal-panel">
@@ -59,26 +60,16 @@ export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {symbolOk && (
             <div className="terminal-news-tabs">
-              <button
-                className={`terminal-news-tab ${mode === 'symbol' ? 'active' : ''}`}
-                onClick={() => setMode('symbol')}
-              >
-                {symbol}
-              </button>
-              <button
-                className={`terminal-news-tab ${mode === 'market' ? 'active' : ''}`}
-                onClick={() => setMode('market')}
-              >
-                Market
-              </button>
+              <button className={`terminal-news-tab ${mode === 'symbol' ? 'active' : ''}`} onClick={() => setMode('symbol')}>{symbol}</button>
+              <button className={`terminal-news-tab ${mode === 'market' ? 'active' : ''}`} onClick={() => setMode('market')}>Market</button>
             </div>
           )}
-          {!loading && <span style={{ fontSize: '9px', color: '#444' }}>{news.length} items</span>}
+          <PanelStatus lastUpdated={lastUpdated} stale={stale} error={error} onRetry={refetch} />
         </div>
       </div>
       <div className="terminal-panel-body">
-        {loading && <div className="terminal-loading">Loading news</div>}
-        {!loading && news.map(item => (
+        {loading && !news && <div className="terminal-loading">Loading news</div>}
+        {news && news.map(item => (
           <a
             key={item.id}
             href={item.url}
@@ -95,10 +86,8 @@ export default function NewsPanel({ symbol, defaultMode = 'symbol' }: { symbol: 
             </div>
           </a>
         ))}
-        {!loading && news.length === 0 && (
-          <div style={{ padding: '20px', textAlign: 'center', color: '#444', fontSize: '11px' }}>
-            No recent news
-          </div>
+        {news && news.length === 0 && !loading && (
+          <div style={{ padding: '20px', textAlign: 'center', color: '#444', fontSize: '11px' }}>No recent news</div>
         )}
       </div>
     </div>
