@@ -132,16 +132,26 @@ export default function AccountPanel() {
 
         <div style={{ background: '#0d0b08', border: '1px solid #2a2010', borderLeft: '3px solid var(--amber, #c8963e)', borderRadius: '4px', padding: '16px', marginBottom: '20px' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--amber, #c8963e)', marginBottom: '4px' }}>
-            Paper Trading — Coming Soon
+            Paper Trading — Live
           </div>
           <div style={{ fontSize: '24px', fontWeight: 700, color: '#e8e8e8' }}>
             {paperCash != null
               ? `$${paperCash.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
               : '$100,000.00'}
           </div>
-          <div style={{ fontSize: '12px', color: '#8a8a6a', marginTop: '4px' }}>
-            Virtual starting balance — reserved and waiting. Trades, positions and a leaderboard land here next.
+          <div style={{ fontSize: '12px', color: '#8a8a6a', margin: '4px 0 14px' }}>
+            Virtual cash balance — fills at real market prices, zero real money.
           </div>
+          <a
+            href="/trade"
+            style={{
+              display: 'inline-block', background: 'var(--amber, #c8963e)', color: '#0a0a0a',
+              fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
+              padding: '10px 22px', borderRadius: '4px', textDecoration: 'none',
+            }}
+          >
+            Open the Trading Desk →
+          </a>
         </div>
 
         <button onClick={signOut} style={{ ...buttonStyle, background: 'none', color: '#9a9a9a', border: '1px solid #2a2a2a' }}>

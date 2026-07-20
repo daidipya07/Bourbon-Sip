@@ -66,3 +66,24 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ── Atomic cash debit for buys ──
+-- Single-statement check-and-debit: returns true and debits only when funds
+-- cover the amount, so concurrent buys can never overspend.
+create or replace function public.paper_debit_cash(p_user_id uuid, p_amount numeric)
+returns boolean
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  updated integer;
+begin
+  update paper_accounts
+     set cash = cash - p_amount,
+         updated_at = now()
+   where user_id = p_user_id
+     and cash >= p_amount;
+  get diagnostics updated = row_count;
+  return updated > 0;
+end;
+$$;

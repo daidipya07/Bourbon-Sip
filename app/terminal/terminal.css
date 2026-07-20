@@ -1726,6 +1726,41 @@
   .terminal-tools-navcode, .terminal-tools-note { display: none; }
 }
 
+/* ── Paper Trading Desk ────────────────────────────────── */
+.terminal-paper-head,
+.terminal-paper-row {
+  display: grid;
+  grid-template-columns: 80px 70px 90px 90px 110px 110px 100px 60px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 16px;
+  font-size: 11px;
+  min-width: 720px;
+  font-variant-numeric: tabular-nums;
+}
+
+.terminal-paper-head {
+  font-size: 8px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.terminal-paper-row {
+  border-bottom: 1px solid #111;
+  color: #ccc;
+}
+
+.terminal-fill-ok {
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #7fbf8f;
+  background: rgba(46, 158, 91, 0.08);
+  border: 1px solid rgba(46, 158, 91, 0.3);
+  border-radius: 2px;
+}
+
 /* ── Disclaimer ────────────────────────────────────────── */
 .terminal-disclaimer {
   padding: 8px 12px;
