@@ -88,6 +88,7 @@ export default function Nav({
         <Link href="/data-pulse">Data Pulse</Link>
         <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
         <Link href="/#radar">Disruptor Radar</Link>
+        <Link href="/account">Account</Link>
       </div>
       <div className="nav-right">
         <div className="nav-live">

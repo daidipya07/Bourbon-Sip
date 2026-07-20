@@ -43,7 +43,7 @@ export default function EmailSignupForm({
       if (res.ok) {
         setEmail('')
         setStatus('success')
-        showToast(data.message || "You're in. First Sip drops tomorrow at 6:30 AM ET 🥃")
+        showToast(data.message || 'Almost in — check your inbox and confirm your email 🥃')
       } else {
         setStatus('error')
         showToast(data.error || 'Something went wrong — try again.')

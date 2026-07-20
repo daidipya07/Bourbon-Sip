@@ -37,12 +37,15 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `/terminal` | `app/terminal/page.tsx` | Bloomberg-style terminal — client component, own CSS (`terminal.css`), 7 views (Chart/Markets/Heatmap/Macro/News/Earnings/Tools). Command codes: `AAPL GP/DES/N`, `MKT HM ECO ERN TOOLS PORT DCA RISK CORR`, keys 1–7 |
 | `/privacy` | `app/privacy/page.tsx` | Privacy Policy |
 | `/terms` | `app/terms/page.tsx` | Terms of Use |
+| `/account` | `app/account/page.tsx` | Reader accounts via Supabase Auth (email+password, confirmation email) — foundation for paper-trading sandbox. Schema+RLS in `supabase-accounts.sql` (owner must run in SQL editor + set Site URL in Supabase auth settings) |
 | `/admin` | `app/admin/` | Protected by JWT middleware |
 
 ### Key API Routes
 | Route | Purpose |
 |-------|---------|
-| `POST /api/subscribe` | Mailchimp email signup |
+| `POST /api/subscribe` | Mailchimp signup — DOUBLE OPT-IN (status:pending → Mailchimp sends confirm email; single opt-in was silent, which was the "no emails" bug). Handles exists/pending/unsubscribed cases |
+| `GET /api/cron/daily-newsletter` | Daily 13:00 UTC — sends "The Daily Pour" Mailchimp campaign ONLY if ≥3 reads published in last 24h. CRON_SECRET |
+| `GET /api/admin/newsletter-preview` | Renders today's exact newsletter HTML (no send) — admin cookie required |
 | `POST /api/admin/login` | Sets httpOnly JWT cookie |
 | `GET /api/admin/tipsy-reads` | List tipsy reads by status |
 | `PUT /api/admin/tipsy-reads/[id]` | Update a tipsy read (sets published_at when status→published) |
