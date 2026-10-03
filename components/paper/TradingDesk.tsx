@@ -44,15 +44,15 @@ function signedMoney(v: number): string {
   return `${v >= 0 ? '+' : '−'}${money(Math.abs(v))}`
 }
 
-export default function TradingDesk() {
+export default function TradingDesk({ initialSymbol, initialSide }: { initialSymbol?: string; initialSide?: 'buy' | 'sell' }) {
   const [client, setClient] = useState<SupabaseClient | null>(null)
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null)
   const [loadError, setLoadError] = useState('')
 
   // Order ticket
-  const [symbol, setSymbol] = useState('')
-  const [side, setSide] = useState<'buy' | 'sell'>('buy')
+  const [symbol, setSymbol] = useState(initialSymbol ?? '')
+  const [side, setSide] = useState<'buy' | 'sell'>(initialSide ?? 'buy')
   const [qty, setQty] = useState('')
   const [quote, setQuote] = useState<TicketQuote | null>(null)
   const [quoteLoading, setQuoteLoading] = useState(false)

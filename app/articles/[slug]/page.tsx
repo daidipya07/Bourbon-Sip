@@ -8,6 +8,7 @@ import EmailSignupForm from '@/components/EmailSignupForm'
 import ToastProvider from '@/components/Toast'
 import { getArticleBySlug, getAllArticleSlugs, getAllArticles } from '@/lib/articles'
 import { articles as legacyArticles } from '@/lib/data/articles'
+import { matchCompanyInText } from '@/lib/terminal/symbols'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -123,6 +124,10 @@ export default async function ArticlePage({ params }: Props) {
   const allArticles = await getAllArticles()
   const relatedMd = allArticles.filter(a => a.slug !== slug).slice(0, 3)
 
+  // Title/subtitle only — deliberately not full body text, to keep this
+  // precision-over-recall and avoid false positives in long-form content.
+  const tickerMatch = matchCompanyInText(`${article.headline} ${article.subtitle}`)
+
   return (
     <>
       <Nav variant="article" />
@@ -146,6 +151,14 @@ export default async function ArticlePage({ params }: Props) {
             <span>{article.dataPoints} data points</span>
             <div className="sep" />
             <span>{article.sourcesCount} independent sources</span>
+            {tickerMatch && (
+              <>
+                <div className="sep" />
+                <Link href={`/terminal?symbol=${tickerMatch.symbol}`} className="terminal-link-chip">
+                  View {tickerMatch.symbol} in Terminal →
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

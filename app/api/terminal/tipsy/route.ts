@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase'
-
-// Company-name search terms from a Finnhub profile name — strip corporate
-// suffixes so "Apple Inc" → "Apple", "JPMorgan Chase & Co" → "JPMorgan".
-function searchTermFromName(name: string): string {
-  const cleaned = name
-    .replace(/\b(inc|corp|corporation|co|company|ltd|plc|group|holdings|the|sa|nv|ag)\b\.?/gi, '')
-    .replace(/[.,&]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-  return cleaned.split(' ')[0] || name
-}
+import { searchTermFromName } from '@/lib/terminal/symbols'
 
 // Tipsy Reads (Bourbon Pour's curated + AI-analyzed news) matched to a ticker by
 // company-name / symbol text search. Ties the terminal to the site's editorial edge.

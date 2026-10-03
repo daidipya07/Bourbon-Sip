@@ -1,5 +1,18 @@
 'use client'
 
+import Link from 'next/link'
+
+function openExternal(url: string) {
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
+
+function onCardKeyDown(e: React.KeyboardEvent, url: string) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    openExternal(url)
+  }
+}
+
 const catColor: Record<string, string> = {
   markets: '#c8963e', ai: '#4a9eff', tech: '#7c3aed',
   macro: '#059669', geopolitics: '#dc2626', policy: '#d97706',
@@ -23,10 +36,14 @@ function strengthColor(score: number): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function TipsyCard({ item }: { item: any }) {
   return (
-    <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-      <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '10px', overflow: 'hidden', transition: 'border-color 0.15s', cursor: 'pointer' }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = '#c8963e')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}>
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => openExternal(item.url)}
+      onKeyDown={e => onCardKeyDown(e, item.url)}
+      style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '10px', overflow: 'hidden', transition: 'border-color 0.15s', cursor: 'pointer' }}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = '#c8963e')}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}>
         {item.og_image && (
           <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
             <img src={item.og_image} alt={item.title}
@@ -92,12 +109,22 @@ export function TipsyCard({ item }: { item: any }) {
               ))}
             </div>
           </div>
-          <div style={{ marginTop: '14px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#c8963e', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Read Full Article ↗
+          <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#c8963e', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Read Full Article ↗
+            </span>
+            {item.tickerMatch && (
+              <Link
+                href={`/terminal?symbol=${item.tickerMatch.symbol}`}
+                onClick={e => e.stopPropagation()}
+                className="terminal-link-chip"
+              >
+                View {item.tickerMatch.symbol} in Terminal →
+              </Link>
+            )}
           </div>
         </div>
-      </div>
-    </a>
+    </div>
   )
 }
 
@@ -105,10 +132,14 @@ export function TipsyCard({ item }: { item: any }) {
 export function CellarRow({ item }: { item: any }) {
   const catColor2: Record<string, string> = catColor
   return (
-    <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-      <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '8px', padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr auto', gap: '16px', alignItems: 'center' }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = '#c8963e')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}>
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => openExternal(item.url)}
+      onKeyDown={e => onCardKeyDown(e, item.url)}
+      style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '8px', padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '16px', alignItems: 'center', cursor: 'pointer' }}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = '#c8963e')}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}>
         <div>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '6px' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: catColor2[item.category] || '#888', textTransform: 'uppercase', letterSpacing: '1.5px' }}>{item.category}</span>
@@ -116,11 +147,19 @@ export function CellarRow({ item }: { item: any }) {
           </div>
           <div style={{ fontSize: '15px', fontWeight: 600, color: '#e8dcc8', lineHeight: 1.4 }}>{item.title}</div>
         </div>
+        {item.tickerMatch && (
+          <Link
+            href={`/terminal?symbol=${item.tickerMatch.symbol}`}
+            onClick={e => e.stopPropagation()}
+            className="terminal-link-chip"
+          >
+            {item.tickerMatch.symbol} →
+          </Link>
+        )}
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#c8963e', marginBottom: '2px' }}>🥃 {item.bourbon_strength}</div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555' }}>{item.proof_score}-proof</div>
         </div>
-      </div>
-    </a>
+    </div>
   )
 }

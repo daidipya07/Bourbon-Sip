@@ -4,6 +4,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import EmailSignupForm from '@/components/EmailSignupForm'
 import { TipsyCard, CellarRow } from '@/components/TipsyCard'
+import { matchCompanyInText } from '@/lib/terminal/symbols'
 import { createClient } from '@supabase/supabase-js'
 
 export const metadata: Metadata = {
@@ -38,7 +39,11 @@ async function getPublishedReads() {
 }
 
 export default async function TipsyReadsPage() {
-  const all = await getPublishedReads()
+  const rawReads = await getPublishedReads()
+  const all = rawReads.map(r => ({
+    ...r,
+    tickerMatch: matchCompanyInText(`${r.title ?? ''} ${r.description ?? ''}`),
+  }))
   const fresh     = all.filter(r => tierLabel(r.published_at) === 'fresh')
   const yesterday = all.filter(r => tierLabel(r.published_at) === 'yesterday')
   const cellar    = all.filter(r => tierLabel(r.published_at) === 'cellar')

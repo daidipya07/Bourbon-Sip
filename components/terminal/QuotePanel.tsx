@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect } from 'react'
+import Link from 'next/link'
 import { usePolling } from './usePolling'
 import { useStreamedPrice, useFlash } from './StreamProvider'
 
@@ -81,6 +82,9 @@ export default function QuotePanel({ symbol }: { symbol: string }) {
           {up ? '+' : ''}{change.toFixed(2)} ({up ? '+' : ''}{pctChange.toFixed(2)}%)
           {data.changeBasis === '24h' && <span style={{ fontSize: '10px', color: '#666', marginLeft: '6px' }}>24h</span>}
         </span>
+        <Link href={`/trade?symbol=${data.symbol}`} className="terminal-trade-btn" style={{ marginLeft: 'auto', alignSelf: 'center' }}>
+          Trade {data.symbol}
+        </Link>
       </div>
 
       <div className="terminal-quote-stats">

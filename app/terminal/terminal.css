@@ -143,6 +143,23 @@
   margin-left: auto;
 }
 
+.terminal-trade-btn {
+  background: #c8963e;
+  color: #000;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 2px;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.terminal-trade-btn:hover { background: #dba84e; }
+
 .terminal-tab {
   padding: 4px 14px;
   color: #666;

@@ -48,9 +48,9 @@ export default async function HomePage() {
               Evidence-scored analysis, curated reads, and macro intelligence — clearly sourced, proof-rated, and free.
             </p>
             <div className="fade-up" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '48px', animationDelay: '.3s' }}>
-              <Link href="#tipsy" className="btn-primary">Today&apos;s Reads ↓</Link>
-              <Link href="/data-pulse" className="btn-ghost">Data Pulse →</Link>
-              <Link href="/articles" className="btn-ghost">Articles →</Link>
+              <Link href="/terminal" className="btn-primary">Analyze Markets →</Link>
+              <Link href="/terminal?view=tools" className="btn-ghost">Research Tools →</Link>
+              <Link href="/articles" className="btn-ghost">Read Today&apos;s Intelligence →</Link>
             </div>
 
             {/* Mini stats strip */}

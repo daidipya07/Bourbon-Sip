@@ -82,11 +82,21 @@ export default function Nav({
         <div className="nav-wordmark">Bourbon Pour</div>
       </Link>
       <div className="nav-links">
-        <Link href="/#sip">Daily Sip</Link>
-        <Link href="/tipsy-reads">Tipsy Reads</Link>
-        <Link href="/articles">Intelligence Desk</Link>
-        <Link href="/data-pulse">Data Pulse</Link>
-        <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
+        <div className="nav-group">
+          <span className="nav-group-label">Analyze</span>
+          <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
+        </div>
+        <div className="nav-group">
+          <span className="nav-group-label">Research</span>
+          <Link href="/terminal?view=tools">Tools</Link>
+        </div>
+        <div className="nav-group">
+          <span className="nav-group-label">Read</span>
+          <Link href="/#sip">Daily Sip</Link>
+          <Link href="/tipsy-reads">Tipsy Reads</Link>
+          <Link href="/articles">Intelligence Desk</Link>
+          <Link href="/data-pulse">Data Pulse</Link>
+        </div>
         <Link href="/#radar">Disruptor Radar</Link>
         <Link href="/account">Account</Link>
       </div>

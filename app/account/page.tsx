@@ -5,7 +5,7 @@ import AccountPanel from '@/components/account/AccountPanel'
 
 export const metadata: Metadata = {
   title: 'Account | Bourbon Pour',
-  description: 'Free reader account for Bourbon Pour — home of the upcoming paper-trading sandbox.',
+  description: 'Free reader account for Bourbon Pour — home of the paper-trading desk.',
 }
 
 export default function AccountPage() {
@@ -20,7 +20,7 @@ export default function AccountPage() {
           Your seat at the bar.
         </h1>
         <p style={{ color: '#9a9a9a', fontSize: '15px', lineHeight: 1.65, marginBottom: '32px' }}>
-          A free account unlocks the upcoming <strong style={{ color: '#cfc3ad' }}>paper-trading sandbox</strong> — practice
+          A free account unlocks the <strong style={{ color: '#cfc3ad' }}>paper-trading desk</strong> — practice
           trades with $100,000 of virtual cash against real market data. Educational only: no real money, no brokerage,
           nothing to buy. Ever.
         </p>
