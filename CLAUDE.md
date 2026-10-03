@@ -63,6 +63,7 @@ This file is auto-loaded by Claude Code at the start of every session. Keep it u
 | `GET /api/terminal/news` | Finnhub company/market news |
 | `GET /api/terminal/search?q=` | Finnhub symbol search |
 | `GET /api/terminal/earnings` | Finnhub earnings calendar, next 7 days, 1h cache |
+| `POST /api/terminal/analyst` | AI Analyst chat — Claude (Haiku 4.5). Gathers REAL data (technical read + quote + Finnhub metrics/consensus/news) into a factual context, runs `lib/terminal/analyst.ts`. Educational ONLY — never buy/sell advice. Site-wide in-memory daily cap (200). Graceful 503 when ANTHROPIC_API_KEY unset/placeholder |
 | `GET /api/admin/weekly-signals` | List all weekly signals |
 | `POST /api/admin/weekly-signals` | Trigger manual signal generation |
 | `PUT /api/admin/weekly-signals/[id]` | Update signal status (draft → published sets published_at) |
@@ -176,6 +177,7 @@ OPENAI_API_KEY=
 CRON_SECRET=
 FRED_API_KEY=        # free at fred.stlouisfed.org/docs/api/api_key.html
 TWELVE_DATA_API_KEY= # free at twelvedata.com — Terminal charts/candles only (800 req/day)
+ANTHROPIC_API_KEY=   # console.anthropic.com — powers Terminal AI Analyst chat (Claude Haiku 4.5). Route 503s gracefully without it
 ```
 
 ---

@@ -18,6 +18,7 @@ import RegimePill from '@/components/terminal/RegimePill'
 import { StreamProvider } from '@/components/terminal/StreamProvider'
 import TerminalStrip from '@/components/terminal/TerminalStrip'
 import TradeStatusChip from '@/components/terminal/TradeStatusChip'
+import AnalystPanel from '@/components/terminal/AnalystPanel'
 import ToolsPanel, { type ToolId } from '@/components/terminal/tools/ToolsPanel'
 import '@/app/terminal/terminal.css'
 
@@ -72,9 +73,15 @@ export default function TerminalClient({ initialSymbol, initialView, initialTool
   const [view, setView] = useState<TerminalView>(initialView ?? 'chart')
   const [newsFocus, setNewsFocus] = useState<'symbol' | 'market'>('market')
   const [activeTool, setActiveTool] = useState<ToolId>(initialTool ?? 'portfolio')
+  const [analystOpen, setAnalystOpen] = useState(true)
   const clock = useNyClock()
   const sideStackRef = useRef<HTMLDivElement>(null)
   const researchRef = useRef<HTMLDivElement>(null)
+
+  // Collapse the AI analyst by default on narrow screens so the chart isn't squeezed.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1100) setAnalystOpen(false)
+  }, [])
 
   function handleSelect(sym: string) {
     setSymbol(sym)
@@ -142,7 +149,10 @@ export default function TerminalClient({ initialSymbol, initialView, initialTool
 
       {/* ── Main Content ────────────────────────────────── */}
       {view === 'chart' && (
-        <div className="terminal-grid">
+        <div className={`terminal-grid chart-grid ${analystOpen ? 'analyst-open' : 'analyst-collapsed'}`}>
+          <div className="tg-analyst">
+            <AnalystPanel symbol={symbol} open={analystOpen} onToggle={() => setAnalystOpen(o => !o)} />
+          </div>
           <div className="terminal-panel tg-main">
             <QuotePanel symbol={symbol} />
             <ChartPanel symbol={symbol} />
