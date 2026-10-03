@@ -137,7 +137,12 @@ export async function POST(request: Request) {
     const reply = await runAnalyst(contextBlock, messages)
     return NextResponse.json({ reply }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Analyst error'
-    return NextResponse.json({ error: `The analyst could not respond: ${msg}` }, { status: 502 })
+    // Log the real reason (incl. provider billing/credit errors) server-side only —
+    // never forward raw provider error text to the client.
+    console.error('[analyst] runAnalyst failed:', err instanceof Error ? err.message : err)
+    return NextResponse.json(
+      { error: 'The AI analyst is temporarily unavailable. Please try again later.' },
+      { status: 503 }
+    )
   }
 }
