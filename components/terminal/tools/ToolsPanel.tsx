@@ -4,10 +4,12 @@ import RiskTool from './RiskTool'
 import BacktestTool from './BacktestTool'
 import CorrelationTool from './CorrelationTool'
 import PortfolioTool from './PortfolioTool'
+import TechnicalReadTool from './TechnicalReadTool'
 
-export type ToolId = 'portfolio' | 'backtest' | 'risk' | 'correlation'
+export type ToolId = 'technicals' | 'portfolio' | 'backtest' | 'risk' | 'correlation'
 
 const TOOLS: Array<{ id: ToolId; label: string; blurb: string; code: string }> = [
+  { id: 'technicals', label: 'Technical Read', blurb: 'Auto-read of trend, momentum & volatility on real candles', code: 'TA' },
   { id: 'portfolio', label: 'Portfolio Analyzer', blurb: 'Live value, P&L, sector mix, beta/vol vs SPY', code: 'PORT' },
   { id: 'backtest', label: 'DCA Backtester', blurb: 'What if you’d invested monthly — real history', code: 'DCA' },
   { id: 'risk', label: 'Position Size & Risk', blurb: 'Shares to buy from account, risk %, stop', code: 'RISK' },
@@ -41,6 +43,7 @@ export default function ToolsPanel({ active, onSelectTool, symbol, onSelectSymbo
         </div>
       </div>
       <div className="terminal-tools-body">
+        {active === 'technicals' && <TechnicalReadTool defaultSymbol={symbol} onSelectSymbol={onSelectSymbol} />}
         {active === 'portfolio' && <PortfolioTool onSelectSymbol={onSelectSymbol} />}
         {active === 'backtest' && <BacktestTool defaultSymbol={symbol} />}
         {active === 'risk' && <RiskTool />}

@@ -83,21 +83,17 @@ export default function Nav({
       </Link>
       <div className="nav-links">
         <div className="nav-group">
-          <span className="nav-group-label">Analyze</span>
-          <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
-        </div>
-        <div className="nav-group">
-          <span className="nav-group-label">Research</span>
-          <Link href="/terminal?view=tools">Tools</Link>
-        </div>
-        <div className="nav-group">
-          <span className="nav-group-label">Read</span>
-          <Link href="/#sip">Daily Sip</Link>
+          <span className="nav-group-label">Read &amp; Research</span>
           <Link href="/tipsy-reads">Tipsy Reads</Link>
           <Link href="/articles">Intelligence Desk</Link>
           <Link href="/data-pulse">Data Pulse</Link>
+          <Link href="/#radar">Disruptor Radar</Link>
         </div>
-        <Link href="/#radar">Disruptor Radar</Link>
+        <div className="nav-group nav-group-last">
+          <span className="nav-group-label">Trade &amp; Analyze</span>
+          <Link href="/terminal" style={{ color: '#c8963e' }}>Terminal</Link>
+          <Link href="/trade">Paper Trade</Link>
+        </div>
         <Link href="/account">Account</Link>
       </div>
       <div className="nav-right">

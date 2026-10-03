@@ -3,7 +3,7 @@ import type { TerminalView } from '@/components/terminal/CommandBar'
 import type { ToolId } from '@/components/terminal/tools/ToolsPanel'
 
 const VIEWS: TerminalView[] = ['chart', 'markets', 'heatmap', 'macro', 'news', 'earnings', 'tools']
-const TOOLS: ToolId[] = ['portfolio', 'backtest', 'risk', 'correlation']
+const TOOLS: ToolId[] = ['technicals', 'portfolio', 'backtest', 'risk', 'correlation']
 const SYMBOL_RE = /^[A-Z0-9.:-]{1,20}$/i
 
 export default async function TerminalPage({

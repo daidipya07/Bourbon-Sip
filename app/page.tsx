@@ -48,10 +48,12 @@ export default async function HomePage() {
             <p className="fade-up" style={{ color: 'var(--text-dim)', fontSize: '17px', lineHeight: 1.7, marginBottom: '32px', maxWidth: '560px', margin: '0 auto 32px', animationDelay: '.2s' }}>
               Evidence-scored analysis, curated reads, and macro intelligence — clearly sourced, proof-rated, and free.
             </p>
-            <div className="fade-up" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '48px', animationDelay: '.3s' }}>
-              <Link href="/terminal" className="btn-primary">Analyze Markets →</Link>
-              <Link href="/terminal?view=tools" className="btn-ghost">Research Tools →</Link>
+            <div className="fade-up" style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginBottom: '16px', animationDelay: '.3s', flexWrap: 'wrap' }}>
+              <Link href="/terminal" className="btn-primary">Open the Terminal →</Link>
               <Link href="/articles" className="btn-ghost">Read Today&apos;s Intelligence →</Link>
+            </div>
+            <div className="fade-up" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '40px', animationDelay: '.35s' }}>
+              Two ways in — <span style={{ color: 'var(--amber-light)' }}>analyze the markets</span> with the Terminal, or <span style={{ color: 'var(--amber-light)' }}>read the intelligence</span>.
             </div>
 
             {/* Mini stats strip */}
