@@ -7,6 +7,7 @@ import RegimeIndicator from '@/components/data-pulse/RegimeIndicator'
 import StressGauges from '@/components/data-pulse/StressGauges'
 import ProofLeaderboard from '@/components/data-pulse/ProofLeaderboard'
 import WeeklySignalBlock from '@/components/data-pulse/WeeklySignalBlock'
+import MarketOutlook from '@/components/MarketOutlook'
 import { getMarketSnapshot } from '@/lib/market-data'
 
 export const metadata: Metadata = {
@@ -76,6 +77,11 @@ export default async function DataPulsePage() {
         <section style={{ padding: '48px 32px 80px' }}>
           <div className="container">
             <div style={{ maxWidth: '900px' }}>
+
+              {/* Market Outlook — The Market Pour (lead narrative) */}
+              <div style={{ marginBottom: '28px' }}>
+                <MarketOutlook initial={snapshot} variant="full" />
+              </div>
 
               {/* Macro Regime */}
               <RegimeIndicator

@@ -61,11 +61,10 @@ depends on account-tied server state, and we already have Supabase Auth +
   keep the current localStorage behavior (graceful).
 - **Server-side portfolio (Tools tab).** Same treatment for the
   `bourbon-terminal-portfolio` holdings in `PortfolioTool`.
-- **Resurrect "Pour Journal" as saved/annotated reads** — the orphaned concept
-  page already pitches exactly this. Let a signed-in reader save a Tipsy Read or
-  article and add a one-line note; surface them on a real `/pour-journal`.
-  - *Cleanup folded in:* replace the dead concept page with the working feature,
-    or retire the route if we don't build it this phase.
+- **Saved / annotated reads** — let a signed-in reader save a Tipsy Read or
+  article and add a one-line note; surface them on a "My Reads" page. (The old
+  `/pour-journal` concept page that pitched this has been removed; this can be
+  built fresh under a new name when the feature is real.)
 - *Audience:* investors + researchers (sticky watchlist/portfolio), readers
   (saved reads).
 
@@ -139,8 +138,8 @@ Not started until the owner says so. Documented so it's ready:
 
 | Item | Where | Folds into |
 |------|-------|-----------|
-| Orphaned, non-functional concept page | `app/pour-journal/` | Phase 1 (build) |
-| Orphaned, non-functional concept page | `app/proof-of-work/` | Phase 4 (retire/build) |
+| ~~Orphaned concept page~~ — **removed** | ~~`app/pour-journal/`~~ | done (Market Outlook pass) |
+| ~~Orphaned concept page~~ — **removed** | ~~`app/proof-of-work/`~~ | done (Market Outlook pass) |
 | Legacy article fallback w/ fake March dates | `lib/data/articles.ts` | Phase 4 |
 | Unused component | `components/GaugeGrid.tsx` | Phase 4 |
 | Unused crypto mappings (5 coins) | `lib/terminal/crypto.ts` | Phase 3 |

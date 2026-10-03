@@ -4,6 +4,7 @@ import Footer from '@/components/Footer'
 import Ticker from '@/components/Ticker'
 import StreakCounter from '@/components/StreakCounter'
 import TipsyReads from '@/components/TipsyReads'
+import MarketOutlook from '@/components/MarketOutlook'
 import EmailSignupForm from '@/components/EmailSignupForm'
 import ProofBarAnimated from '@/components/ProofBarAnimated'
 import ToastProvider from '@/components/Toast'
@@ -66,6 +67,13 @@ export default async function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── MARKET OUTLOOK — THE MARKET POUR ─────────────── */}
+        <section style={{ padding: '0 32px 8px' }}>
+          <div className="container" style={{ maxWidth: '900px' }}>
+            <MarketOutlook variant="compact" />
           </div>
         </section>
 
